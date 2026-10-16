@@ -1,0 +1,32 @@
+html{color-scheme:light}body{margin:0;padding:32px 16px;background:#f4f4f4}main{width:100%;min-width:0}nav{max-width:850px;margin:0 auto 20px;display:flex;flex-wrap:wrap;gap:12px 24px;font:600 15px Arial,sans-serif}nav a{color:#1d1d1d;min-height:44px;display:inline-flex;align-items:center}a:focus-visible{outline:3px solid #1555a0;outline-offset:5px}.draft-notice{padding:16px;border:2px solid #9f854f;border-radius:8px;background:#fff8e8;color:#1d1d1d}@media(max-width:600px){body{padding:16px 10px}}
+
+.tempo-info{box-sizing:border-box;width:100%;min-width:0;max-width:850px;margin:0 auto;padding:clamp(24px,5vw,56px);background:#fff;color:#1d1d1d;font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:1.75;border:1px solid #ddd;border-radius:16px;overflow-wrap:anywhere}
+.tempo-info *{box-sizing:border-box;min-width:0}.tempo-info a{overflow-wrap:anywhere;word-break:normal}.tempo-info .tempo-brand{font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#666}.tempo-info h1{font-family:inherit;font-size:clamp(32px,6vw,48px);line-height:1.12;color:#1d1d1d;margin:12px 0 20px}.tempo-info h2{font-family:inherit;font-size:23px;line-height:1.35;color:#1d1d1d;margin:36px 0 12px}.tempo-info p{margin:0 0 16px}.tempo-info li{margin:8px 0}.tempo-info ul{padding-left:24px}.tempo-info a{color:#1555a0;text-decoration:underline;text-underline-offset:3px}.tempo-info a:focus-visible{outline:3px solid #1555a0;outline-offset:5px}.tempo-info .tempo-meta{font-size:14px;color:#555}.tempo-info .tempo-contact{padding:22px;background:#f3f4f6;border-radius:10px;margin:24px 0}.tempo-info .tempo-button{display:inline-block;background:#1d1d1d;color:#fff;padding:12px 20px;border-radius:7px;font-weight:700;min-height:48px}.tempo-info footer{border-top:1px solid #ddd;margin-top:36px;padding-top:20px;font-size:15px}
+/* Container queries respond to the Squarespace block width, even inside columns. */
+.tempo-info{container-type:inline-size}
+.tempo-info footer{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.tempo-info footer a{display:inline-flex;align-items:center;min-height:44px}
+@container (max-width:520px){
+  .tempo-info h1{font-size:34px}
+  .tempo-info h2{font-size:21px;margin-top:28px}
+  .tempo-info .tempo-contact{padding:16px}
+  .tempo-info .tempo-button{display:flex;justify-content:center;align-items:center;width:100%;text-align:center;white-space:normal}
+}
+@media (max-width:600px){
+  .tempo-info{padding:24px 18px;font-size:16px;line-height:1.7;border-radius:12px}
+  .tempo-info h1{font-size:34px}
+  .tempo-info h2{font-size:21px;margin-top:28px}
+  .tempo-info ul{padding-left:20px}
+  .tempo-info .tempo-contact{padding:16px;margin:20px 0}
+  .tempo-info .tempo-button{display:flex;align-items:center;justify-content:center;width:100%;text-align:center;white-space:normal}
+}
+@media (max-width:360px){
+  .tempo-info{padding:20px 14px;border-radius:8px}
+  .tempo-info h1{font-size:29px}
+  .tempo-info h2{font-size:20px}
+}
+@media print{
+  .tempo-info{max-width:none;padding:0;border:0;border-radius:0;color:#000}
+  .tempo-info .tempo-contact{background:transparent;border:1px solid #aaa}
+  .tempo-info .tempo-button{display:none}
+}
