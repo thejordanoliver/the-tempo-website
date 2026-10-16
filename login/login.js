@@ -21,6 +21,24 @@
   let accessToken = null;
   let refreshController = null;
   const loginLayout = document.querySelector(".login-layout");
+  const homeScreen = document.getElementById("home-screen");
+  const navHome = document.getElementById("nav-home");
+  const navAccount = document.querySelector('nav a[aria-current="page"]');
+  function showView(view) {
+    if (!accessToken) return;
+    const home = view === "home";
+    homeScreen.hidden = !home;
+    signedIn.hidden = home;
+    loginLayout.hidden = true;
+    history.replaceState(null, "", new URL(`../${view}/`, location.href).pathname);
+    document.title = `${home ? "Home" : "Your Profile"} | Tempo Sports`;
+    navHome.setAttribute("aria-current",home?"page":"false");
+    navAccount?.setAttribute("aria-current",home?"false":"page");
+    document.getElementById(home ? "home-title" : "profile-name").focus();
+  }
+  navHome.addEventListener("click", () => showView("home"));
+  navAccount?.addEventListener("click", event => { if (accessToken) { event.preventDefault(); showView("profile"); } });
+  document.getElementById("home-sign-out").addEventListener("click", () => signOut.click());
   const profileStatus = document.getElementById("profile-status");
   const refreshButton = document.getElementById("refresh-profile");
   function setImage(id, value) {
@@ -106,14 +124,10 @@
       refreshToken = data.refreshToken;
       accessToken = data.accessToken;
       renderProfile(data.user);
-      loginLayout.hidden = true;
-      signedIn.hidden = false;
-      const profileUrl = new URL("../profile/", location.href);
-      history.replaceState(null, "", profileUrl.pathname);
-      document.title = "Your Profile | Tempo Sports";
-      const navAccount = document.querySelector('nav a[aria-current="page"]');
-      if (navAccount) { navAccount.textContent = "Profile"; navAccount.href = profileUrl.pathname; }
-      document.getElementById("profile-name").focus();
+      navHome.hidden = false;
+      if (navAccount) { navAccount.textContent = "Profile"; navAccount.href = new URL("../profile/", location.href).pathname; }
+      showView("home");
+      window.TempoHome.start(accessToken, data.user, () => signOut.click());
       void refreshProfile();
     } catch {
       setStatus("Cannot reach the local Tempo backend. Check that it is running at 192.168.1.225:4000 and that this device is on the same network.");
@@ -128,11 +142,15 @@
     }
   });
   signOut.addEventListener("click", async () => {
+    if (signOut.disabled) return;
     signOut.disabled = true;
     const token = refreshToken;
     refreshToken = null;
     accessToken = null;
     refreshController?.abort();
+    window.TempoHome.stop();
+    homeScreen.hidden = true;
+    navHome.hidden = true;
     let revoked = false;
     try {
       const response = await fetch(`${API_URL}/api/logout`, {
@@ -147,8 +165,8 @@
     loginLayout.hidden = false;
     history.replaceState(null, "", new URL("../login/", location.href).pathname);
     document.title = "Sign In | Tempo Sports";
-    const navAccount = document.querySelector('nav a[aria-current="page"]');
-    if (navAccount) { navAccount.textContent = "Sign in"; navAccount.href = new URL("../login/", location.href).pathname; }
+    const navAccount = document.querySelector('nav a[href$="profile/"]');
+    if (navAccount) { navAccount.setAttribute("aria-current", "page"); navAccount.textContent = "Sign in"; navAccount.href = new URL("../login/", location.href).pathname; }
     signedIn.hidden = true;
     for (const id of ["account-name", "profile-name", "profile-email", "profile-username", "profile-bio", "profile-joined", "profile-initials", "profile-status"]) document.getElementById(id).textContent = "";
     setImage("profile-image", null); setImage("profile-banner-image", null);
