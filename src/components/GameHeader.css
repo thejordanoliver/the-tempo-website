@@ -80,12 +80,21 @@
 }
 .gh-status {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0;
   align-items: center;
   margin: 0;
   font: 400 14px/1.25 var(--font);
   overflow-wrap: anywhere;
+}
+.gh-status > span {
+  white-space: nowrap;
+}
+.gh-status > span + span {
+  border-left: 1px solid var(--muted);
+  margin-left: 6px;
+  padding-left: 6px;
 }
 .gh-final,
 .gh-clock {
@@ -112,8 +121,8 @@
   }
   .gh-matchup {
     grid-template-columns: minmax(46px, 1fr) minmax(32px, 0.7fr) minmax(
-        64px,
-        0.95fr
+        96px,
+        1.4fr
       ) minmax(32px, 0.7fr) minmax(46px, 1fr);
     gap: 6px;
   }
@@ -141,7 +150,7 @@
     font-size: 18px;
   }
   .gh-status {
-    font-size: 12px;
+    font-size: 11px;
   }
   .gh-secondary,
   .gh-broadcast {
@@ -155,8 +164,8 @@
   .gh-matchup {
     gap: 3px;
     grid-template-columns: minmax(40px, 1fr) minmax(28px, 0.7fr) minmax(
-        58px,
-        0.95fr
+        90px,
+        1.4fr
       ) minmax(28px, 0.7fr) minmax(40px, 1fr);
   }
   .gh-team .team-logo,
