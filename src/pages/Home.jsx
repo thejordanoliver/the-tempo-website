@@ -36,6 +36,19 @@ export default function Home({ user, onLogout }) {
       "",
     );
   }, [date, league, selectedTeam]);
+  const favoriteSports = useResource(
+    "/api/users/me/favorite-sports",
+    favoritesVersion,
+  );
+  const savedLeagues = Array.isArray(favoriteSports.data?.favoriteSports)
+    ? [
+        ...new Set(
+          favoriteSports.data.favoriteSports.filter(
+            (key) => typeof key === "string",
+          ),
+        ),
+      ]
+    : [];
   const favorites = useResource("/api/users/me/favorites", favoritesVersion);
   const favoriteTeams = Array.isArray(favorites.data?.favoriteTeams)
     ? favorites.data.favoriteTeams.filter(
@@ -72,8 +85,14 @@ export default function Home({ user, onLogout }) {
       </header>
       <FavoritesScroll
         teams={favoriteTeams}
-        loading={favorites.loading}
-        error={favorites.error}
+        leagues={savedLeagues}
+        activeLeague={league}
+        onLeagueSelect={(key) => {
+          setLeague(key);
+          setSelectedTeam(null);
+        }}
+        loading={favorites.loading || favoriteSports.loading}
+        error={favorites.error || favoriteSports.error}
         onRetry={() => setFavoritesVersion((v) => v + 1)}
         selected={selectedTeam}
         supportedLeagues={Object.keys(endpoints)}

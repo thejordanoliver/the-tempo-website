@@ -1,5 +1,5 @@
 .favorites-section {
-  margin: 32px 0;
+  margin: 24px 0 20px;
 }
 .favorites-heading {
   display: flex;
@@ -9,17 +9,28 @@
 .favorites-heading .heading-two {
   flex: 1;
 }
+.favorites-all-games {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
 .favorites-arrows {
   display: flex;
   gap: 4px;
 }
 .favorites-arrows button {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: 0;
   background: transparent;
   color: var(--text);
-  font: 32px/1 Arial;
+  font: 28px/1 Arial;
   cursor: pointer;
   border-radius: 6px;
 }
@@ -28,21 +39,22 @@
 }
 .favorites-scroll {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   overflow-x: auto;
-  padding: 12px 2px 18px;
+  padding: 24px 10px 14px;
   scroll-snap-type: x proximity;
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
-  align-items: stretch;
+  align-items: flex-start;
 }
 .favorite-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 16px;
-  flex: 0 0 148px;
+  gap: 4px;
+  flex: 0 0 80px;
+  width: 80px;
   scroll-snap-align: start;
   padding: 0;
   border: 0;
@@ -53,39 +65,49 @@
   cursor: pointer;
   text-align: center;
 }
-.favorite-item:first-child {
-  flex-basis: 168px;
-  padding-right: 20px;
-  border-right: 1px solid var(--line);
-}
 .favorite-item:disabled {
   cursor: default;
 }
 .favorite-item strong {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 30px;
+  max-width: 100%;
+  height: 30px;
 }
 .favorite-caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   white-space: nowrap;
+  min-width: 0;
 }
-.favorite-caption > span[aria-hidden] {
-  color: var(--muted);
+.favorite-label-divider {
+  height: 12px;
+  width: 1px;
+  background: #aaa;
+  flex: none;
+  margin: 0 4px;
+}
+.favorite-league {
+  font-size: inherit;
+  color: inherit;
+  flex: none;
 }
 .favorite-logo {
   position: relative;
   display: grid;
   place-items: center;
-  width: 148px;
-  height: 148px;
-  border: 1px solid #aaa;
+  width: 80px;
+  height: 80px;
+  border: 0.5px solid var(--text);
   border-radius: 50%;
   flex: none;
   overflow: hidden;
   background: var(--surface);
 }
 .favorite-item[aria-pressed="true"] .favorite-logo {
-  outline: 2px solid var(--text);
+  outline: 1px solid var(--text);
   outline-offset: 3px;
 }
 .favorite-logo .team-logo {
@@ -94,49 +116,30 @@
   display: grid;
   place-items: center;
 }
+.favorite-logo picture {
+  display: grid;
+  place-items: center;
+}
 .favorite-logo img {
-  width: 88px;
-  height: 88px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
 }
 .favorite-initials {
-  font-size: 24px;
+  font-size: 18px;
   color: #fff;
   text-shadow: 0 1px 4px #000;
 }
-.favorite-all {
-  font-size: 42px;
-}
-.favorite-league {
-  font-size: inherit;
-  color: inherit;
+.favorites-section-divider {
+  flex: 0 0 1px;
+  height: 80px;
+  background: var(--line);
+  margin: 0 -6px;
 }
 .favorites-scroll:focus-visible,
 .favorite-item:focus-visible,
+.favorites-all-games:focus-visible,
 .favorites-arrows button:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: 4px;
-}
-@media (max-width: 480px) {
-  .favorite-item {
-    flex-basis: 112px;
-    gap: 12px;
-  }
-  .favorite-item:first-child {
-    flex-basis: 132px;
-  }
-  .favorite-logo {
-    width: 112px;
-    height: 112px;
-  }
-  .favorite-logo img {
-    width: 68px;
-    height: 68px;
-  }
-  .favorite-item strong {
-    font-size: 15px;
-  }
-  .favorites-scroll {
-    gap: 16px;
-  }
 }
