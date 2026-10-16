@@ -7,12 +7,21 @@
   const submit = form.querySelector('button[type="submit"]');
   const signedIn = document.getElementById("signed-in");
   const signOut = document.getElementById("sign-out");
+  const toggle = document.getElementById("toggle-password");
+  toggle.addEventListener("click", () => {
+    const password = document.getElementById("password");
+    const show = password.type === "password";
+    password.type = show ? "text" : "password";
+    toggle.textContent = show ? "Hide" : "Show";
+    toggle.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    toggle.setAttribute("aria-pressed", String(show));
+  });
   // Keep credentials and tokens out of browser persistence.
   let refreshToken = null;
   const setStatus = (message) => { status.textContent = message; };
   if (location.protocol === "https:") {
     fields.disabled = true;
-    setStatus("Sign-in is unavailable on this HTTPS website while Tempo uses a local HTTP backend. For local testing, open this website through an HTTP preview on the same network as the backend. You can also sign in through the Tempo mobile app.");
+    setStatus("Web sign-in is not available yet. Please use the Tempo mobile app to access your account.");
     return;
   }
   form.addEventListener("submit", async (event) => {
@@ -52,6 +61,10 @@
       setStatus("Cannot reach the local Tempo backend. Check that it is running at 192.168.1.225:4000 and that this device is on the same network.");
     } finally {
       passwordField.value = "";
+      passwordField.type = "password";
+      toggle.textContent = "Show";
+      toggle.setAttribute("aria-label", "Show password");
+      toggle.setAttribute("aria-pressed", "false");
       fields.disabled = false;
       submit.textContent = "Sign in";
     }
