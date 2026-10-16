@@ -6,6 +6,7 @@ import LineScore from "../components/LineScore.jsx";
 import GameLeaders from "../components/GameLeaders.jsx";
 import GameStats from "../components/GameStats.jsx";
 import GameSummary from "../components/GameSummary.jsx";
+import GameLocation from "../components/GameLocation.jsx";
 const sports = {
   nba: "basketball",
   nfl: "football",
@@ -45,6 +46,7 @@ function GameData({ id, league }) {
           <GameLeaders score={score} league={league} />
           <GameStats score={score} league={league} />
           <GameSummary score={score} league={league} />
+          <GameLocation details={details} />
         </>
       )}
     </>
