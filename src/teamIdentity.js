@@ -833,7 +833,13 @@ export function teamIdentity(team, league) {
     shortName:
       local?.name || team?.shortName || team?.name || team?.code || "TBD",
     logo: local?.logo || team?.logo,
-    logoDark: local?.logo || team?.logoDark || team?.logo,
+    // The app’s logoLight assets are designed for dark backgrounds.
+    logoDark:
+      local?.logoLight ||
+      local?.logo ||
+      team?.logoDark ||
+      team?.logoLight ||
+      team?.logo,
     logoLight: local?.logoLight || team?.logoLight || team?.logo,
   };
 }
