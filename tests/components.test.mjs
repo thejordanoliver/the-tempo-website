@@ -5,7 +5,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 await mkdir(".preview/tests", { recursive: true });
 const result = await build({
   stdin: {
-    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Landing from './src/pages/Landing.jsx';import Support from './src/pages/Support.jsx';import Privacy from './src/pages/Privacy.jsx';import Game from './src/pages/Game.jsx';import Article from './src/pages/Article.jsx';import {safeURL} from './src/components.jsx';import TeamLogo from './src/components/TeamLogo.jsx';import GameHeader from './src/components/GameHeader.jsx';export {safeURL};export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Landing,Support,Privacy,Game,Article,TeamLogo,GameHeader}[name],props));`,
+    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Landing from './src/pages/Landing.jsx';import Support from './src/pages/Support.jsx';import Privacy from './src/pages/Privacy.jsx';import Game from './src/pages/Game.jsx';import Article from './src/pages/Article.jsx';import {safeURL} from './src/components.jsx';import TeamLogo from './src/components/TeamLogo.jsx';import GameHeader from './src/components/GameHeader.jsx';import LineScore from './src/components/LineScore.jsx';import GameStats from './src/components/GameStats.jsx';import GameLeaders from './src/components/GameLeaders.jsx';export {safeURL};export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Landing,Support,Privacy,Game,Article,TeamLogo,GameHeader,LineScore,GameStats,GameLeaders}[name],props));`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
@@ -88,3 +88,8 @@ test("live scores use central slots and final records sit below team names", () 
   assert.equal((final.match(/class="gh-team-record"/g) || []).length, 2);
   assert(final.includes("gh-loser"));
 });
+
+const sectionScore={...headerGame,status:{state:"post"},periodScores:[{period:1,away:32,home:35}],teamStats:[{team:{id:20},stats:[{name:"turnovers",displayValue:"15"}]},{team:{id:26},stats:[{name:"turnovers",displayValue:"9"}]}],leaders:[{team:{id:26},leaders:[{name:"points",leaders:[{athlete:{fullName:"Test Player",jersey:"4"},mainStat:{value:"23"},statistics:[{name:"fieldGoals",displayValue:"9/15"}]}]}]}]};
+test("line score preserves missing periods instead of inventing zeros",()=>{const html=render("LineScore",{score:sectionScore,league:"nba"});assert(html.includes("Line Score"));assert(html.includes("heading-two"));assert(html.includes("TOTAL"));assert(html.includes("32"));assert(html.includes("–"));});
+test("team stats align by team ID and highlight fewer turnovers",()=>{const html=render("GameStats",{score:sectionScore,league:"nba"});assert(html.includes("Game Stats"));assert(html.includes('class="stat-trailing"><span class="sr-only">PHI </span>15'));assert(html.includes('media="(prefers-color-scheme: dark)"'));});
+test("leaders render backend player statistics and accessible tabs",()=>{const html=render("GameLeaders",{score:sectionScore,league:"nba"});assert(html.includes("Test Player"));assert(html.includes("9/15"));assert(html.includes('role="tab"'));assert(html.includes('role="tabpanel"'));assert(html.includes("Leader unavailable"));assert.equal(render("GameLeaders",{score:{...sectionScore,leaders:[]},league:"nba"}),"");});

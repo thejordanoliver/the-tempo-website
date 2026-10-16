@@ -1,6 +1,10 @@
 import { useState } from "react";
-import { State, Table, useResource } from "../components.jsx";
+import { State, useResource } from "../components.jsx";
 import GameHeader from "../components/GameHeader.jsx";
+import HeadingTwo from "../components/HeadingTwo.jsx";
+import LineScore from "../components/LineScore.jsx";
+import GameLeaders from "../components/GameLeaders.jsx";
+import GameStats from "../components/GameStats.jsx";
 const sports = {
   nba: "basketball",
   nfl: "football",
@@ -15,11 +19,6 @@ function GameData({ id, league }) {
     );
   const score = data?.score,
     details = data?.details || {},
-    periods = score?.periodScores || [],
-    groups = Array.isArray(score?.teamStats)
-      ? score.teamStats.filter((g) => Array.isArray(g.stats))
-      : [],
-    stats = [...new Set(groups.flatMap((g) => g.stats.map((s) => s.name)))],
     plays = Array.isArray(score?.plays)
       ? score.plays.filter((p) => p.text).slice(0, 30)
       : [];
@@ -39,52 +38,15 @@ function GameData({ id, league }) {
           <GameHeader score={score} details={details} league={league} />
           {details.headline && (
             <section className="detail-section">
-              <h2>Game overview</h2>
+              <HeadingTwo>Game overview</HeadingTwo>
               <p>{details.headline}</p>
             </section>
           )}
-          {periods.length > 0 && (
-            <section className="detail-section">
-              <h2>{league === "mlb" ? "By inning" : "By period"}</h2>
-              <Table
-                headers={["Team", ...periods.map((p) => p.period), "Total"]}
-                rows={[
-                  [
-                    score.away.shortName || score.away.name,
-                    ...periods.map((p) => p.away),
-                    score.away.score,
-                  ],
-                  [
-                    score.home.shortName || score.home.name,
-                    ...periods.map((p) => p.home),
-                    score.home.score,
-                  ],
-                ]}
-              />
-            </section>
-          )}
-          {groups.length > 0 && (
-            <section className="detail-section">
-              <h2>Team statistics</h2>
-              <Table
-                headers={[
-                  "Statistic",
-                  ...groups.map(
-                    (g) => g.team?.shortName || g.team?.name || "Team",
-                  ),
-                ]}
-                rows={stats.map((name) => [
-                  name,
-                  ...groups.map(
-                    (g) =>
-                      g.stats.find((s) => s.name === name)?.displayValue ?? "—",
-                  ),
-                ])}
-              />
-            </section>
-          )}
+          <LineScore score={score} league={league} />
+          <GameLeaders score={score} league={league} />
+          <GameStats score={score} league={league} />
           <section className="detail-section">
-            <h2>Play-by-play</h2>
+            <HeadingTwo>Play-by-play</HeadingTwo>
             {plays.length ? (
               plays.map((p, i) => (
                 <p className="detail-play" key={p.id || i}>
