@@ -16,7 +16,7 @@
     toggle.setAttribute("aria-label", show ? "Hide password" : "Show password");
     toggle.setAttribute("aria-pressed", String(show));
   });
-  // Keep credentials and tokens out of browser persistence.
+  // Session tokens are saved only for this browser tab; passwords are never stored.
   let refreshToken = null;
   let accessToken = null;
   let refreshController = null;
@@ -73,7 +73,7 @@
     refreshController = new AbortController();
     const timer = setTimeout(() => refreshController?.abort(), 15000);
     try {
-      const response = await fetch(`${API_URL}/api/users/me`, {headers:{Authorization:`Bearer ${accessToken}`}, signal:refreshController.signal, credentials:"omit", cache:"no-store"});
+      const response = await window.TempoSession.request("/api/users/me", { signal:refreshController.signal, credentials:"omit", cache:"no-store"});
       if (response.status === 401 || response.status === 403) {
         document.getElementById("sign-out").click();
         return;
@@ -81,6 +81,7 @@
       if (!response.ok) throw new Error("Profile request failed");
       const user = await response.json();
       if (!accessToken) return;
+      if (window.TempoSession.get()) window.TempoSession.set({...window.TempoSession.get(),user});
       renderProfile(user);
       profileStatus.textContent = "Your profile is up to date.";
     } catch {
@@ -123,6 +124,7 @@
       }
       refreshToken = data.refreshToken;
       accessToken = data.accessToken;
+      window.TempoSession.set({accessToken,refreshToken,user:data.user});
       renderProfile(data.user);
       navHome.hidden = false;
       if (navAccount) { navAccount.textContent = "Profile"; navAccount.href = new URL("../profile/", location.href).pathname; }
@@ -144,7 +146,8 @@
   signOut.addEventListener("click", async () => {
     if (signOut.disabled) return;
     signOut.disabled = true;
-    const token = refreshToken;
+    const token = window.TempoSession.get()?.refreshToken || refreshToken;
+    window.TempoSession.clear();
     refreshToken = null;
     accessToken = null;
     refreshController?.abort();
@@ -174,4 +177,17 @@
     setStatus(revoked ? "You’re signed out." : "You’re signed out of this page. The server could not confirm session revocation.");
     document.getElementById("username").focus();
   });
+  window.addEventListener("tempo:signed-out", () => signOut.click());
+  const saved = window.TempoSession.get();
+  if (saved) {
+    accessToken = saved.accessToken;
+    refreshToken = saved.refreshToken;
+    renderProfile(saved.user);
+    navHome.hidden = false;
+    if (navAccount) { navAccount.textContent = "Profile"; navAccount.href = new URL("../profile/", location.href).pathname; }
+    showView(location.pathname.endsWith("/profile/") ? "profile" : "home");
+    window.TempoHome.start(accessToken, saved.user, () => signOut.click());
+    void refreshProfile();
+  }
+
 })();
