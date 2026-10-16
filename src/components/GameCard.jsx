@@ -44,7 +44,7 @@ export default function GameCard({ game, league }) {
     </span>
   );
   const possession = (side) =>
-    league === "nfl" &&
+    (league === "nfl" || league === "cfb") &&
     model.live &&
     game.situation?.possession != null &&
     game[side]?.id != null &&
@@ -84,7 +84,7 @@ export default function GameCard({ game, league }) {
             {model.broadcast}
           </span>
         )}
-        {league === "nfl" && model.live && game.situation?.downDistanceText && (
+        {(league === "nfl" || league === "cfb") && model.live && game.situation?.downDistanceText && (
           <span className="gc-context">{game.situation.downDistanceText}</span>
         )}
       </div>

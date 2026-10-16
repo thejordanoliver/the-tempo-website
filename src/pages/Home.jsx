@@ -6,6 +6,7 @@ import { Image, State, useResource } from "../components.jsx";
 const endpoints = {
   nba: "basketball/nba",
   nfl: "football/nfl",
+  cfb: "football/cfb",
   mlb: "baseball",
   nhl: "hockey",
 };

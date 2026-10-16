@@ -9,6 +9,7 @@ import GameSummary from "../components/GameSummary.jsx";
 const sports = {
   nba: "basketball",
   nfl: "football",
+  cfb: "football",
   mlb: "baseball",
   nhl: "hockey",
 };
