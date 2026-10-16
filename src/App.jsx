@@ -137,12 +137,6 @@ export default function App() {
               Home
             </Link>
           )}
-          <Link
-            to="/support/"
-            aria-current={route.path === "/support" ? "page" : undefined}
-          >
-            Support
-          </Link>
           {session ? (
             <Link
               to="/profile/"
