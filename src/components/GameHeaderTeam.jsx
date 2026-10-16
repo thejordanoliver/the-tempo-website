@@ -1,5 +1,6 @@
-import TeamLogo from "./TeamLogo.jsx";
 import { teamIdentity } from "../teamIdentity.js";
+import TeamLogo from "./TeamLogo.jsx";
+
 export default function GameHeaderTeam({ team, league, postGame, side }) {
   const identity = teamIdentity(team, league);
   const name = team?.code || identity.shortName || "TBD";

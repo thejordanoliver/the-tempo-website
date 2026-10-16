@@ -24,7 +24,6 @@ function GameData({ id, league }) {
     details = data?.details || {};
   return (
     <>
-    
       <State
         loading={loading}
         error={

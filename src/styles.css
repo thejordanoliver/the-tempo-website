@@ -1316,9 +1316,8 @@ nav a[aria-current="page"] {
   font-size: 14px;
 }
 .scoreboard {
-  padding: 28px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
+  padding: 4px;
+  border-bottom:  1px solid var(--line);
   text-align: center;
 }
 .scoreboard .eyebrow {
@@ -1331,10 +1330,11 @@ nav a[aria-current="page"] {
 }
 .score-team {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   gap: 10px;
 }
+
 .score-team h2 {
   font-size: 24px;
   margin: 0;

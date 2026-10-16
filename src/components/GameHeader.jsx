@@ -1,6 +1,6 @@
-import GameHeaderTeam from "./GameHeaderTeam.jsx";
 import { gameCardModel } from "./gameCardModel.js";
 import "./GameHeader.css";
+import GameHeaderTeam from "./GameHeaderTeam.jsx";
 export function HeaderScore({ team, side, model }) {
   const value = model.showRecords ? team?.record || "—" : (team?.score ?? "—");
   const lost = model.winner && model.winner !== side;

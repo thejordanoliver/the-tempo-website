@@ -3,6 +3,7 @@ import TeamLogo from "./TeamLogo.jsx";
 import { teamIdentity } from "../teamIdentity.js";
 import { gameCardModel } from "./gameCardModel.js";
 import "./GameCard.css";
+
 function Team({ team, side, possession, league }) {
   const name = team?.shortName || team?.name || team?.code || "TBD";
   return (

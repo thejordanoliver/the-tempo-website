@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "../router.jsx";
 import { Image, State, useResource } from "../components.jsx";
+import { Link } from "../router.jsx";
 import { sessionStore } from "../session.js";
+
 export default function Profile({ user, onLogout }) {
   const [version, setVersion] = useState(0);
   const state = useResource("/api/users/me", version);
@@ -35,7 +36,6 @@ export default function Profile({ user, onLogout }) {
             Sign out
           </button>
         </div>
-        <p className="eyebrow">Your Tempo profile</p>
         <h1>{name}</h1>
         <p className="profile-handle">@{user.username}</p>
         <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
