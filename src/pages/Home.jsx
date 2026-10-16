@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GameDatePicker from "../components/GameDatePicker.jsx";
 import GameCard from "../components/GameCard.jsx";
 import { Link } from "../router.jsx";
@@ -15,10 +15,19 @@ export function localDate() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 export default function Home({ user, onLogout }) {
-  const [league, setLeague] = useState("nba"),
-    [date, setDate] = useState(localDate),
+  const [league, setLeague] = useState(() => {
+      const saved = globalThis.history?.state?.tempoHome?.league;
+      return Object.hasOwn(endpoints, saved) ? saved : "nba";
+    }),
+    [date, setDate] = useState(() => {
+      const saved = globalThis.history?.state?.tempoHome?.date;
+      return /^\d{4}-\d{2}-\d{2}$/.test(saved || "") ? saved : localDate();
+    }),
     [gamesVersion, setGamesVersion] = useState(0),
     [newsVersion, setNewsVersion] = useState(0);
+  useEffect(() => {
+    history.replaceState({ ...history.state, tempoHome: { date, league } }, "");
+  }, [date, league]);
   const games = useResource(
     `/api/games/${endpoints[league]}?date=${date.replaceAll("-", "")}`,
     gamesVersion,

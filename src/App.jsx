@@ -101,7 +101,7 @@ export default function App() {
         Skip to content
       </a>
       <nav aria-label="Main navigation">
-        {route.path === "/game" ? (
+        {["/game", "/article"].includes(route.path) ? (
           <button
             className="navbar-back"
             type="button"
