@@ -1,0 +1,176 @@
+.game-header {
+  padding: 24px 0 28px;
+  border-bottom: 1px solid var(--line);
+}
+.gh-matchup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(44px, 0.6fr) minmax(
+      80px,
+      0.8fr
+    ) minmax(44px, 0.6fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+.gh-team {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.gh-team-home {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+.gh-team .team-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex: none;
+}
+.gh-team img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+.gh-team-label {
+  min-width: 0;
+}
+.gh-team h2 {
+  font: 500 24px/1.2 var(--font);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.gh-team h2 small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.gh-team-record {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font: 400 14px/1.2 var(--font);
+}
+.gh-value {
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+.gh-score {
+  font:
+    700 clamp(32px, 5vw, 56px) / 1 Barlow,
+    sans-serif;
+}
+.gh-pregame-record {
+  font: 700 clamp(17px, 2.8vw, 26px) / 1.2 var(--font);
+}
+.gh-loser {
+  color: var(--muted);
+  opacity: 0.65;
+}
+.gh-info {
+  text-align: center;
+  min-width: 0;
+}
+.gh-league {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font: 400 11px/1.2 var(--font);
+  letter-spacing: 1px;
+}
+.gh-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  margin: 0;
+  font: 400 14px/1.25 var(--font);
+  overflow-wrap: anywhere;
+}
+.gh-final,
+.gh-clock {
+  color: #c00;
+}
+.gh-secondary {
+  font-size: 12px;
+}
+.gh-broadcast {
+  margin: 6px 0 0;
+  font: 400 11px/1.2 var(--font);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+@media (prefers-color-scheme: dark) {
+  .gh-final,
+  .gh-clock {
+    color: #ff4444;
+  }
+}
+@media (max-width: 640px) {
+  .game-header {
+    padding: 16px 0 22px;
+  }
+  .gh-matchup {
+    grid-template-columns: minmax(46px, 1fr) minmax(32px, 0.7fr) minmax(
+        64px,
+        0.95fr
+      ) minmax(32px, 0.7fr) minmax(46px, 1fr);
+    gap: 6px;
+  }
+  .gh-team,
+  .gh-team-home {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+  .gh-team .team-logo,
+  .gh-team img {
+    width: 48px;
+    height: 48px;
+  }
+  .gh-team h2 {
+    font-size: 17px;
+  }
+  .gh-team-record {
+    font-size: 12px;
+  }
+  .gh-score {
+    font-size: 38px;
+  }
+  .gh-pregame-record {
+    font-size: 18px;
+  }
+  .gh-status {
+    font-size: 12px;
+  }
+  .gh-secondary,
+  .gh-broadcast {
+    font-size: 10px;
+  }
+  .gh-league {
+    font-size: 10px;
+  }
+}
+@media (max-width: 360px) {
+  .gh-matchup {
+    gap: 3px;
+    grid-template-columns: minmax(40px, 1fr) minmax(28px, 0.7fr) minmax(
+        58px,
+        0.95fr
+      ) minmax(28px, 0.7fr) minmax(40px, 1fr);
+  }
+  .gh-team .team-logo,
+  .gh-team img {
+    width: 42px;
+    height: 42px;
+  }
+  .gh-team h2 {
+    font-size: 15px;
+  }
+  .gh-score {
+    font-size: 32px;
+  }
+  .gh-pregame-record {
+    font-size: 16px;
+  }
+}

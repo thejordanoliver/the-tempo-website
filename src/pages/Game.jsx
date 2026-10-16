@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { State, Table, useResource } from "../components.jsx";
-import TeamLogo from "../components/TeamLogo.jsx";
+import GameHeader from "../components/GameHeader.jsx";
 const sports = {
   nba: "basketball",
   nfl: "football",
@@ -36,38 +36,7 @@ function GameData({ id, league }) {
       />
       {!loading && !error && score?.home && score?.away && (
         <>
-          <section className="scoreboard">
-            <p className="eyebrow">
-              {league.toUpperCase()} ·{" "}
-              {score.status?.shortDetail ||
-                score.status?.detail ||
-                score.status?.description ||
-                "Scheduled"}
-            </p>
-            <div className="score-teams">
-              {[score.away, score.home].map((team, i) => (
-                <div className="score-team" key={i}>
-                  <TeamLogo team={team} league={league} />
-                  <h2>
-                    {team.fullName || team.name || team.shortName || "TBD"}
-                  </h2>
-                  <strong>
-                    {score.status?.state === "pre" ? "—" : (team.score ?? "—")}
-                  </strong>
-                  {team.record && <span className="small">{team.record}</span>}
-                </div>
-              ))}
-            </div>
-            <p className="score-meta">
-              {[
-                formatDate(score.date),
-                details.venue?.name || details.venue?.fullName,
-                details.broadcast || details.broadcasts?.join(" · "),
-              ]
-                .filter(Boolean)
-                .join(" · ")}
-            </p>
-          </section>
+          <GameHeader score={score} details={details} league={league} />
           {details.headline && (
             <section className="detail-section">
               <h2>Game overview</h2>

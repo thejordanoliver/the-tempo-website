@@ -5,11 +5,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 await mkdir(".preview/tests", { recursive: true });
 const result = await build({
   stdin: {
-    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Landing from './src/pages/Landing.jsx';import Support from './src/pages/Support.jsx';import Privacy from './src/pages/Privacy.jsx';import Game from './src/pages/Game.jsx';import Article from './src/pages/Article.jsx';import {safeURL} from './src/components.jsx';import TeamLogo from './src/components/TeamLogo.jsx';export {safeURL};export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Landing,Support,Privacy,Game,Article,TeamLogo}[name],props));`,
+    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Landing from './src/pages/Landing.jsx';import Support from './src/pages/Support.jsx';import Privacy from './src/pages/Privacy.jsx';import Game from './src/pages/Game.jsx';import Article from './src/pages/Article.jsx';import {safeURL} from './src/components.jsx';import TeamLogo from './src/components/TeamLogo.jsx';import GameHeader from './src/components/GameHeader.jsx';export {safeURL};export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Landing,Support,Privacy,Game,Article,TeamLogo,GameHeader}[name],props));`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
-  loader: { ".png": "dataurl" },
+  loader: { ".png": "dataurl", ".css": "empty" },
   bundle: true,
   write: false,
   platform: "node",
@@ -48,4 +48,43 @@ test("shared team logo provides a dark-mode source for game screens and cards", 
   const html = render("TeamLogo", { team: { id: 26 }, league: "nba" });
   assert(html.includes('media="(prefers-color-scheme: dark)"'));
   assert(html.includes("srcSet="));
+});
+
+const headerGame = {
+  away: { id: 26, code: "UTA", score: 108, record: "1-2" },
+  home: { id: 20, code: "PHI", score: 112, record: "2-1" },
+};
+test("pregame records occupy the score positions rather than team labels", () => {
+  const html = render("GameHeader", {
+    score: {
+      ...headerGame,
+      status: { state: "pre", description: "Scheduled" },
+    },
+    league: "nba",
+  });
+  assert.equal((html.match(/gh-pregame-record/g) || []).length, 2);
+  assert(!html.includes('class="gh-team-record"'));
+  assert(html.includes("Away record 1-2"));
+});
+test("live scores use central slots and final records sit below team names", () => {
+  const live = render("GameHeader", {
+    score: {
+      ...headerGame,
+      status: {
+        state: "in",
+        description: "In Progress",
+        period: 4,
+        displayClock: "2:00",
+      },
+    },
+    league: "nba",
+  });
+  assert(live.includes("Away score 108"));
+  assert(!live.includes('class="gh-team-record"'));
+  const final = render("GameHeader", {
+    score: { ...headerGame, status: { state: "post", description: "Final" } },
+    league: "nba",
+  });
+  assert.equal((final.match(/class="gh-team-record"/g) || []).length, 2);
+  assert(final.includes("gh-loser"));
 });
