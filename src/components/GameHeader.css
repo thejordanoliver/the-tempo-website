@@ -183,3 +183,7 @@
     font-size: 16px;
   }
 }
+
+.gh-final > span + span {
+  border-left-color: currentColor;
+}
