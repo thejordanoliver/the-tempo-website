@@ -101,7 +101,7 @@
   color: #c00;
 }
 .gh-secondary {
-  font-size: 12px;
+  font-size: inherit;
 }
 .gh-broadcast {
   margin: 6px 0 0;
@@ -152,7 +152,6 @@
   .gh-status {
     font-size: 11px;
   }
-  .gh-secondary,
   .gh-broadcast {
     font-size: 10px;
   }
