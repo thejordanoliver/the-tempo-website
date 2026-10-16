@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { favoriteTeamAssets } from "../favoriteTeamAssets.js";
 import HeadingTwo from "./HeadingTwo.jsx";
 import TeamLogo from "./TeamLogo.jsx";
 import { State } from "../components.jsx";
@@ -63,7 +64,15 @@ export default function FavoritesScroll({
               </span>
               <strong>All Games</strong>
             </button>
-            {teams.map((team) => {
+            {teams.map((savedTeam) => {
+              const team = {
+                ...savedTeam,
+                ...favoriteTeamAssets[`${savedTeam.league}:${savedTeam.id}`],
+              };
+              const rawColor = team.primaryColor || team.color || "";
+              const color = /^#?[0-9a-f]{6}$/i.test(rawColor)
+                ? `#${rawColor.replace(/^#/, "")}`
+                : "var(--surface)";
               const key = `${team.league}:${team.id}`,
                 name =
                   team.shortName ||
@@ -86,16 +95,22 @@ export default function FavoritesScroll({
                   }
                   onClick={() => onSelect(team)}
                 >
-                  <span className="favorite-logo">
+                  <span
+                    className="favorite-logo"
+                    style={{ backgroundColor: color }}
+                  >
                     <span className="favorite-initials" aria-hidden="true">
                       {team.code || name.slice(0, 3).toUpperCase()}
                     </span>
                     <TeamLogo team={team} league={team.league} loading="lazy" />
                   </span>
-                  <strong>{name}</strong>
-                  <span className="favorite-league">
-                    {team.league.toUpperCase()}
-                  </span>
+                  <strong className="favorite-caption">
+                    {name}
+                    <span aria-hidden="true"> | </span>
+                    <span className="favorite-league">
+                      {team.league.toUpperCase()}
+                    </span>
+                  </strong>
                 </button>
               );
             })}
