@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import FavoritesScroll from "../components/FavoritesScroll.jsx";
 import GameDatePicker from "../components/GameDatePicker.jsx";
 import GameCard from "../components/GameCard.jsx";
 import { Link } from "../router.jsx";
@@ -23,11 +24,24 @@ export default function Home({ user, onLogout }) {
       const saved = globalThis.history?.state?.tempoHome?.date;
       return /^\d{4}-\d{2}-\d{2}$/.test(saved || "") ? saved : localDate();
     }),
+    [selectedTeam, setSelectedTeam] = useState(
+      () => globalThis.history?.state?.tempoHome?.team || null,
+    ),
+    [favoritesVersion, setFavoritesVersion] = useState(0),
     [gamesVersion, setGamesVersion] = useState(0),
     [newsVersion, setNewsVersion] = useState(0);
   useEffect(() => {
-    history.replaceState({ ...history.state, tempoHome: { date, league } }, "");
-  }, [date, league]);
+    history.replaceState(
+      { ...history.state, tempoHome: { date, league, team: selectedTeam } },
+      "",
+    );
+  }, [date, league, selectedTeam]);
+  const favorites = useResource("/api/users/me/favorites", favoritesVersion);
+  const favoriteTeams = Array.isArray(favorites.data?.favoriteTeams)
+    ? favorites.data.favoriteTeams.filter(
+        (t) => t && t.id != null && typeof t.league === "string",
+      )
+    : [];
   const games = useResource(
     `/api/games/${endpoints[league]}?date=${date.replaceAll("-", "")}`,
     gamesVersion,
@@ -36,13 +50,19 @@ export default function Home({ user, onLogout }) {
     "/api/feed/for-you?newsLimit=12&postsLimit=1",
     newsVersion,
   );
-  const gameList = Array.isArray(games.data?.games) ? games.data.games : [],
+  const allGames = Array.isArray(games.data?.games) ? games.data.games : [],
+    gameList = selectedTeam
+      ? allGames.filter((g) =>
+          [g.home, g.away].some(
+            (t) => t?.id != null && String(t.id) === selectedTeam.split(":")[1],
+          ),
+        )
+      : allGames,
     articles = Array.isArray(feed.data?.articles) ? feed.data.articles : [];
   return (
     <section className="home-screen">
       <header className="home-heading">
         <div>
-          <p className="eyebrow">Your sports, together</p>
           <h1>Home</h1>
           <p>Welcome back, {user.fullName || user.username || "Tempo fan"}.</p>
         </div>
@@ -50,24 +70,29 @@ export default function Home({ user, onLogout }) {
           Sign out
         </button>
       </header>
+      <FavoritesScroll
+        teams={favoriteTeams}
+        loading={favorites.loading}
+        error={favorites.error}
+        onRetry={() => setFavoritesVersion((v) => v + 1)}
+        selected={selectedTeam}
+        supportedLeagues={Object.keys(endpoints)}
+        onSelect={(team) => {
+          setSelectedTeam(team ? `${team.league}:${team.id}` : null);
+          if (team) setLeague(team.league);
+        }}
+      />
       <section aria-labelledby="games-title">
-        <div className="home-section-heading">
-          <h2 id="games-title">Games</h2>
-          <button
-            className="home-text-button"
-            disabled={games.loading}
-            onClick={() => setGamesVersion((v) => v + 1)}
-          >
-            Refresh games
-          </button>
-        </div>
         <div className="games-controls">
           <div className="league-filters" role="group" aria-label="League">
             {Object.keys(endpoints).map((key) => (
               <button
                 key={key}
                 aria-pressed={league === key}
-                onClick={() => setLeague(key)}
+                onClick={() => {
+                  setLeague(key);
+                  setSelectedTeam(null);
+                }}
               >
                 {key.toUpperCase()}
               </button>
@@ -79,7 +104,9 @@ export default function Home({ user, onLogout }) {
           {...games}
           empty={
             !gameList.length
-              ? "No games scheduled for this league and date."
+              ? selectedTeam
+                ? "No games scheduled for this favorite team on the selected date."
+                : "No games scheduled for this league and date."
               : null
           }
           onRetry={() => setGamesVersion((v) => v + 1)}

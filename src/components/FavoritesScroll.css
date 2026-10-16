@@ -1,0 +1,116 @@
+.favorites-section {
+  margin: 32px 0;
+}
+.favorites-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.favorites-heading .heading-two {
+  flex: 1;
+}
+.favorites-arrows {
+  display: flex;
+  gap: 4px;
+}
+.favorites-arrows button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: 32px/1 Arial;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.favorites-arrows button:hover {
+  background: var(--surface);
+}
+.favorites-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 12px;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.favorite-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  flex: 0 0 100px;
+  scroll-snap-align: start;
+  padding: 12px 8px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+.favorite-item[aria-pressed="true"] {
+  border-color: var(--muted);
+  background: var(--surface);
+}
+.favorite-item:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.favorite-item strong {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.favorite-logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  flex: none;
+}
+.favorite-logo .team-logo {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.favorite-logo img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  background: var(--bg);
+}
+.favorite-item[aria-pressed="true"] .favorite-logo img {
+  background: var(--surface);
+}
+.favorite-initials {
+  font-size: 18px;
+  color: var(--muted);
+}
+.favorite-all {
+  font-size: 34px;
+}
+.favorite-league {
+  font-size: 11px;
+  color: var(--muted);
+}
+.favorites-scroll:focus-visible,
+.favorite-item:focus-visible,
+.favorites-arrows button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+@media (max-width: 480px) {
+  .favorite-item {
+    flex-basis: 88px;
+  }
+  .favorites-scroll {
+    gap: 8px;
+  }
+}
