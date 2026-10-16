@@ -1,0 +1,218 @@
+/* Mirrors styles/GamecardStyles/GameCardStyles.ts in the mobile app. */
+.home-games {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 10px;
+  align-items: start;
+}
+.tempo-game-card {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    minmax(48px, 70px) minmax(32px, 1fr) minmax(78px, 100px)
+    minmax(32px, 1fr) minmax(48px, 70px);
+  align-items: center;
+  min-height: 80px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  gap: 3px;
+  isolation: isolate;
+}
+.tempo-game-card:hover {
+  opacity: 0.8;
+}
+.tempo-game-card:active {
+  opacity: 0.7;
+}
+.tempo-game-card:focus-visible {
+  outline: 3px solid #007aff;
+  outline-offset: 3px;
+}
+.gc-team {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.gc-logo {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+}
+.gc-logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.gc-logo img + span {
+  display: none;
+}
+.gc-fallback {
+  font:
+    700 14px Barlow,
+    sans-serif;
+  color: var(--muted);
+}
+.gc-name {
+  display: block;
+  max-width: 100%;
+  margin-top: 4px;
+  font: 400 12px/1.2 var(--font);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gc-name small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.gc-score {
+  display: block;
+  font: 700 28px/1.2 var(--font);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.gc-record {
+  font-size: 16px;
+}
+.gc-loser {
+  color: var(--muted);
+  opacity: 0.6;
+}
+.gc-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 3px;
+  min-width: 0;
+  padding-top: 4px;
+}
+.gc-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font: 400 12px/1.3 var(--font);
+  max-width: 100%;
+}
+.gc-status > span {
+  overflow-wrap: anywhere;
+}
+.gc-final,
+.gc-clock {
+  color: #c00;
+}
+.gc-status-divider {
+  height: 12px;
+  width: 1px;
+  background: currentColor;
+  flex: none;
+}
+.gc-broadcast,
+.gc-context {
+  font: 400 10px/1.2 var(--font);
+  color: var(--muted);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gc-headline {
+  position: absolute;
+  top: 3px;
+  left: 8px;
+  right: 8px;
+  max-width: 100%;
+  color: var(--muted);
+  font: 400 8px/1.2 var(--font);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.gc-has-headline {
+  padding-top: 14px;
+  min-height: 86px;
+}
+.gc-possession {
+  position: absolute;
+  bottom: 1px;
+  right: 0;
+  font-size: 8px;
+  color: var(--text);
+}
+.gc-championship {
+  background: linear-gradient(#dbb145, #cda765);
+  color: #1d1d1d;
+}
+.gc-championship .gc-headline,
+.gc-championship .gc-broadcast,
+.gc-championship .gc-context {
+  color: #333;
+}
+.gc-championship .gc-loser {
+  color: #333;
+}
+@media (prefers-color-scheme: dark) {
+  .gc-final,
+  .gc-clock {
+    color: #ff4444;
+  }
+  .gc-championship {
+    background: linear-gradient(#846f4a, #50412a);
+    color: #fff;
+  }
+  .gc-championship .gc-headline,
+  .gc-championship .gc-broadcast,
+  .gc-championship .gc-context {
+    color: #ddd;
+  }
+  .gc-championship .gc-loser {
+    color: #ddd;
+  }
+}
+@media (max-width: 380px) {
+  .tempo-game-card {
+    grid-template-columns:
+      minmax(44px, 56px) minmax(28px, 1fr) minmax(72px, 82px)
+      minmax(28px, 1fr) minmax(44px, 56px);
+    gap: 2px;
+  }
+  .gc-score {
+    font-size: 26px;
+  }
+  .gc-record {
+    font-size: 14px;
+  }
+  .gc-status {
+    font-size: 11px;
+    gap: 3px;
+  }
+  .gc-name {
+    font-size: 11px;
+  }
+}
+
+.gc-logo picture {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+}
+.gc-logo:has(img) .gc-fallback {
+  display: none;
+}
+.gc-logo picture:not(:has(img)) {
+  display: none;
+}

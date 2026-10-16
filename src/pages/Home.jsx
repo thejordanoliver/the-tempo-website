@@ -1,4 +1,5 @@
 import { useState } from "react";
+import GameCard from "../components/GameCard.jsx";
 import { Link } from "../router.jsx";
 import { Image, State, useResource } from "../components.jsx";
 const endpoints = {
@@ -10,40 +11,6 @@ const endpoints = {
 export function localDate() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-}
-function GameCard({ game, league }) {
-  const pre = game.status?.state === "pre";
-  let detail =
-    game.status?.shortDetail ||
-    game.status?.detail ||
-    game.status?.description ||
-    "Scheduled";
-  const start = new Date(game.date || "");
-  if (pre && !Number.isNaN(start.valueOf()))
-    detail = start.toLocaleString(undefined, {
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-  return (
-    <Link
-      to={`/game/?league=${league}&id=${encodeURIComponent(game.id)}`}
-      className="game-card game-card-link"
-    >
-      <p className="game-status">{detail}</p>
-      {[game.away, game.home].map((team, i) => (
-        <div className="game-team" key={i}>
-          <Image src={team?.logo} />
-          <span className="team-name">
-            {team?.shortName || team?.name || team?.code || "TBD"}
-          </span>
-          <strong>{pre ? "—" : (team?.score ?? "—")}</strong>
-        </div>
-      ))}
-      <span className="game-detail-link">Game details →</span>
-    </Link>
-  );
 }
 export default function Home({ user, onLogout }) {
   const [league, setLeague] = useState("nba"),

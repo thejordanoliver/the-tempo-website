@@ -22,7 +22,7 @@ export async function buildSite({
     format: "esm",
     jsx: "automatic",
     target: ["es2022"],
-    loader: { ".ttf": "file" },
+    loader: { ".ttf": "file", ".png": "file" },
     define: { __TEMPO_API_URL__: JSON.stringify(api.replace(/\/+$/, "")) },
     metafile: true,
   });
