@@ -46,7 +46,7 @@ export async function buildSite({
     await mkdir(path.join(outdir, route), { recursive: true });
     await writeFile(
       path.join(outdir, route, "index.html"),
-      `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="tempo-base" content="${prefix}"><meta name="description" content="Tempo sports scores, news, and fan conversations.">${route === "privacy" ? '<meta name="robots" content="noindex">' : ""}<title>${title} | Tempo Sports</title><link rel="stylesheet" href="${prefix}web-assets/${css}"><script type="module" src="${prefix}web-assets/${js}"></script></head><body><div id="root"></div><noscript>Enable JavaScript to use Tempo. Contact jordanoliver@thetemposports.com for help.</noscript></body></html>\n`,
+      `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="tempo-base" content="${prefix}"><meta name="description" content="Tempo sports scores, news, and fan conversations."><title>${title} | Tempo Sports</title><link rel="stylesheet" href="${prefix}web-assets/${css}"><script type="module" src="${prefix}web-assets/${js}"></script></head><body><div id="root"></div><noscript>Enable JavaScript to use Tempo. Contact jordanoliver@thetemposports.com for help.</noscript></body></html>\n`,
     );
   }
   await writeFile(path.join(outdir, ".nojekyll"), "");

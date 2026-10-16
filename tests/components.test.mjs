@@ -25,9 +25,11 @@ test("homepage preserves copy and links to the React sign-in route", () => {
   assert(html.includes('href="/login/"'));
   assert(!html.includes('href="./login/"'));
 });
-test("support and privacy remain public with contact and draft notice", () => {
+test("support and privacy remain public with contact and published policy", () => {
   assert(render("Support").includes("jordanoliver@thetemposports.com"));
-  assert(render("Privacy").includes("Draft — pending verification."));
+  assert(!render("Privacy").includes("Draft — pending verification."));
+  assert(render("Privacy").includes("October 16, 2026"));
+  assert(render("Privacy").includes("GitHub Pages"));
 });
 test("invalid game/article links render recoverable states", () => {
   assert(

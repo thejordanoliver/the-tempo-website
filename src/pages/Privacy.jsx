@@ -5,16 +5,12 @@ export default function Privacy() {
       <header>
         <p className="tempo-brand">Tempo Sports</p>
         <h1 id="tempo-privacy-title">Privacy Policy</h1>
-        <p className="tempo-meta">Last updated: October 15, 2026</p>
+        <p className="tempo-meta">Last updated: October 16, 2026</p>
       </header>
-      <p className="draft-notice">
-        <strong>Draft — pending verification.</strong> This privacy policy is
-        being reviewed for accuracy and is not yet the final published policy.
-      </p>
       <p>
         This policy explains how Tempo handles information when you use the
-        Tempo sports app and contact our support team. For questions or privacy
-        requests, email{" "}
+        Tempo sports app, thetemposports.com website, and support services. For
+        questions or privacy requests, email{" "}
         <a href="mailto:jordanoliver@thetemposports.com">
           jordanoliver@thetemposports.com
         </a>
@@ -79,9 +75,13 @@ export default function Privacy() {
         Tempo uses service providers for hosting, database storage, media
         processing and delivery, and email delivery. These providers process
         information needed to perform those functions. Uploaded media is
-        processed through Cloudinary. GIF features use GIPHY content. Opening
-        external news or other third-party links takes you to services with
-        their own privacy practices.
+        processed through Cloudinary. GIF features use GIPHY content; GIF search
+        terms are sent to GIPHY through our backend, and loading GIFs or other
+        externally hosted images can disclose connection information to their
+        providers. Our public website is hosted on GitHub Pages, which processes
+        connection information when serving the site. Opening external news or
+        other third-party links takes you to services with their own privacy
+        practices.
       </p>
       <p>
         Information may also be disclosed when required by law or when necessary
@@ -96,7 +96,9 @@ export default function Privacy() {
         information. Signing out clears app-managed session information. On the
         Tempo website, session tokens and basic account details are kept in
         browser tab session storage to maintain sign-in between pages. Signing
-        out removes the saved website session.
+        out removes the saved website session. The website also uses browser
+        history to retain your selected game date, league, and team filter when
+        you return from another page.
       </p>
       <h2>Retention and account deletion</h2>
       <p>
@@ -104,7 +106,10 @@ export default function Privacy() {
         features you use, and address security, support, and legal obligations.
         You can initiate account deletion in the app through{" "}
         <strong>Settings → Delete Account</strong>, using your current password.
-        If you cannot access your account, contact us for assistance.
+        Deleting your account removes the account record and its refresh tokens;
+        the service also attempts to remove the profile and banner images from
+        our media provider. If you cannot access your account, contact us for
+        assistance.
       </p>
       <p>
         Contact us for details about retention or deletion of particular posts,
