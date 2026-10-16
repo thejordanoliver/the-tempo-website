@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import { gameCardModel } from "./gameCardModel.js";
 import HeadingTwo from "./HeadingTwo.jsx";
 import TeamLogo from "./TeamLogo.jsx";
 import { periodLabel, summaryPlays } from "./gameSummaryModel.js";
@@ -7,6 +8,8 @@ export default function GameSummary({ score, league }) {
   const [selected, setSelected] = useState("all"),
     [limit, setLimit] = useState(30),
     id = useId();
+  const { live, final } = gameCardModel(score, league);
+  if (!live && !final) return null;
   const plays = summaryPlays(score.plays),
     periods = [
       ...new Set(
