@@ -833,6 +833,7 @@ export function teamIdentity(team, league) {
     shortName:
       local?.name || team?.shortName || team?.name || team?.code || "TBD",
     logo: local?.logo || team?.logo,
-    logoLight: local?.logoLight || team?.logoDark || team?.logo,
+    logoDark: local?.logo || team?.logoDark || team?.logo,
+    logoLight: local?.logoLight || team?.logoLight || team?.logo,
   };
 }

@@ -9,10 +9,10 @@ function Team({ team, side, possession }) {
     <div className={`gc-team gc-${side}`}>
       <div className="gc-logo">
         <picture>
-          {team?.logoLight && (
+          {(team?.logoDark || team?.logo) && (
             <source
               media="(prefers-color-scheme: dark)"
-              srcSet={team.logoLight}
+              srcSet={team.logoDark || team.logo}
             />
           )}
           <Image src={team?.logo} alt="" loading="lazy" />
