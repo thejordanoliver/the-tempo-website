@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "../router.jsx";
 import { Image, State, Table, useResource } from "../components.jsx";
 const sports = {
   nba: "basketball",
@@ -25,17 +24,7 @@ function GameData({ id, league }) {
       : [];
   return (
     <>
-      <header className="detail-header">
-        <Link to="/home/">← Home</Link>
-        <button
-          className="detail-button"
-          disabled={loading}
-          onClick={() => setVersion((v) => v + 1)}
-        >
-          Refresh
-        </button>
-      </header>
-      <h1 className="detail-title">Game details</h1>
+    
       <State
         loading={loading}
         error={
@@ -157,7 +146,6 @@ export default function Game({ search }) {
         <>
           <h1>Game details</h1>
           <State error="Select a supported game from Home." />
-          <Link to="/home/">Back to Home</Link>
         </>
       ) : (
         <GameData key={`${id}-${league}`} id={id} league={league} />

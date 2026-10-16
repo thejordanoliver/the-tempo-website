@@ -10,8 +10,18 @@ export function href(to) {
   return root + to.replace(/^\//, "");
 }
 export function navigate(to, { replace = false } = {}) {
-  history[replace ? "replaceState" : "pushState"](null, "", href(to));
+  history[replace ? "replaceState" : "pushState"](
+    {
+      tempoNavigation: replace ? Boolean(history.state?.tempoNavigation) : true,
+    },
+    "",
+    href(to),
+  );
   window.dispatchEvent(new Event("tempo:navigate"));
+}
+export function goBack(fallback = "/home/") {
+  if (history.state?.tempoNavigation) history.back();
+  else navigate(fallback, { replace: true });
 }
 const subscribe = (fn) => {
   window.addEventListener("popstate", fn);
