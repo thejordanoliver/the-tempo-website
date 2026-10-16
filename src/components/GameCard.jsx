@@ -1,22 +1,14 @@
 import { Link } from "../router.jsx";
-import { Image } from "../components.jsx";
+import TeamLogo from "./TeamLogo.jsx";
 import { teamIdentity } from "../teamIdentity.js";
 import { gameCardModel } from "./gameCardModel.js";
 import "./GameCard.css";
-function Team({ team, side, possession }) {
+function Team({ team, side, possession, league }) {
   const name = team?.shortName || team?.name || team?.code || "TBD";
   return (
     <div className={`gc-team gc-${side}`}>
       <div className="gc-logo">
-        <picture>
-          {(team?.logoDark || team?.logo) && (
-            <source
-              media="(prefers-color-scheme: dark)"
-              srcSet={team.logoDark || team.logo}
-            />
-          )}
-          <Image src={team?.logo} alt="" loading="lazy" />
-        </picture>
+        <TeamLogo team={team} league={league} loading="lazy" />
         <span className="gc-fallback" aria-hidden="true">
           {team?.code || name.slice(0, 3).toUpperCase()}
         </span>
@@ -68,7 +60,12 @@ export default function GameCard({ game, league }) {
           {model.headline}
         </span>
       )}
-      <Team team={game.away} side="away" possession={possession("away")} />
+      <Team
+        team={game.away}
+        side="away"
+        possession={possession("away")}
+        league={league}
+      />
       {score("away")}
       <div className="gc-info">
         <div className={`gc-status ${model.final ? "gc-final" : ""}`}>
@@ -92,7 +89,12 @@ export default function GameCard({ game, league }) {
         )}
       </div>
       {score("home")}
-      <Team team={game.home} side="home" possession={possession("home")} />
+      <Team
+        team={game.home}
+        side="home"
+        possession={possession("home")}
+        league={league}
+      />
     </Link>
   );
 }

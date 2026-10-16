@@ -5,10 +5,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 await mkdir(".preview/tests", { recursive: true });
 const result = await build({
   stdin: {
-    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Landing from './src/pages/Landing.jsx';import Support from './src/pages/Support.jsx';import Privacy from './src/pages/Privacy.jsx';import Game from './src/pages/Game.jsx';import Article from './src/pages/Article.jsx';import {safeURL} from './src/components.jsx';export {safeURL};export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Landing,Support,Privacy,Game,Article}[name],props));`,
+    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Landing from './src/pages/Landing.jsx';import Support from './src/pages/Support.jsx';import Privacy from './src/pages/Privacy.jsx';import Game from './src/pages/Game.jsx';import Article from './src/pages/Article.jsx';import {safeURL} from './src/components.jsx';import TeamLogo from './src/components/TeamLogo.jsx';export {safeURL};export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Landing,Support,Privacy,Game,Article,TeamLogo}[name],props));`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
+  loader: { ".png": "dataurl" },
   bundle: true,
   write: false,
   platform: "node",
@@ -41,4 +42,10 @@ test("external media/link validation rejects executable URLs", () => {
     safeURL("https://example.test/story"),
     "https://example.test/story",
   );
+});
+
+test("shared team logo provides a dark-mode source for game screens and cards", () => {
+  const html = render("TeamLogo", { team: { id: 26 }, league: "nba" });
+  assert(html.includes('media="(prefers-color-scheme: dark)"'));
+  assert(html.includes("srcSet="));
 });

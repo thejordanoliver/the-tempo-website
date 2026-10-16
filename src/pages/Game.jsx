@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Image, State, Table, useResource } from "../components.jsx";
+import { State, Table, useResource } from "../components.jsx";
+import TeamLogo from "../components/TeamLogo.jsx";
 const sports = {
   nba: "basketball",
   nfl: "football",
@@ -46,7 +47,7 @@ function GameData({ id, league }) {
             <div className="score-teams">
               {[score.away, score.home].map((team, i) => (
                 <div className="score-team" key={i}>
-                  <Image src={team.logo} />
+                  <TeamLogo team={team} league={league} />
                   <h2>
                     {team.fullName || team.name || team.shortName || "TBD"}
                   </h2>
