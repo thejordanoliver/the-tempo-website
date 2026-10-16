@@ -1,0 +1,44 @@
+.game-date-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+}
+.game-date-controls input {
+  flex: 1;
+  min-width: 0;
+}
+.game-date-chevron {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+}
+.game-date-chevron svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.game-date-chevron:hover {
+  background: var(--surface);
+}
+.game-date-chevron:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+@media (max-width: 480px) {
+  .game-date-controls {
+    gap: 4px;
+  }
+}

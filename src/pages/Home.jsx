@@ -1,4 +1,5 @@
 import { useState } from "react";
+import GameDatePicker from "../components/GameDatePicker.jsx";
 import GameCard from "../components/GameCard.jsx";
 import { Link } from "../router.jsx";
 import { Image, State, useResource } from "../components.jsx";
@@ -62,18 +63,7 @@ export default function Home({ user, onLogout }) {
               </button>
             ))}
           </div>
-          <label className="game-date-label">
-            Game date
-            <input
-              type="date"
-              id="game-date"
-              required
-              value={date}
-              onChange={(e) => {
-                if (e.target.value) setDate(e.target.value);
-              }}
-            />
-          </label>
+          <GameDatePicker date={date} onChange={setDate} />
         </div>
         <State
           {...games}
