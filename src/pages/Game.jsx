@@ -5,6 +5,7 @@ import HeadingTwo from "../components/HeadingTwo.jsx";
 import LineScore from "../components/LineScore.jsx";
 import GameLeaders from "../components/GameLeaders.jsx";
 import GameStats from "../components/GameStats.jsx";
+import GameSummary from "../components/GameSummary.jsx";
 const sports = {
   nba: "basketball",
   nfl: "football",
@@ -18,10 +19,7 @@ function GameData({ id, league }) {
       version,
     );
   const score = data?.score,
-    details = data?.details || {},
-    plays = Array.isArray(score?.plays)
-      ? score.plays.filter((p) => p.text).slice(0, 30)
-      : [];
+    details = data?.details || {};
   return (
     <>
     
@@ -45,20 +43,7 @@ function GameData({ id, league }) {
           <LineScore score={score} league={league} />
           <GameLeaders score={score} league={league} />
           <GameStats score={score} league={league} />
-          <section className="detail-section">
-            <HeadingTwo>Play-by-play</HeadingTwo>
-            {plays.length ? (
-              plays.map((p, i) => (
-                <p className="detail-play" key={p.id || i}>
-                  {p.text}
-                </p>
-              ))
-            ) : (
-              <p className="small">
-                Play-by-play is not available for this game yet.
-              </p>
-            )}
-          </section>
+          <GameSummary score={score} league={league} />
         </>
       )}
     </>
