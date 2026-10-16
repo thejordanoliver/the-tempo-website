@@ -7,4 +7,4 @@ Uses the app’s Oswald and Barlow Condensed fonts, monochrome colors, 12px roun
 The privacy policy remains a draft; see PRIVACY-REVIEW.md before launch. The older tempo-website/ URLs are retained for compatibility.
 
 ## Website login
-The /login/ page is intentionally disabled. App configuration currently points to a private LAN backend. Enable real sign-in only after choosing a public HTTPS API, a web session strategy, and a signed-in destination. This page sends and stores no credentials.
+Uses the temporary LAN backend http://192.168.1.225:4000 via POST /api/login. Preview with python3 -m http.server on a device on the same network. Public HTTPS hosting cannot call this HTTP API: the form explicitly explains the limitation and stays disabled there. No tokens are persisted. Successful sign-in displays an account confirmation, not the full mobile app. Existing backend login rotates the account’s refresh tokens, so test sign-in can affect other sessions. Configure a public HTTPS API before enabling public website login.
