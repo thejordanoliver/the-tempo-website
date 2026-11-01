@@ -7,13 +7,19 @@ import GameLeaders from "../components/GameLeaders.jsx";
 import GameStats from "../components/GameStats.jsx";
 import GameSummary from "../components/GameSummary.jsx";
 import GameLocation from "../components/GameLocation.jsx";
-const sports = {
-  nba: "basketball",
-  nfl: "football",
-  cfb: "football",
-  mlb: "baseball",
-  nhl: "hockey",
-};
+import { leagueSports } from "../leagues.js";
+const sports = Object.fromEntries(
+  Object.entries(leagueSports).filter(([, sport]) =>
+    [
+      "basketball",
+      "football",
+      "baseball",
+      "hockey",
+      "soccer",
+      "volleyball",
+    ].includes(sport),
+  ),
+);
 function GameData({ id, league }) {
   const [version, setVersion] = useState(0),
     { data, loading, error } = useResource(

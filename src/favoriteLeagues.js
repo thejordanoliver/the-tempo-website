@@ -1,3 +1,5 @@
+import MCVBLogo from "./league-logos/MCVBLogo.png";
+import WCVBLogo from "./league-logos/WCVBLogo.png";
 import ATPLogo from "./league-logos/ATPLogo.png";
 import BundesligaLogo from "./league-logos/BundesligaLogo.png";
 import BundesligaLightLogo from "./league-logos/BundesligaLightLogo.png";
@@ -43,6 +45,18 @@ import WNBALogoLight from "./league-logos/WNBALogoLight.png";
 import WTALogo from "./league-logos/WTALogo.png";
 import WTALogoLight from "./league-logos/WTALogoLight.png";
 export const favoriteLeagues = {
+  mcvb: {
+    label: "Men's College Volleyball",
+    color: "#009CDE",
+    logo: new URL(MCVBLogo, import.meta.url).href,
+    logoDark: new URL(MCVBLogo, import.meta.url).href,
+  },
+  wcvb: {
+    label: "Women's College Volleyball",
+    color: "#009CDE",
+    logo: new URL(WCVBLogo, import.meta.url).href,
+    logoDark: new URL(WCVBLogo, import.meta.url).href,
+  },
   atp: {
     label: "ATP Tennis",
     color: "#002865",
@@ -91,7 +105,12 @@ export const favoriteLeagues = {
     logo: new URL(UEFAEuropaLogo, import.meta.url).href,
     logoDark: new URL(UEFAEuropaLightLogo, import.meta.url).href,
   },
-  f1: { label: "F1", color: "#E10600", logo: new URL(F1Logo, import.meta.url).href, logoDark: new URL(F1LogoLight, import.meta.url).href },
+  f1: {
+    label: "F1",
+    color: "#E10600",
+    logo: new URL(F1Logo, import.meta.url).href,
+    logoDark: new URL(F1LogoLight, import.meta.url).href,
+  },
   fifa: {
     label: "FIFA World Cup",
     color: "#326295",
@@ -123,7 +142,7 @@ export const favoriteLeagues = {
     logoDark: new URL(LeaguesCupLogoLight, import.meta.url).href,
   },
   ligue1: {
-    label: "French Ligue",
+    label: "French Ligue 1",
     color: "#FF4B44",
     logo: new URL(Ligue1Logo, import.meta.url).href,
     logoDark: new URL(Ligue1LightLogo, import.meta.url).href,
@@ -134,8 +153,18 @@ export const favoriteLeagues = {
     logo: new URL(Ligue2Logo, import.meta.url).href,
     logoDark: new URL(Ligue2LightLogo, import.meta.url).href,
   },
-  mlb: { label: "MLB", color: "#002D72", logo: new URL(MLBLogo, import.meta.url).href, logoDark: new URL(MLBLogo, import.meta.url).href },
-  mls: { label: "MLS", color: "#111111", logo: new URL(MLSLogo, import.meta.url).href, logoDark: new URL(MLSLogo, import.meta.url).href },
+  mlb: {
+    label: "MLB",
+    color: "#002D72",
+    logo: new URL(MLBLogo, import.meta.url).href,
+    logoDark: new URL(MLBLogo, import.meta.url).href,
+  },
+  mls: {
+    label: "MLS",
+    color: "#111111",
+    logo: new URL(MLSLogo, import.meta.url).href,
+    logoDark: new URL(MLSLogo, import.meta.url).href,
+  },
   msoc: {
     label: "Men's College Soccer",
     color: "#009CDE",
@@ -154,9 +183,24 @@ export const favoriteLeagues = {
     logo: new URL(NascarLogo, import.meta.url).href,
     logoDark: new URL(NascarLightLogo, import.meta.url).href,
   },
-  nba: { label: "NBA", color: "#1D428A", logo: new URL(NBALogo, import.meta.url).href, logoDark: new URL(NBALogo, import.meta.url).href },
-  nfl: { label: "NFL", color: "#013369", logo: new URL(NFLLogo, import.meta.url).href, logoDark: new URL(NFLLogo, import.meta.url).href },
-  nhl: { label: "NHL", color: "#000000", logo: new URL(NHLLogo, import.meta.url).href, logoDark: new URL(NHLLogo, import.meta.url).href },
+  nba: {
+    label: "NBA",
+    color: "#1D428A",
+    logo: new URL(NBALogo, import.meta.url).href,
+    logoDark: new URL(NBALogo, import.meta.url).href,
+  },
+  nfl: {
+    label: "NFL",
+    color: "#013369",
+    logo: new URL(NFLLogo, import.meta.url).href,
+    logoDark: new URL(NFLLogo, import.meta.url).href,
+  },
+  nhl: {
+    label: "NHL",
+    color: "#000000",
+    logo: new URL(NHLLogo, import.meta.url).href,
+    logoDark: new URL(NHLLogo, import.meta.url).href,
+  },
   sb: {
     label: "College Softball",
     color: "#009CDE",

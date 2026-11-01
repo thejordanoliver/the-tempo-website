@@ -10,6 +10,10 @@ import Home from "./pages/Home.jsx";
 import Profile from "./pages/Profile.jsx";
 import Game from "./pages/Game.jsx";
 import Article from "./pages/Article.jsx";
+import Leagues from "./pages/Leagues.jsx";
+import League from "./pages/League.jsx";
+import { favoriteLeagues } from "./favoriteLeagues.js";
+import { hasLeague } from "./leagues.js";
 export default function App() {
   const route = useRoute(),
     session = useSyncExternalStore(
@@ -33,6 +37,11 @@ export default function App() {
         "/privacy": "Privacy Policy",
         "/game": "Game",
         "/article": "Article",
+        "/leagues": "Leagues",
+        "/league": hasLeague(new URLSearchParams(route.search).get("league"))
+          ? favoriteLeagues[new URLSearchParams(route.search).get("league")]
+              .label
+          : "League",
       }[route.path] || "Page not found";
     document.title = title + " | Tempo Sports";
     let robots = document.querySelector('meta[name="robots"]');
@@ -44,6 +53,11 @@ export default function App() {
       }
       robots.content = "noindex";
     } else robots?.remove();
+    if (
+      route.path === "/league" &&
+      document.activeElement?.closest(".league-detail")
+    )
+      return;
     requestAnimationFrame(() => {
       if (route.hash) {
         document.getElementById(route.hash.slice(1))?.scrollIntoView();
@@ -84,6 +98,12 @@ export default function App() {
     case "/game":
       page = <Game search={route.search} />;
       break;
+    case "/leagues":
+      page = <Leagues />;
+      break;
+    case "/league":
+      page = <League search={route.search} signedIn={Boolean(session)} />;
+      break;
     case "/article":
       page = <Article search={route.search} />;
       break;
@@ -101,7 +121,7 @@ export default function App() {
         Skip to content
       </a>
       <nav aria-label="Main navigation">
-        {["/game", "/article"].includes(route.path) ? (
+        {["/game", "/article", "/league"].includes(route.path) ? (
           <button
             className="navbar-back"
             type="button"
@@ -129,6 +149,14 @@ export default function App() {
           </Link>
         )}
         <div className="nav-links">
+          <Link
+            to="/leagues/"
+            aria-current={
+              ["/leagues", "/league"].includes(route.path) ? "page" : undefined
+            }
+          >
+            Leagues
+          </Link>
           {session && (
             <Link
               to="/home/"

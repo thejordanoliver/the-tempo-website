@@ -31,7 +31,9 @@ After changing the API URL, rebuild and publish the generated HTML and `web-asse
 
 ## Pages and sessions
 
-React handles the homepage, sign-in, Home, profile, Support, Privacy Policy, games and articles. Navigation uses the browser history API, including Back/Forward. Every known route has a generated HTML entry so direct links and reloads work on GitHub Pages, under either a project path or a custom domain. Old `tempo-website/` links redirect to the canonical routes.
+React handles the homepage, sign-in, Home, profile, Support, Privacy Policy, games, articles, the league directory, and individual league pages. Navigation uses the browser history API, including Back/Forward. Every known route has a generated HTML entry so direct links and reloads work on GitHub Pages, under either a project path or a custom domain. Old `tempo-website/` links redirect to the canonical routes.
+
+Browse `/leagues/` to search all 32 leagues across nine sports. League detail links use `/league/?league=nba`, with optional `tab`, `date`, `season`, `week`, and `page` parameters preserved by Back/Forward and reload. Scores, news, standings, and sport-specific sections use the existing backend and session request layer; league forums require sign-in.
 
 Session tokens and basic account details stay in this browser tab's `sessionStorage`, and access tokens refresh when needed. Support and other page navigation preserve sign-in. Signing out clears the saved session immediately. Passwords are never persisted.
 

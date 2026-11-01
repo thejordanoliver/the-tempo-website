@@ -102,6 +102,12 @@ export default function Home({ user, onLogout }) {
         }}
       />
       <section aria-labelledby="games-title">
+        <div className="home-section-heading">
+          <h2 id="games-title">Scores</h2>
+          <Link to={`/league/?league=${league}`}>
+            View {league.toUpperCase()} league page →
+          </Link>
+        </div>
         <div className="games-controls">
           <div className="league-filters" role="group" aria-label="League">
             {Object.keys(endpoints).map((key) => (
