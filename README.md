@@ -13,13 +13,21 @@ Open the local URL printed by the server (default: `http://127.0.0.1:8766`). Sou
 
 ## Backend
 
-The temporary default is `http://192.168.1.225:4000`. Local account and sports-data testing requires access to that network. HTTPS-hosted pages cannot call an HTTP backend. Set a public HTTPS API when it is ready:
+Set `TEMPO_API_URL` in `.env` before running `npm run dev` or `npm run build`:
+
+```sh
+TEMPO_API_URL=https://the-tempo-api.onrender.com
+```
+
+Both commands load `.env` automatically. An explicit environment variable overrides the file, for example:
 
 ```sh
 TEMPO_API_URL=https://your-api.example npm run build
 ```
 
-The API URL is public configuration embedded at build time. Never put secrets in it. A `.env.example` documents the setting; `.env` files are ignored and are not loaded automatically.
+The API URL is public configuration embedded at build time. Never put secrets in it. `.env` is Git-ignored. A missing or invalid URL fails the build instead of silently selecting a local backend. HTTPS-hosted pages require an HTTPS API; an HTTP backend can be used with a local HTTP preview on the same network.
+
+After changing the API URL, rebuild and publish the generated HTML and `web-assets/`. Editing `.env` alone does not update an already published website. Restart `npm run dev` after environment changes.
 
 ## Pages and sessions
 

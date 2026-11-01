@@ -1,17 +1,40 @@
 import { build } from "esbuild";
 import { mkdir, writeFile, rm, readdir } from "node:fs/promises";
 import path from "node:path";
+import { readFileSync } from "node:fs";
+import { parseEnv } from "node:util";
+
+export function getApiUrl({ env = process.env, envPath = ".env" } = {}) {
+  let fileEnv = {};
+  try {
+    fileEnv = parseEnv(readFileSync(envPath, "utf8"));
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  const api = (env.TEMPO_API_URL ?? fileEnv.TEMPO_API_URL)?.trim();
+  if (!api)
+    throw new Error(
+      "Set TEMPO_API_URL in .env or the build environment before building.",
+    );
+  let url;
+  try {
+    url = new URL(api);
+  } catch {
+    throw new Error("TEMPO_API_URL must be an absolute http(s) URL.");
+  }
+  if (!["http:", "https:"].includes(url.protocol))
+    throw new Error("TEMPO_API_URL must use http(s)");
+  return api.replace(/\/+$/, "");
+}
+
 export async function buildSite({
   outdir = process.cwd(),
   minify = true,
 } = {}) {
+  const api = getApiUrl();
   await mkdir(path.join(outdir, "web-assets"), { recursive: true });
   // Remove only previous generated bundles; user assets and app sources are preserved.
   const previousAssets = await readdir(path.join(outdir, "web-assets"));
-  const api = process.env.TEMPO_API_URL || "http://192.168.1.225:4000";
-  const url = new URL(api);
-  if (!["http:", "https:"].includes(url.protocol))
-    throw new Error("TEMPO_API_URL must use http(s)");
   const result = await build({
     entryPoints: ["src/main.jsx"],
     outdir: path.join(outdir, "web-assets"),
@@ -23,7 +46,7 @@ export async function buildSite({
     jsx: "automatic",
     target: ["es2022"],
     loader: { ".ttf": "file", ".png": "file" },
-    define: { __TEMPO_API_URL__: JSON.stringify(api.replace(/\/+$/, "")) },
+    define: { __TEMPO_API_URL__: JSON.stringify(api) },
     metafile: true,
   });
   const outputs = Object.keys(result.metafile.outputs),
