@@ -86,11 +86,6 @@ export default function Home({ user, onLogout }) {
       <FavoritesScroll
         teams={favoriteTeams}
         leagues={savedLeagues}
-        activeLeague={league}
-        onLeagueSelect={(key) => {
-          setLeague(key);
-          setSelectedTeam(null);
-        }}
         loading={favorites.loading || favoriteSports.loading}
         error={favorites.error || favoriteSports.error}
         onRetry={() => setFavoritesVersion((v) => v + 1)}

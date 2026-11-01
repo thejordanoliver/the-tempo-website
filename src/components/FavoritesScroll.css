@@ -64,6 +64,7 @@
   font: inherit;
   cursor: pointer;
   text-align: center;
+  text-decoration: none;
 }
 .favorite-item:disabled {
   cursor: default;

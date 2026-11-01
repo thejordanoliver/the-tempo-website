@@ -67,9 +67,7 @@ export default function Leagues() {
                   <h3>{favoriteLeagues[league].label}</h3>
                   <span>Scores &amp; more</span>
                 </div>
-                <span className="league-tile-arrow" aria-hidden="true">
-                  ↗
-                </span>
+                <ion-icon name="chevron-forward-outline"/>
               </Link>
             ))}
           </div>

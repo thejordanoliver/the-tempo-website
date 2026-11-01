@@ -1,4 +1,6 @@
 import { favoriteLeagues } from "../favoriteLeagues.js";
+import { hasLeague, leagueHref } from "../leagues.js";
+import { Link } from "../router.jsx";
 import { useRef } from "react";
 import { favoriteTeamAssets } from "../favoriteTeamAssets.js";
 import HeadingTwo from "./HeadingTwo.jsx";
@@ -8,8 +10,6 @@ import "./FavoritesScroll.css";
 export default function FavoritesScroll({
   teams = [],
   leagues = [],
-  activeLeague,
-  onLeagueSelect,
   loading,
   error,
   onRetry,
@@ -26,7 +26,10 @@ export default function FavoritesScroll({
         : "smooth",
     });
   return (
-    <section className="favorites-section" aria-label="Favorite teams">
+    <section
+      className="favorites-section"
+      aria-label="Favorite leagues and teams"
+    >
       <div className="favorites-heading">
         <HeadingTwo>Favorites</HeadingTwo>
         <button
@@ -62,53 +65,40 @@ export default function FavoritesScroll({
             className="favorites-scroll"
             ref={rail}
             role="group"
-            aria-label="Filter games by favorite team"
+            aria-label="Favorite leagues and team filters"
             tabIndex={0}
           >
-            {leagues
-              .filter((key) => favoriteLeagues[key])
-              .map((key) => {
-                const config = favoriteLeagues[key],
-                  supported = supportedLeagues.includes(key);
-                return (
-                  <button
-                    className="favorite-item"
-                    type="button"
-                    key={`league:${key}`}
-                    aria-pressed={!selected && activeLeague === key}
-                    disabled={!supported}
-                    title={
-                      supported
-                        ? `Show ${config.label} games`
-                        : `${config.label} games are not available on the website yet`
-                    }
-                    onClick={() => onLeagueSelect(key)}
+            {leagues.filter(hasLeague).map((key) => {
+              const config = favoriteLeagues[key];
+              return (
+                <Link
+                  className="favorite-item"
+                  to={leagueHref(key)}
+                  key={`league:${key}`}
+                  title={`View ${config.label} league page`}
+                  aria-label={`View ${config.label} league page`}
+                >
+                  <span
+                    className="favorite-logo"
+                    style={{ backgroundColor: config.color }}
                   >
-                    <span
-                      className="favorite-logo"
-                      style={{ backgroundColor: config.color }}
-                    >
-                      <picture>
-                        <source
-                          media="(prefers-color-scheme: dark)"
-                          srcSet={config.logoDark}
-                        />
-                        <img src={config.logo} alt="" loading="lazy" />
-                      </picture>
-                    </span>
-                    <strong className="favorite-caption">
-                      {key.toUpperCase()}
-                    </strong>
-                  </button>
-                );
-              })}
-            {leagues.some((key) => favoriteLeagues[key]) &&
-              teams.length > 0 && (
-                <span
-                  className="favorites-section-divider"
-                  aria-hidden="true"
-                />
-              )}
+                    <picture>
+                      <source
+                        media="(prefers-color-scheme: dark)"
+                        srcSet={config.logoDark}
+                      />
+                      <img src={config.logo} alt="" loading="lazy" />
+                    </picture>
+                  </span>
+                  <strong className="favorite-caption">
+                    {key.toUpperCase()}
+                  </strong>
+                </Link>
+              );
+            })}
+            {leagues.some(hasLeague) && teams.length > 0 && (
+              <span className="favorites-section-divider" aria-hidden="true" />
+            )}
             {teams.map((savedTeam) => {
               const team = {
                 ...savedTeam,
