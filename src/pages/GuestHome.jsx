@@ -14,13 +14,6 @@ function GuestScores({ league, date }) {
     );
   return (
     <>
-      <button
-        className="home-text-button"
-        disabled={scores.loading}
-        onClick={() => setVersion((v) => v + 1)}
-      >
-        Refresh scores
-      </button>
       <State {...scores} onRetry={() => setVersion((v) => v + 1)} />
       {!scores.loading && !scores.error && (
         <LeagueScores data={scores.data} league={league} />
@@ -89,13 +82,6 @@ export default function GuestHome() {
       <section className="home-news" aria-labelledby="guest-news">
         <div className="home-section-heading">
           <h2 id="guest-news">Around the game</h2>
-          <button
-            className="home-text-button"
-            disabled={news.loading}
-            onClick={() => setNewsVersion((v) => v + 1)}
-          >
-            Refresh news
-          </button>
         </div>
         <State {...news} onRetry={() => setNewsVersion((v) => v + 1)} />
         {!news.loading && !news.error && (

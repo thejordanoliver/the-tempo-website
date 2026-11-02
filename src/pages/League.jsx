@@ -1,3 +1,4 @@
+import FootballScores from "../components/FootballScores.jsx";
 import { useState } from "react";
 import { Link, navigate } from "../router.jsx";
 import { State, useResource } from "../components.jsx";
@@ -35,7 +36,7 @@ const yearTabs = [
 ];
 const label = (tab) =>
   tab === "stats" ? "Stats" : tab[0].toUpperCase() + tab.slice(1);
-function ResourcePanel({ path, league, tab, page, onPageChange }) {
+function ResourcePanel({ path, league, tab, page, onPageChange, season, conference, onConferenceChange }) {
   const [version, setVersion] = useState(0);
   const resource = useResource(path, version),
     { data, loading, error } = resource;
@@ -51,19 +52,13 @@ function ResourcePanel({ path, league, tab, page, onPageChange }) {
     <>
       <div className="league-panel-heading">
         <h2>{label(tab)}</h2>
-        <button
-          type="button"
-          className="league-text-button"
-          disabled={loading}
-          onClick={() => setVersion((value) => value + 1)}
-        >
-          Refresh {tab}
-        </button>
       </div>
       <State {...resource} onRetry={() => setVersion((value) => value + 1)} />
       {!loading && !error && (
         <>
-          {tab === "news" ? (
+          {tab === "scores" && leagueSports[league] === "football" ? (
+            <FootballScores data={data} league={league} season={season} conference={conference} onChange={onConferenceChange} />
+          ) : tab === "news" ? (
             <LeagueNews data={data} />
           ) : ["scores", "fights", "playoffs", "bracket"].includes(tab) ? (
             <LeagueScores
@@ -114,7 +109,8 @@ export default function League({ search = "", signedIn = false }) {
     );
   const config = favoriteLeagues[league],
     tabs = leagueTabs(league);
-  const tab = tabs.includes(params.get("tab")) ? params.get("tab") : tabs[0];
+  const requestedTab = params.get("tab") === "rankings" ? "standings" : params.get("tab");
+  const tab = tabs.includes(requestedTab) ? requestedTab : tabs[0];
   const requestedDate = params.get("date"),
     date =
       /^\d{4}-\d{2}-\d{2}$/.test(requestedDate || "") &&
@@ -138,7 +134,7 @@ export default function League({ search = "", signedIn = false }) {
   );
   const week = /^([1-9]|1[0-9]|2[0-2])$/.test(params.get("week") || "")
     ? params.get("week")
-    : "";
+    : leagueSports[league] === "football" ? "1" : "";
   const seasonType = ["1", "2", "3"].includes(params.get("seasontype"))
     ? params.get("seasontype")
     : "2";
@@ -157,6 +153,7 @@ export default function League({ search = "", signedIn = false }) {
     page,
     week,
     seasonType,
+    conferenceId: params.get("conference"),
   });
   return (
     <section
@@ -223,7 +220,7 @@ export default function League({ search = "", signedIn = false }) {
         ))}
       </div>
       <div className="league-controls">
-        {["scores", "fights"].includes(tab) && (
+        {["scores", "fights"].includes(tab) && leagueSports[league] !== "football" && (
           <GameDatePicker
             date={date}
             onChange={(value) => update({ date: value, week: null })}
@@ -259,7 +256,7 @@ export default function League({ search = "", signedIn = false }) {
                 value={week}
                 onChange={(event) => update({ week: event.target.value })}
               >
-                <option value="">By date</option>
+
                 {Array.from({ length: 22 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     Week {index + 1}
@@ -284,6 +281,7 @@ export default function League({ search = "", signedIn = false }) {
             )}
           </>
         )}
+        <div id="league-extra-controls" style={{display: "contents"}} />
       </div>
       <section
         id="league-panel"
@@ -304,6 +302,9 @@ export default function League({ search = "", signedIn = false }) {
             league={league}
             tab={tab}
             page={page}
+            season={season}
+            conference={params.get("conference") || ""}
+            onConferenceChange={(value) => update({conference: value})}
             onPageChange={(value) => update({ page: value })}
           />
         )}

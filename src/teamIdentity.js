@@ -828,20 +828,24 @@ const teams = {
     },
   },
 };
+export const TEAM_PLACEHOLDER =
+  "https://res.cloudinary.com/dm3qtdhag/image/upload/v1781619331/placeholder/team.png";
+
 export function teamIdentity(team, league) {
   const local = teams[league]?.[String(team?.id)];
   return {
     ...team,
     shortName:
       local?.name || team?.shortName || team?.name || team?.code || "TBD",
-    logo: local?.logo || team?.logo,
+    logo: local?.logo || team?.logo || TEAM_PLACEHOLDER,
     // The app’s logoLight assets are designed for dark backgrounds.
     logoDark:
       local?.logoLight ||
       local?.logo ||
       team?.logoDark ||
       team?.logoLight ||
-      team?.logo,
-    logoLight: local?.logoLight || team?.logoLight || team?.logo,
+      team?.logo ||
+      TEAM_PLACEHOLDER,
+    logoLight: local?.logoLight || team?.logoLight || team?.logo || TEAM_PLACEHOLDER,
   };
 }

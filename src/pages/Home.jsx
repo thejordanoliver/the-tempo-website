@@ -118,7 +118,7 @@ export default function Home({ user, onLogout }) {
             !gameList.length
               ? selectedTeam
                 ? "No games scheduled for this favorite team on the selected date."
-                : "No favorite-team games or live games from favorite leagues for this date."
+                : "No games scheduled for the selected date."
               : null
           }
           onRetry={() => setGamesVersion((v) => v + 1)}
@@ -153,13 +153,6 @@ export default function Home({ user, onLogout }) {
             <p className="eyebrow">For you</p>
             <h2 id="news-title">Around the game</h2>
           </div>
-          <button
-            className="home-text-button"
-            disabled={feed.loading}
-            onClick={() => setNewsVersion((v) => v + 1)}
-          >
-            Refresh news
-          </button>
         </div>
         <State
           {...feed}

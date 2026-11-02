@@ -14,7 +14,7 @@ import TeamLogo from "../components/TeamLogo.jsx";
 import { favoriteLeagues } from "../favoriteLeagues.js";
 import { defaultSeason } from "../leagues.js";
 import { Link, navigate } from "../router.jsx";
-import { hasTeamLeague, teamResource, teamTabs } from "../teams.js";
+import { hasTeamLeague, teamResource, teamTabs, teamConferenceStandings } from "../teams.js";
 const list = (value) => (Array.isArray(value) ? value : []);
 const label = (value) => value[0].toUpperCase() + value.slice(1);
 function TeamPanel({ league, id, tab, season, page, onPage, team }) {
@@ -75,7 +75,7 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
     );
   } else if (tab === "news") content = <LeagueNews data={data} />;
   else if (tab === "standings")
-    content = <LeagueStandings data={data} league={league} />;
+    content = <LeagueStandings data={teamConferenceStandings(data, id)} league={league} showRankings={false} />;
   else if (tab === "forum")
     content = <LeagueRecords data={data} tab="forum" league={league} />;
   else if (tab === "roster") {
@@ -182,13 +182,6 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
     <>
       <div className="league-panel-heading">
         <h2>{label(tab)}</h2>
-        <button
-          className="league-text-button"
-          disabled={loading}
-          onClick={() => setVersion((v) => v + 1)}
-        >
-          Refresh {tab}
-        </button>
       </div>
       <State {...resource} onRetry={() => setVersion((v) => v + 1)} />
       {!loading && !error && content}

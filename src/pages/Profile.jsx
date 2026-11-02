@@ -68,20 +68,13 @@ export default function Profile({ user, onLogout }) {
           <State error={state.error} onRetry={() => setVersion((v) => v + 1)} />
         )}
         <div className="profile-actions">
-          <button
-            className="tempo-button"
-            disabled={state.loading}
-            onClick={() => setVersion((v) => v + 1)}
-          >
-            {state.loading ? "Refreshing…" : "Refresh profile"}
-          </button>
           <Link className="tempo-button outline" to="/support/">
             Help &amp; support
           </Link>
         </div>
         <p className="profile-app-note">
-          Update your profile in the Tempo app. Your changes will appear here
-          when you refresh.
+          Update your profile in the Tempo app. Reopen this page to see your
+          changes.
         </p>
       </div>
     </section>

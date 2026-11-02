@@ -32,6 +32,8 @@ export const leagueSports = Object.fromEntries(
 export const hasLeague = (value) => Object.hasOwn(leagueSports, value);
 export const leagueHref = (league, options = {}) =>
   `/league/?${new URLSearchParams({ league, ...options })}`;
+export const standingsPath = (league) =>
+  `/api/standings/${leagueSports[league] === "soccer" ? "soccer/" : ""}${league}${["cfb", "mcbb", "wcbb"].includes(league) ? "/conference" : ""}`;
 export function leagueTabs(league) {
   const tabs = [league === "ufc" ? "fights" : "scores", "news"];
   if (
@@ -50,7 +52,6 @@ export function leagueTabs(league) {
   if (["nba", "nfl", "mlb"].includes(league)) tabs.push("transactions");
   if (["nba", "wnba", "nfl"].includes(league)) tabs.push("draft");
   if (["mcbb", "cfb"].includes(league)) tabs.push("recruits");
-  if (["mcvb", "wcvb"].includes(league)) tabs.push("rankings");
   if (
     ["nba", "wnba", "mcbb", "wcbb", "nfl", "cfb", "mlb", "nhl"].includes(league)
   )
@@ -78,7 +79,7 @@ export function scorePath(league) {
 export function leagueResource(
   league,
   tab,
-  { date, season, page = 1, week, seasonType = "2" } = {},
+  { date, season, page = 1, week, seasonType = "2", conferenceId } = {},
 ) {
   if (!hasLeague(league) || !leagueTabs(league).includes(tab)) return null;
   const query = (values) =>
@@ -95,7 +96,7 @@ export function leagueResource(
         scorePath(league) +
         query(
           week
-            ? { season, week, seasontype: seasonType }
+            ? { season, week, seasontype: seasonType, ...(league === "cfb" && conferenceId ? {conferenceId} : {}) }
             : { date: date?.replaceAll("-", "") },
         )
       );
@@ -106,7 +107,7 @@ export function leagueResource(
       );
     case "standings":
       return (
-        `/api/standings/${leagueSports[league] === "soccer" ? "soccer/" : ""}${league}` +
+        standingsPath(league) +
         query({ season, seasontype: "2" })
       );
     case "stats":

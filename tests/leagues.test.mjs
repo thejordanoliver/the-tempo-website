@@ -15,7 +15,7 @@ import {
 await mkdir(".preview/tests", { recursive: true });
 const result = await build({
   stdin: {
-    contents: `import React from 'react'; import {renderToStaticMarkup} from 'react-dom/server'; import ForumPosts from './src/components/ForumPosts.jsx'; import {CommentsList} from './src/pages/Post.jsx'; import Leagues from './src/pages/Leagues.jsx'; import League from './src/pages/League.jsx'; import Game from './src/pages/Game.jsx'; import {favoriteLeagues} from './src/favoriteLeagues.js'; import {LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords} from './src/components/LeagueContent.jsx'; export {favoriteLeagues}; export const render=(name,props={})=>renderToStaticMarkup(React.createElement({ForumPosts,CommentsList,Leagues,League,Game,LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords}[name],props));`,
+    contents: `import React from 'react'; import {renderToStaticMarkup} from 'react-dom/server'; import {StandingsFilter} from './src/components/CollegeRankings.jsx'; import ForumPosts from './src/components/ForumPosts.jsx'; import {CommentsList} from './src/pages/Post.jsx'; import Leagues from './src/pages/Leagues.jsx'; import League from './src/pages/League.jsx'; import Game from './src/pages/Game.jsx'; import {favoriteLeagues} from './src/favoriteLeagues.js'; import {LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords} from './src/components/LeagueContent.jsx'; export {favoriteLeagues}; export const render=(name,props={})=>renderToStaticMarkup(React.createElement({StandingsFilter,ForumPosts,CommentsList,Leagues,League,Game,LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords}[name],props));`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
@@ -84,7 +84,7 @@ test("scoreboards use normalized backend routes for every sport", () => {
 test("sections have sport-specific tabs, API routes, season and pagination params", () => {
   assert.deepEqual(leagueTabs("ufc"), ["fights", "news", "champions", "forum"]);
   assert(!leagueTabs("atp").includes("standings"));
-  assert(leagueTabs("mcvb").includes("rankings"));
+  assert(!leagueTabs("mcvb").includes("rankings"));
   assert.equal(
     leagueResource("epl", "standings", { season: 2026 }),
     "/api/standings/soccer/epl?season=2026&seasontype=2",
@@ -248,6 +248,7 @@ test("game links for additional team leagues now resolve to a detail screen", ()
 test("volleyball standings display normalized nested groups and statistic columns", () => {
   const html = render("LeagueStandings", {
     league: "wcvb",
+    showRankings: false,
     data: {
       groups: [
         {
@@ -332,7 +333,60 @@ test("post comments show full text and nested replies without post engagement li
 });
 test("college standings include a rankings section alongside conference tables", () => {
   const html = render("LeagueStandings", {league: "cfb", data: {conferences: []}});
-  assert(html.includes('aria-label="College rankings"'));
+  assert(html.includes('aria-label="College standings and polls"'));
   const pro = render("LeagueStandings", {league: "nfl", data: {conferences: []}});
-  assert(!pro.includes('aria-label="College rankings"'));
+  assert(!pro.includes('aria-label="College standings and polls"'));
+});
+
+
+test("college polls are accessed through standings instead of a separate tab", () => {
+  for (const league of ["cfb", "mcbb", "wcbb", "mcvb", "wcvb"]) {
+    assert(!leagueTabs(league).includes("rankings"), league);
+    assert.equal(leagueResource(league, "rankings", {season: 2026}), null);
+  }
+});
+test("college rankings render multiple polls with ranked teams and points", () => {
+  const html = render("LeagueRecords", {league: "cfb", tab: "rankings", data: {rankings: [
+    {name: "AP Top 25", ranks: [{current: 1, team: {id: 57, name: "Florida Gators"}, recordSummary: "8-0", points: 1500}]},
+    {name: "Coaches Poll", ranks: [{current: 2, team: {id: 57, name: "Florida Gators"}, recordSummary: "8-0", points: 1400}]},
+  ]}});
+  assert(html.includes("AP Top 25"));
+  assert(html.includes("Coaches Poll"));
+  assert(html.includes("Florida Gators"));
+  assert(html.includes("1500"));
+  assert(html.includes("1400"));
+});
+
+
+test("college standings call conference endpoints without a separate rankings tab", () => {
+  for (const league of ["cfb", "mcbb", "wcbb"]) {
+    assert.equal(leagueResource(league, "standings", {season: 2026}), `/api/standings/${league}/conference?season=2026&seasontype=2`);
+  }
+  for (const league of ["cfb", "mcbb", "wcbb", "mcvb", "wcvb"]) {
+    const tabs = leagueTabs(league);
+    assert(!tabs.includes("rankings"));
+  }
+});
+test("college conference standings render division teams and conference records", () => {
+  const html = render("LeagueStandings", {league: "cfb", showRankings: false, data: {conferences: [{name: "SEC", divisions: [{name: "Overall", teams: [{id: 57, name: "Florida Gators", rank: 1, confOverall: "4-0", overall: "7-1", homeOverall: "4-0", awayOverall: "3-1", streak: "W5"}]}]}]}});
+  for (const value of ["SEC", "Florida Gators", "4-0", "7-1", "3-1", "W5"]) assert(html.includes(value));
+  assert(!html.includes("No standings available"));
+});
+
+test("team profiles can render conference standings without rankings", () => {
+  const html = render("LeagueStandings", {league: "cfb", showRankings: false, data: {conferences: [{name: "SEC", divisions: [{name: "Overall", teams: [{id: 57, name: "Florida", overall: "7-1"}]}]}]}});
+  assert(html.includes("SEC"));
+  assert(html.includes("Florida"));
+  assert(!html.includes('aria-label="College standings and polls"'));
+});
+
+test("standings dropdown defaults to AP and displays only the selected poll", () => {
+  const html = render("StandingsFilter", {league: "cfb", data: {conferences: [{name: "SEC", divisions: []}]}, rankings: {rankings: [
+    {type: "coaches", name: "Coaches Poll", ranks: [{current: 1, team: {id: 2, name: "Coaches leader"}}]},
+    {type: "ap", name: "AP Top 25", ranks: [{current: 1, team: {id: 57, name: "AP leader"}}]},
+  ]}});
+  assert(html.includes('<option value="poll:1" selected="">AP Top 25</option>'));
+  assert(html.includes('<option value="conference:0">SEC</option>'));
+  assert(html.includes("AP leader"));
+  assert(!html.includes("Coaches leader"));
 });

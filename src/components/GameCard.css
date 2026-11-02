@@ -1,4 +1,3 @@
-/* Mirrors styles/GamecardStyles/GameCardStyles.ts in the mobile app. */
 .home-games {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
   gap: 10px;

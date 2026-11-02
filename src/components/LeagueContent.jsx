@@ -1,3 +1,4 @@
+import { hasCollegePolls } from "../collegeStandings.js";
 import CollegeRankings from "./CollegeRankings.jsx";
 import ForumPosts from "./ForumPosts.jsx";
 import { teamHref, hasTeamLeague } from "../teams.js";
@@ -248,10 +249,28 @@ const percentage = (value) =>
   value != null && Number.isFinite(Number(value))
     ? Number(value).toFixed(3)
     : "—";
-export function LeagueStandings({ data, league }) {
-  return <><StandingsTables data={data} league={league} /><CollegeRankings league={league} /></>;
+export function LeagueStandings({ data, league, showRankings = true }) {
+  if (showRankings && hasCollegePolls(league)) return <CollegeRankings league={league} data={data} />;
+  return <StandingsTables data={data} league={league} />;
+}
+function CollegeStandings({ data, league }) {
+  const groups = list(data?.conferences).flatMap(conference =>
+    list(conference.divisions).filter(division => list(division.teams).length).map(division => ({
+      name: division.name === "Overall" ? conference.name : `${conference.name} · ${division.name}`,
+      teams: division.teams,
+    }))
+  );
+  if (!groups.length) return <Empty>No standings available for this season.</Empty>;
+  return groups.map((group, index) => <section className="league-table-section" key={index}>
+    <h3>{group.name}</h3>
+    <Table headers={["Rank", "Team", "Conference", "Overall", "Home", "Away", "Streak"]}
+      rows={group.teams.map((team, index) => [team.rank ?? index + 1,
+        <StandingsName team={team} league={league} />, team.confOverall, team.overall,
+        team.homeOverall, team.awayOverall, team.streak])} />
+  </section>);
 }
 function StandingsTables({ data, league }) {
+  if (["cfb", "mcbb", "wcbb"].includes(league)) return <CollegeStandings data={data} league={league} />;
   if (leagueSports[league] === "volleyball")
     return <VolleyballStandings data={data} league={league} />;
   const groups = list(data?.conferences).filter(

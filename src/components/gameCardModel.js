@@ -1,3 +1,5 @@
+import { getBroadcastDisplay } from "./broadcastDisplay.js";
+
 export function ordinal(value) {
   const number = Number(value);
   if (!Number.isInteger(number) || number < 1) return "";
@@ -81,7 +83,7 @@ export function gameCardModel(game, league) {
     live,
     showRecords,
     winner,
-    broadcast: !final && !interrupted ? broadcasts.join(" · ") : "",
+    broadcast: !final && !interrupted ? getBroadcastDisplay(broadcasts) : "",
     headline: game.headline || "",
     championship:
       /nba finals|super bowl|world series|stanley cup final|national championship/i.test(

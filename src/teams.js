@@ -1,4 +1,4 @@
-import { hasLeague, leagueSports, leagueTabs } from "./leagues.js";
+import { hasLeague, leagueSports, leagueTabs, standingsPath } from "./leagues.js";
 export const hasTeamLeague = (league) =>
   hasLeague(league) &&
   [
@@ -50,10 +50,27 @@ export function teamResource(league, id, tab, season, page = 1) {
     case "stats":
       return `/api/team/stats/${league}/${id}?season=${season}`;
     case "standings":
-      return `/api/standings/${leagueSports[league] === "soccer" ? "soccer/" : ""}${league}?season=${season}&seasontype=2`;
+      return `${standingsPath(league)}?season=${season}&seasontype=2`;
     case "forum":
       return `/api/forum/team/${league}/${id}?page=${page}&limit=20`;
     default:
       return `/api/teams/${league}/${id}`;
   }
+}
+
+// Match by roster membership rather than conference IDs, which differ across APIs.
+export function teamConferenceStandings(data, teamId) {
+  const list = value => Array.isArray(value) ? value : [];
+  const containsTeam = group =>
+    [...list(group.standings), ...list(group.teams)].some(row => String(row.team?.id ?? row.id) === String(teamId)) ||
+    [...list(group.divisions), ...list(group.children)].some(containsTeam);
+  const filterGroups = groups => list(groups).flatMap(group => {
+    if (list(group.standings).length || list(group.divisions).length) return containsTeam(group) ? [group] : [];
+    return filterGroups(group.children);
+  });
+  return {...data,
+    conferences: list(data?.conferences).filter(containsTeam),
+    groups: filterGroups(data?.groups),
+    standings: list(data?.standings).some(row => String(row.team?.id ?? row.id) === String(teamId)) ? data.standings : [],
+  };
 }

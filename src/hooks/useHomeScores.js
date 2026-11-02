@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { sessionStore } from "../session.js";
 import { hasLeague, leagueSports, scorePath, scoreGroups } from "../leagues.js";
-import { gameCardModel } from "../components/gameCardModel.js";
 
 export default function useHomeScores(teams, leagues, date, version, enabled) {
   const teamKeys = teams.map((team) => `${team.league}:${team.id}`);
   const leagueKeys = [
-    ...new Set([...teams.map((team) => team.league), ...leagues]),
+    ...new Set([...teams.map((team) => team.league), ...leagues, ...Object.keys(leagueSports)]),
   ].filter(hasLeague);
   const key = JSON.stringify([teamKeys, leagues, date, version, enabled]);
   const [state, setState] = useState({
@@ -38,7 +37,8 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
       );
       if (controller.signal.aborted) return;
       const favorite = [],
-        live = [],
+        preferred = [],
+        other = [],
         seen = new Set();
       for (const result of results) {
         if (result.status !== "fulfilled") continue;
@@ -51,22 +51,18 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
               teamKeys.includes(`${item.league}:${team.id}`),
           );
           if (isFavorite) favorite.push(item);
-          else if (
-            leagues.includes(item.league) &&
-            gameCardModel(item.game, item.league).live
-          )
-            live.push(item);
-          else continue;
+          else if (leagues.includes(item.league)) preferred.push(item);
+          else other.push(item);
           seen.add(id);
         }
       }
       const failures = results.filter((result) => result.status === "rejected");
       setState({
         key,
-        items: [...favorite, ...live],
+        items: [...favorite, ...preferred, ...other],
         loading: false,
         error: failures.length
-          ? "Some favorite scores could not be loaded. Please try again."
+          ? "Some scores could not be loaded. Please try again."
           : null,
       });
     }
