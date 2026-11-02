@@ -1,3 +1,4 @@
+import GuestHome from "./pages/GuestHome.jsx";
 import Team from "./pages/Team.jsx";
 import Icon from "./components/Icon.jsx";
 import { useEffect, useSyncExternalStore } from "react";
@@ -22,7 +23,7 @@ export default function App() {
       sessionStore.subscribe,
       sessionStore.getSnapshot,
     ),
-    protectedPage = ["/home", "/profile"].includes(route.path);
+    protectedPage = route.path === "/profile";
   useEffect(() => {
     if (!session && protectedPage) navigate("/login/", { replace: true });
     else if (session && route.path === "/login")
@@ -76,7 +77,7 @@ export default function App() {
   }, [route.path, route.search, route.hash]);
   function logout() {
     void sessionStore.logout();
-    navigate("/login/", { replace: true });
+    navigate("/home/", { replace: true });
   }
   let page;
   switch (route.path) {
@@ -93,7 +94,11 @@ export default function App() {
       page = <Login />;
       break;
     case "/home":
-      page = session ? <Home user={session.user} onLogout={logout} /> : null;
+      page = session ? (
+        <Home user={session.user} onLogout={logout} />
+      ) : (
+        <GuestHome />
+      );
       break;
     case "/profile":
       page = session ? <Profile user={session.user} onLogout={logout} /> : null;
@@ -151,14 +156,12 @@ export default function App() {
           >
             Leagues
           </Link>
-          {session && (
-            <Link
-              to="/home/"
-              aria-current={route.path === "/home" ? "page" : undefined}
-            >
-              Home
-            </Link>
-          )}
+          <Link
+            to="/home/"
+            aria-current={route.path === "/home" ? "page" : undefined}
+          >
+            Home
+          </Link>
           {session ? (
             <Link
               to="/profile/"

@@ -1,3 +1,4 @@
+import { wnbaTeams } from "./wnbaTeams.js";
 // Team names and logos reused from the Tempo mobile app.
 import asset92 from "./team-logos/mlb-Angels.png";
 import asset89 from "./team-logos/mlb-Astros.png";
@@ -182,6 +183,7 @@ import asset135 from "./team-logos/nhl-StarsLight.png";
 import asset144 from "./team-logos/nhl-Wild.png";
 import asset145 from "./team-logos/nhl-WildLight.png";
 const teams = {
+  wnba: wnbaTeams,
   nba: {
     1: {
       name: "Hawks",

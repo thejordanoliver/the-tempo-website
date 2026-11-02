@@ -156,7 +156,7 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
             />
           </section>
         )}
-        <GameLocation details={{ venueInfo: team.venue }} />
+        <GameLocation title="Home Venue" details={{ venueInfo: team.venue }} />
       </>
     );
   const more =

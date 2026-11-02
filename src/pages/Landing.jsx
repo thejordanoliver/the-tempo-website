@@ -16,7 +16,10 @@ export default function Landing() {
             for the sports you love.
           </p>
           <div className="actions">
-            <Link className="tempo-button" to="/login/">
+            <Link className="tempo-button" to="/home/">
+              Browse scores and news
+            </Link>
+            <Link className="tempo-button outline" to="/login/">
               Sign in to Tempo
             </Link>
             <a className="tempo-button outline" href="#explore">

@@ -2,7 +2,10 @@ import Icon from "./Icon.jsx";
 import HeadingTwo from "./HeadingTwo.jsx";
 import { Image, safeURL } from "../components.jsx";
 import "./GameLocation.css";
-export default function GameLocation({ details = {} }) {
+export default function GameLocation({
+  details = {},
+  title = "Game Location",
+}) {
   const venue = details.venueInfo || {},
     fallback = details.venue || {},
     address = venue.address || fallback.address || {},
@@ -47,7 +50,7 @@ export default function GameLocation({ details = {} }) {
   const query = [name, formatted].filter(Boolean).join(", ");
   return (
     <section className="detail-section">
-      <HeadingTwo>Game Location</HeadingTwo>
+      <HeadingTwo>{title}</HeadingTwo>
       <div className="game-panel game-location">
         {image && (
           <Image
