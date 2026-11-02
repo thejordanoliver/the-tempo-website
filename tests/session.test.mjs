@@ -151,3 +151,17 @@ test("unchecked remember me removes previous persistence and stays tab-only", as
   assert.equal(createSessionStore({storage: tab, persistentStorage: persistent}).getSnapshot().user.id, 1);
   assert.equal(createSessionStore({storage: storage(), persistentStorage: persistent}).getSnapshot(), null);
 });
+
+test("remembered session refreshes expired access on a later visit and persists rotation", async () => {
+  const persistent = storage();
+  const first = createSessionStore({storage: storage(), persistentStorage: persistent, fetcher: async () => response(200, sample)});
+  await first.login("fan", "secret", true);
+  const reopened = createSessionStore({storage: storage(), persistentStorage: persistent, fetcher: async (url, options) => {
+    if (url.endsWith("/api/refresh")) return response(200, {accessToken: "rotated-access", refreshToken: "rotated-refresh"});
+    return options.headers.Authorization === "Bearer rotated-access" ? response(200, {id: 1}) : response(401);
+  }});
+  assert.equal((await reopened.request("/api/users/me")).id, 1);
+  const later = createSessionStore({storage: storage(), persistentStorage: persistent});
+  assert.equal(later.getSnapshot().accessToken, "rotated-access");
+  assert.equal(later.getSnapshot().refreshToken, "rotated-refresh");
+});
