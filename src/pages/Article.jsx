@@ -112,19 +112,6 @@ function ArticleData({ id }) {
     state = useResource(`/api/news/article/${id}`, version);
   return (
     <>
-      <header className="detail-header">
-        <Link to="/home/">
-          <Icon name="arrow-back" className="icon-before" size={18} />
-          Home
-        </Link>
-        <button
-          className="detail-button"
-          disabled={state.loading}
-          onClick={() => setVersion((v) => v + 1)}
-        >
-          Refresh
-        </button>
-      </header>
       <State
         {...state}
         error={
