@@ -80,23 +80,32 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
     content = <LeagueRecords data={data} tab="forum" league={league} />;
   else if (tab === "roster") {
     const players = Array.isArray(data) ? data : list(data?.players);
-    content = players.length ? (
-      <Table
-        headers={["#", "Player", "Position", "Height", "Weight", "College"]}
-        rows={players.map((player) => [
-          player.jersey_number,
-          <span className="team-player">
-            <span className="team-headshot">
-              <Image src={player.headshot_url} loading="lazy" />
-            </span>
-            <span>{player.full_name || player.short_name}</span>
-          </span>,
-          player.position,
-          player.height,
-          player.weight,
-          player.college,
-        ])}
-      />
+    const sections = list(data?.sections).filter((section) => list(section.data).length);
+    const groups = sections.length ? sections : [{ title: "Players", data: players }];
+    const college = ["cfb", "mcbb", "wcbb"].includes(league);
+    content = players.length || sections.length ? (
+      groups.map((section) => (
+        <section className="league-table-section" key={section.title}>
+          <h3>{section.title}</h3>
+          <Table
+            headers={["#", "Player", "Position", "Height", "Weight", college ? "Year" : "College", "Hometown"]}
+            rows={section.data.map((player) => [
+              player.jersey_number,
+              <span className="team-player">
+                <span className="team-headshot">
+                  <Image src={player.headshot_url} loading="lazy" />
+                </span>
+                <span>{player.full_name || player.short_name}</span>
+              </span>,
+              player.position,
+              player.height,
+              player.weight != null && player.weight !== "" ? `${player.weight} lbs` : null,
+              college ? player.experience_display || player.experience_abbr : player.college,
+              player.birth_display,
+            ])}
+          />
+        </section>
+      ))
     ) : (
       <State empty="No roster available for this team." />
     );
