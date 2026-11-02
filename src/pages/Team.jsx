@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, navigate } from "../router.jsx";
 import { State, Table, useResource, Image } from "../components.jsx";
 import { teamTabs, teamResource, hasTeamLeague } from "../teams.js";
-import { defaultSeason, leagueHref } from "../leagues.js";
+import { defaultSeason } from "../leagues.js";
 import { favoriteLeagues } from "../favoriteLeagues.js";
 import TeamLogo from "../components/TeamLogo.jsx";
-import Icon from "../components/Icon.jsx";
 import GameLocation from "../components/GameLocation.jsx";
 import {
   LeagueScores,
@@ -218,14 +217,10 @@ function TeamData({ league, id, search, signedIn }) {
     next.delete("page");
     for (const [key, value] of Object.entries(values))
       next.set(key, String(value));
-    navigate(`/team/?${next}`);
+    navigate(`/team/?${next}`, { replace: true });
   }
   return (
     <section className="leagues-page league-detail team-detail">
-      <Link to={leagueHref(league)}>
-        <Icon name="chevron-back" size={18} />
-        {favoriteLeagues[league].label}
-      </Link>
       <State
         {...resource}
         empty={
