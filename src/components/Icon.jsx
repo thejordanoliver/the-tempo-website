@@ -1,3 +1,5 @@
+import SunnyOutline from "react-ionicons/lib/SunnyOutline.js";
+import MoonOutline from "react-ionicons/lib/MoonOutline.js";
 import HeartOutline from "react-ionicons/lib/HeartOutline.js";
 import ShareSocialOutline from "react-ionicons/lib/ShareSocialOutline.js";
 import BookmarkOutline from "react-ionicons/lib/BookmarkOutline.js";
@@ -16,6 +18,8 @@ import "./Icon.css";
 
 // Import individual icons to avoid bundling the package's entire icon catalog.
 const icons = {
+  sun: SunnyOutline,
+  moon: MoonOutline,
   heart: HeartOutline,
   share: ShareSocialOutline,
   bookmark: BookmarkOutline,

@@ -1,3 +1,4 @@
+import ThemeSource from "./ThemeSource.jsx";
 import { conferenceIdentity } from "../conferences.js";
 import { Image } from "../components.jsx";
 export default function ConferenceBadge({ conference, league }) {
@@ -7,7 +8,7 @@ export default function ConferenceBadge({ conference, league }) {
     <span className="team-conference">
       {item.logo && (
         <picture>
-          <source media="(prefers-color-scheme: dark)" srcSet={item.logoDark} />
+          <ThemeSource srcSet={item.logoDark} />
           <Image src={item.logo} alt="" />
         </picture>
       )}

@@ -109,12 +109,12 @@
   color: var(--muted);
   overflow-wrap: anywhere;
 }
-@media (prefers-color-scheme: dark) {
-  .gh-final,
-  .gh-clock {
+
+:root[data-theme="dark"] .gh-final,
+:root[data-theme="dark"] .gh-clock {
     color: #ff4444;
   }
-}
+
 @media (max-width: 640px) {
   .game-header {
     padding: 16px 0 22px;

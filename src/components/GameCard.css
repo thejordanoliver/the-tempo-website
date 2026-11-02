@@ -173,24 +173,24 @@
 .gc-championship .gc-loser {
   color: #333;
 }
-@media (prefers-color-scheme: dark) {
-  .gc-final,
-  .gc-clock {
+
+:root[data-theme="dark"] .gc-final,
+:root[data-theme="dark"] .gc-clock {
     color: #ff4444;
   }
-  .gc-championship {
+:root[data-theme="dark"] .gc-championship {
     background: linear-gradient(#846f4a, #50412a);
     color: #fff;
   }
-  .gc-championship .gc-headline,
-  .gc-championship .gc-broadcast,
-  .gc-championship .gc-context {
+:root[data-theme="dark"] .gc-championship .gc-headline,
+:root[data-theme="dark"] .gc-championship .gc-broadcast,
+:root[data-theme="dark"] .gc-championship .gc-context {
     color: #ddd;
   }
-  .gc-championship .gc-loser {
+:root[data-theme="dark"] .gc-championship .gc-loser {
     color: #ddd;
   }
-}
+
 @media (max-width: 380px) {
   .tempo-game-card {
     grid-template-columns:

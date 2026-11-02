@@ -1,3 +1,4 @@
+import ThemeSource from "../components/ThemeSource.jsx";
 import { useState } from "react";
 import Icon from "../components/Icon.jsx";
 import { Link } from "../router.jsx";
@@ -9,7 +10,7 @@ export function LeagueLogo({ league }) {
   const config = favoriteLeagues[league];
   return (
     <picture className="league-logo">
-      <source media="(prefers-color-scheme: dark)" srcSet={config.logoDark} />
+      <ThemeSource srcSet={config.logoDark} />
       <img src={config.logo} alt="" loading="lazy" />
     </picture>
   );

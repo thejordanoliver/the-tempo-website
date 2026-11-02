@@ -1,3 +1,4 @@
+import ThemeSelector from "./components/ThemeSelector.jsx";
 import Post from "./pages/Post.jsx";
 import NavLinks from "./components/NavLinks.jsx";
 import GuestHome from "./pages/GuestHome.jsx";
@@ -184,6 +185,7 @@ export default function App() {
             </Link>
           )}
         </NavLinks>
+        <ThemeSelector />
       </nav>
       <main id="content">{page}</main>
       <Footer />

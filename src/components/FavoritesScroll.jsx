@@ -1,3 +1,4 @@
+import ThemeSource from "./ThemeSource.jsx";
 import { teamHref, hasTeamLeague } from "../teams.js";
 import Icon from "./Icon.jsx";
 import { favoriteLeagues } from "../favoriteLeagues.js";
@@ -74,8 +75,7 @@ export default function FavoritesScroll({
                     style={{ backgroundColor: config.color }}
                   >
                     <picture>
-                      <source
-                        media="(prefers-color-scheme: dark)"
+                      <ThemeSource
                         srcSet={config.logoDark}
                       />
                       <img src={config.logo} alt="" loading="lazy" />

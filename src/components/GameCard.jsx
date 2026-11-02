@@ -1,3 +1,4 @@
+import ThemeSource from "./ThemeSource.jsx";
 import Football from "../../assets/Football.png";
 import FootballLight from "../../assets/FootballLight.png";
 import { Link } from "../router.jsx";
@@ -57,8 +58,7 @@ export default function GameCard({ game, league }) {
           role="img"
           aria-label="Has possession"
         >
-          <source
-            media="(prefers-color-scheme: dark)"
+          <ThemeSource
             srcSet={footballLightSource}
           />
           <img src={footballSource} alt="" width="22" height="22" />

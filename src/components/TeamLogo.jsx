@@ -1,3 +1,4 @@
+import ThemeSource from "./ThemeSource.jsx";
 import { Image } from "../components.jsx";
 import { teamIdentity } from "../teamIdentity.js";
 export default function TeamLogo({ team, league, alt = "", ...props }) {
@@ -5,8 +6,7 @@ export default function TeamLogo({ team, league, alt = "", ...props }) {
   return (
     <picture className="team-logo">
       {identity.logoDark && (
-        <source
-          media="(prefers-color-scheme: dark)"
+        <ThemeSource
           srcSet={identity.logoDark}
         />
       )}
