@@ -1,3 +1,4 @@
+import PlayerLink from "./PlayerLink.jsx";
 import { useId, useState } from "react";
 import HeadingTwo from "./HeadingTwo.jsx";
 import TeamLogo from "./TeamLogo.jsx";
@@ -97,11 +98,11 @@ export default function GameLeaders({ score, league }) {
                 </div>
                 <div className="leader-info">
                   <div className="leader-name">
-                    <strong>
+                    <strong><PlayerLink league={league} id={athlete?.id}>
                       {athlete?.fullName ||
                         athlete?.shortName ||
                         "Leader unavailable"}
-                    </strong>
+                    </PlayerLink></strong>
                     {athlete?.jersey && <span>#{athlete.jersey}</span>}
                   </div>
                   <dl className="leader-values">

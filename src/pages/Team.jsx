@@ -1,3 +1,4 @@
+import PlayerLink from "../components/PlayerLink.jsx";
 import ConferenceBadge from "../components/ConferenceBadge.jsx";
 import { useEffect, useState } from "react";
 import { Image, State, Table, useResource } from "../components.jsx";
@@ -91,12 +92,12 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
             headers={["#", "Player", "Position", "Height", "Weight", college ? "Year" : "College", "Hometown"]}
             rows={section.data.map((player) => [
               player.jersey_number,
-              <span className="team-player">
+              <PlayerLink league={league} id={player.id || player.player_id} className="team-player">
                 <span className="team-headshot">
                   <Image src={player.headshot_url} loading="lazy" />
                 </span>
                 <span>{player.full_name || player.short_name}</span>
-              </span>,
+              </PlayerLink>,
               player.position,
               player.height,
               player.weight != null && player.weight !== "" ? `${player.weight} lbs` : null,

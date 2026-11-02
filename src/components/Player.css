@@ -1,0 +1,188 @@
+.player-heading {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 24px 0 28px;
+}
+.player-portrait {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 132px;
+  height: 132px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface);
+  font-size: 36px;
+  font-weight: 700;
+}
+.player-portrait img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  background: var(--surface);
+}
+.player-identity {
+  flex: 1;
+}
+.player-identity h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(28px, 5vw, 48px);
+}
+.player-identity p {
+  margin: 0;
+  color: var(--muted);
+}
+.player-country-flag {
+  width: 60px;
+  height: 40px;
+  object-fit: contain;
+}
+nav.player-tabs {
+  max-width: none;
+  margin: 0 0 24px;
+  padding: 0;
+  gap: 28px;
+  overflow-x: auto;
+  justify-content: flex-start;
+}
+nav.player-tabs a,
+nav.player-tabs a:first-child {
+  flex: none;
+  margin: 0;
+  padding: 10px 0;
+  font: 500 16px/1.5 var(--font);
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+nav.player-tabs a[aria-current="page"] {
+  color: var(--text);
+  border-color: var(--text);
+}
+.player-section {
+  margin-bottom: 28px;
+}
+.player-section h2,
+.player-college-stats > h2 {
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+.player-bio {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 18px 24px;
+  margin: 0;
+}
+.player-bio > div {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.player-bio dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+.player-bio dd {
+  margin: 4px 0 0;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.player-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.player-filter {
+  display: flex;
+  flex-direction: column;
+  max-width: 240px;
+  gap: 6px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.player-filter select {
+  min-height: 44px;
+  padding: 8px 12px;
+  color: var(--text);
+  background-color: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+a.team-player,
+a.league-stats-player {
+  color: inherit;
+  text-decoration: none;
+}
+a.team-player:hover,
+a.league-stats-player:hover {
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  .player-heading {
+    gap: 16px;
+  }
+  .player-portrait {
+    flex-basis: 88px;
+    height: 88px;
+  }
+  .player-country-flag {
+    width: 36px;
+    height: 24px;
+  }
+  .player-bio {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.leader-name a {
+  color: inherit;
+  text-decoration: none;
+}
+.leader-name a:hover {
+  text-decoration: underline;
+}
+
+.player-season-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+a.player-season-team:hover {
+  text-decoration: underline;
+}
+.player-season-team .team-logo {
+  display: block;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+}
+.player-season-team img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.player-result-win {
+  color: #177901;
+}
+.player-result-loss {
+  color: #cc0000;
+}
+:root[data-theme="dark"] .player-result-win {
+  color: #4caf50;
+}
+:root[data-theme="dark"] .player-result-loss {
+  color: #ff4444;
+}

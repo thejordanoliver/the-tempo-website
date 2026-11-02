@@ -436,3 +436,23 @@ test("post links accept backend UUIDs and mount the post and comments page", () 
     assert(render("Post", { search }).includes("Select a forum post."));
   }
 });
+
+test("UFC champions match app division order, select one title holder and show fighter details", () => {
+  const fighter = {id: 1, full_name: "Test Champion", nickname: "The Champ", headshot_url: "https://example.test/headshot.png", flag_url: "https://example.test/flag.png", citizenship: "Brazil", weight: 205, stance_text: "Orthodox", association_name: "Test Camp"};
+  const html = render("LeagueRecords", {tab: "champions", league: "ufc", data: {data: {
+    "Women's Flyweight": [{accolade_name: "Interim Title", fighter: {...fighter, full_name: "Interim Fighter"}}],
+    Heavyweight: [{accolade_name: "Former Title", fighter: {...fighter, full_name: "Former Fighter"}}, {is_current: true, accolade_name: "Title", fighter}],
+  }}});
+  assert(html.indexOf("Heavyweight") < html.indexOf("W Flyweight"));
+  for (const text of ["Test Champion", "headshot.png", "flag.png", "Brazil", "205 lbs", "Orthodox", "Test Camp", "TITLE HOLDER", "INTERIM TITLE"]) assert(html.includes(text));
+  assert(!html.includes("Former Fighter"));
+  assert(render("LeagueRecords", {tab: "champions", league: "ufc", data: {data: {}}}).includes("No champions available"));
+});
+
+test("UFC fight cards show headshots, records, flags and final results", () => {
+  const html = render("LeagueScores", {league: "ufc", data: {events: [{id: 1, name: "UFC Test", date: "2026-11-01", fights: [{id: 2, method: "Submission", weightClass: "Heavyweight", status: {description: "Final"}, competitors: [
+    {name: "Winner Fighter", headshot: "https://example.test/winner.png", flag: "https://example.test/flag.png", record: "12-0", winner: true},
+    {name: "Other Fighter", headshot: "https://example.test/other.png", record: "10-2", winner: false},
+  ]}]}]}});
+  for (const value of ["ufc-fight-card", "winner.png", "other.png", "flag.png", "12-0", "10-2", "SUB", "Heavyweight", "ufc-fight-loser", "ufc-fight-winner", "ufc-fight-final", "ufc-event-fights", "ufc-fight-left", "ufc-fight-right"]) assert(html.includes(value));
+});

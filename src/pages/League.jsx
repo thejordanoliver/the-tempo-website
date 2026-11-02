@@ -1,3 +1,4 @@
+import UFCEvents from "../components/UFCEvents.jsx";
 import FootballScores from "../components/FootballScores.jsx";
 import { useState } from "react";
 import { Link, navigate } from "../router.jsx";
@@ -36,7 +37,7 @@ const yearTabs = [
 ];
 const label = (tab) =>
   tab === "stats" ? "Stats" : tab[0].toUpperCase() + tab.slice(1);
-function ResourcePanel({ path, league, tab, page, onPageChange, season, conference, onConferenceChange }) {
+function ResourcePanel({ path, league, tab, page, onPageChange, season, conference, onConferenceChange, eventId, onEventChange }) {
   const [version, setVersion] = useState(0);
   const resource = useResource(path, version),
     { data, loading, error } = resource;
@@ -50,13 +51,17 @@ function ResourcePanel({ path, league, tab, page, onPageChange, season, conferen
           : false;
   return (
     <>
-      <div className="league-panel-heading">
-        <h2>{label(tab)}</h2>
-      </div>
+      {!(league === "ufc" && tab === "fights") && (
+        <div className="league-panel-heading">
+          <h2>{label(tab)}</h2>
+        </div>
+      )}
       <State {...resource} onRetry={() => setVersion((value) => value + 1)} />
       {!loading && !error && (
         <>
-          {tab === "scores" && leagueSports[league] === "football" ? (
+          {tab === "fights" && league === "ufc" ? (
+            <UFCEvents data={data} eventId={eventId} onChange={onEventChange} />
+          ) : tab === "scores" && leagueSports[league] === "football" ? (
             <FootballScores data={data} league={league} season={season} conference={conference} onChange={onConferenceChange} />
           ) : tab === "news" ? (
             <LeagueNews data={data} />
@@ -69,7 +74,7 @@ function ResourcePanel({ path, league, tab, page, onPageChange, season, conferen
           ) : tab === "standings" ? (
             <LeagueStandings data={data} league={league} />
           ) : tab === "stats" ? (
-            <LeagueStats data={data} />
+            <LeagueStats data={data} league={league} />
           ) : (
             <LeagueRecords data={data} tab={tab} league={league} />
           )}
@@ -147,7 +152,9 @@ export default function League({ search = "", signedIn = false }) {
       if (next[key] == null || next[key] === "") delete next[key];
     navigate(leagueHref(league, next));
   }
-  const path = leagueResource(league, tab, {
+  const path = league === "ufc" && tab === "fights"
+    ? `/api/games/mma/ufc?dates=${season}0101-${season}1231&limit=1000`
+    : leagueResource(league, tab, {
     date,
     season,
     page,
@@ -220,19 +227,19 @@ export default function League({ search = "", signedIn = false }) {
         ))}
       </div>
       <div className="league-controls">
-        {["scores", "fights"].includes(tab) && leagueSports[league] !== "football" && (
+        {["scores", "fights"].includes(tab) && leagueSports[league] !== "football" && league !== "ufc" && (
           <GameDatePicker
             date={date}
             onChange={(value) => update({ date: value, week: null })}
           />
         )}
-        {(yearTabs.includes(tab) ||
+        {(yearTabs.includes(tab) || (league === "ufc" && tab === "fights") ||
           (leagueSports[league] === "football" && tab === "scores")) && (
           <label>
             Season / year
             <select
               value={season}
-              onChange={(event) => update({ season: event.target.value })}
+              onChange={(event) => update({ season: event.target.value, event: null })}
             >
               {Array.from(
                 { length: 32 },
@@ -299,6 +306,8 @@ export default function League({ search = "", signedIn = false }) {
           <ResourcePanel
             key={path}
             path={path}
+            eventId={params.get("event")}
+            onEventChange={(value) => update({ event: value, date: null })}
             league={league}
             tab={tab}
             page={page}

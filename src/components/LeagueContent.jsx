@@ -1,3 +1,6 @@
+import PlayerLink from "./PlayerLink.jsx";
+import UFCFightCard from "./UFCFightCard.jsx";
+import UFCChampions from "./UFCChampions.jsx";
 import { awardName } from "../awardNames.js";
 import DraftList from "./DraftList.jsx";
 import { hasCollegePolls } from "../collegeStandings.js";
@@ -64,6 +67,16 @@ function Participant({ name, score, winner }) {
   );
 }
 function EventCard({ game, sport }) {
+  if (sport === "mma") return (
+    <section className="ufc-event-fights">
+      <h3>{game.name || game.headline || "UFC event"}</h3>
+      <div className="ufc-fight-list">
+        {(list(game.fights).length ? game.fights : [game.mainEvent || game]).map((fight, index) => (
+          <UFCFightCard key={fight.id || index} fight={fight} event={game} />
+        ))}
+      </div>
+    </section>
+  );
   return (
     <article className="league-event">
       <p className="eyebrow">
@@ -75,27 +88,6 @@ function EventCard({ game, sport }) {
       </p>
       <h3>{game.tournamentName || game.name || game.headline || "Event"}</h3>
       {game.round?.name && <p>{game.round.name}</p>}
-      {sport === "mma" &&
-        (list(game.fights).length ? game.fights : [game.mainEvent || game]).map(
-          (fight, index) => (
-            <div className="league-fight" key={fight.id || index}>
-              <p className="small">{fight.weightClass || fight.cardSegment}</p>
-              {list(fight.competitors).map((fighter, i) => (
-                <Participant
-                  key={fighter.id || i}
-                  name={fighter.displayName || fighter.fullName || fighter.name}
-                  score={fighter.record}
-                  winner={fighter.winner}
-                />
-              ))}
-              <p className="small">
-                {fight.method ||
-                  fight.status?.shortDetail ||
-                  fight.status?.description}
-              </p>
-            </div>
-          ),
-        )}
       {sport === "racing" && (
         <>
           <p>{game.venue?.name || game.circuit?.name}</p>
@@ -142,10 +134,10 @@ export function LeagueScores({ data, league, playoffs = false }) {
     <div className="league-score-groups">
       {groups.map((group, index) => (
         <section key={index}>
-          {group.label && <h3 className="league-group-title">{group.label}</h3>}
+          {group.label && sport !== "mma" && <h3 className="league-group-title">{group.label}</h3>}
           <div
             className={
-              ["mma", "racing"].includes(sport)
+              sport === "mma" ? "ufc-events" : sport === "racing"
                 ? "league-events"
                 : "home-games"
             }
@@ -317,7 +309,7 @@ function StandingsTables({ data, league }) {
     </>
   );
 }
-export function LeagueStats({ data }) {
+export function LeagueStats({ data, league }) {
   const categories = list(data?.categories).filter(
     (category) => list(category.leaders).length,
   );
@@ -337,13 +329,13 @@ export function LeagueStats({ data }) {
               headers={["Rank", "Player", category.abbreviation || "Value"]}
               rows={category.leaders.map((player, i) => [
                 player.rank ?? i + 1,
-                <span className="league-stats-player">
+                <PlayerLink league={league} id={player.id} className="league-stats-player">
                   <span className="league-stats-headshot">
                     <span aria-hidden="true">{(player.full_name || player.short_name || "").split(/\s+/).map((part) => part[0]).slice(0, 2).join("") || "—"}</span>
                     <Image src={player.headshot} alt="" loading="lazy" />
                   </span>
                   <span>{player.full_name || player.short_name || "Unknown player"}</span>
-                </span>,
+                </PlayerLink>,
                 player.stat_value,
               ])}
             />
@@ -432,34 +424,7 @@ export function LeagueRecords({ data, tab, league }) {
       <Empty>No awards recorded for this season.</Empty>
     );
   }
-  if (tab === "champions") {
-    const groups = Object.entries(data?.data || {}).filter(
-      ([, rows]) => list(rows).length,
-    );
-    return groups.length ? (
-      <div className="league-stats-grid">
-        {groups.map(([division, rows]) => (
-          <section className="league-event" key={division}>
-            <h3>{division.replaceAll("-", " ")}</h3>
-            {rows.map((row, index) => (
-              <div key={row.accolade_id || index}>
-                <p>
-                  <strong>
-                    {row.fighter?.full_name ||
-                      row.fighter?.display_name ||
-                      row.fighter?.name}
-                  </strong>
-                </p>
-                <p className="small">{row.accolade_name}</p>
-              </div>
-            ))}
-          </section>
-        ))}
-      </div>
-    ) : (
-      <Empty>No champions available right now.</Empty>
-    );
-  }
+  if (tab === "champions") return <UFCChampions data={data} />;
   if (tab === "rankings") {
     const raw = data?.rankings;
     const groups = Array.isArray(raw) ? raw : list(raw?.all);

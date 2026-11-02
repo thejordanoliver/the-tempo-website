@@ -1,3 +1,4 @@
+import Player from "./pages/Player.jsx";
 import MobileNavigation from "./components/MobileNavigation.jsx";
 import ThemeSelector from "./components/ThemeSelector.jsx";
 import Post from "./pages/Post.jsx";
@@ -65,6 +66,8 @@ export default function App() {
         "/post": "Post",
         "/leagues": "Leagues",
         "/team": "Team",
+        "/player": "Player",
+        "/fighter": "Fighter",
         "/league": hasLeague(new URLSearchParams(route.search).get("league"))
           ? favoriteLeagues[new URLSearchParams(route.search).get("league")]
               .label
@@ -129,6 +132,12 @@ export default function App() {
     case "/game":
       page = <Game search={route.search} />;
       break;
+    case "/player":
+      page = <Player search={route.search} />;
+      break;
+    case "/fighter":
+      page = <Player search={route.search} fighter />;
+      break;
     case "/team":
       page = <Team search={route.search} signedIn={Boolean(session)} />;
       break;
@@ -158,7 +167,7 @@ export default function App() {
         Skip to content
       </a>
       <nav ref={navigationRef} aria-label="Main navigation">
-        {["/game", "/article", "/league", "/team", "/post"].includes(route.path) ? (
+        {["/game", "/article", "/league", "/team", "/post", "/player", "/fighter"].includes(route.path) ? (
           <button
             className="navbar-back"
             type="button"

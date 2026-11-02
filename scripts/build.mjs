@@ -65,6 +65,8 @@ export async function buildSite({
     "leagues",
     "league",
     "team",
+    "player",
+    "fighter",
   ]) {
     const prefix = route ? "../" : "./";
     const title = route
@@ -91,6 +93,8 @@ export async function buildSite({
     "leagues",
     "league",
     "team",
+    "player",
+    "fighter",
   ]) {
     const prefix = route ? "../../" : "../";
     const destination = prefix + (route ? route + "/" : "");
