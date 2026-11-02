@@ -73,10 +73,12 @@
   min-width: 0;
 }
 .gh-league {
-  margin: 0 0 6px;
+  margin: 0 0 16px;
   color: var(--muted);
   font: 400 11px/1.2 var(--font);
   letter-spacing: 1px;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 .gh-status {
   display: flex;

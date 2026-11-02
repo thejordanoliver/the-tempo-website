@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import FavoritesScroll from "../components/FavoritesScroll.jsx";
 import GameDatePicker from "../components/GameDatePicker.jsx";
 import GameCard from "../components/GameCard.jsx";
+import TennisGameCard from "../components/TennisGameCard.jsx";
 import { Link } from "../router.jsx";
 import { Image, State, useResource } from "../components.jsx";
 const endpoints = {
@@ -126,7 +127,9 @@ export default function Home({ user, onLogout }) {
         {!games.loading && (
           <div className="home-games">
             {gameList.map(({ game, league }) =>
-              ["tennis", "mma", "racing"].includes(leagueSports[league]) ? (
+              leagueSports[league] === "tennis" ? (
+                <TennisGameCard key={`${league}:${game.id}`} match={game} />
+              ) : ["mma", "racing"].includes(leagueSports[league]) ? (
                 <LeagueScores
                   key={`${league}:${game.id}`}
                   league={league}

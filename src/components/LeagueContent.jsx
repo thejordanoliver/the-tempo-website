@@ -5,6 +5,7 @@ import { teamHref, hasTeamLeague } from "../teams.js";
 import { Image, State, Table } from "../components.jsx";
 import { Link } from "../router.jsx";
 import GameCard from "./GameCard.jsx";
+import TennisGameCard from "./TennisGameCard.jsx";
 import TeamLogo from "./TeamLogo.jsx";
 import { leagueSports, scoreGroups, playoffGroups } from "../leagues.js";
 
@@ -72,21 +73,6 @@ function EventCard({ game, sport }) {
       </p>
       <h3>{game.tournamentName || game.name || game.headline || "Event"}</h3>
       {game.round?.name && <p>{game.round.name}</p>}
-      {sport === "tennis" &&
-        list(game.competitors).map((player, index) => (
-          <Participant
-            key={player.id || index}
-            name={player.displayName}
-            score={
-              list(player.linescores).length
-                ? player.linescores
-                    .map((set) => set.displayValue ?? set.value ?? "—")
-                    .join("  ")
-                : player.score
-            }
-            winner={player.winner}
-          />
-        ))}
       {sport === "mma" &&
         (list(game.fights).length ? game.fights : [game.mainEvent || game]).map(
           (fight, index) => (
@@ -157,13 +143,15 @@ export function LeagueScores({ data, league, playoffs = false }) {
           {group.label && <h3 className="league-group-title">{group.label}</h3>}
           <div
             className={
-              ["mma", "racing", "tennis"].includes(sport)
+              ["mma", "racing"].includes(sport)
                 ? "league-events"
                 : "home-games"
             }
           >
             {group.games.map((game, i) => {
-              if (["mma", "racing", "tennis"].includes(sport))
+              if (sport === "tennis")
+                return <TennisGameCard key={game.id || i} match={game} />;
+              if (["mma", "racing"].includes(sport))
                 return (
                   <EventCard key={game.id || i} game={game} sport={sport} />
                 );

@@ -32,6 +32,7 @@ export default function GameHeader({ score, details = {}, league }) {
         {score.away.code || score.away.name || "Away"} at{" "}
         {score.home.code || score.home.name || "Home"}
       </h1>
+      {details.headline && <p className="gh-league">{details.headline}</p>}
       <div className="gh-matchup">
         <GameHeaderTeam
           team={score.away}
@@ -42,8 +43,6 @@ export default function GameHeader({ score, details = {}, league }) {
         <HeaderScore team={score.away} side="away" model={model} />
 
         <div className="gh-info">
-          <p className="gh-league">{details.headline}</p>
-
           <p className={`gh-status ${model.final ? "gh-final" : ""}`}>
             <span>{model.primary}</span>
             {model.secondary && (
