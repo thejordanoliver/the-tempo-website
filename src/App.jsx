@@ -1,3 +1,4 @@
+import Team from "./pages/Team.jsx";
 import Icon from "./components/Icon.jsx";
 import { useEffect, useSyncExternalStore } from "react";
 import { Link, goBack, navigate, useRoute } from "./router.jsx";
@@ -39,6 +40,7 @@ export default function App() {
         "/game": "Game",
         "/article": "Article",
         "/leagues": "Leagues",
+        "/team": "Team",
         "/league": hasLeague(new URLSearchParams(route.search).get("league"))
           ? favoriteLeagues[new URLSearchParams(route.search).get("league")]
               .label
@@ -55,7 +57,7 @@ export default function App() {
       robots.content = "noindex";
     } else robots?.remove();
     if (
-      route.path === "/league" &&
+      ["/league", "/team"].includes(route.path) &&
       document.activeElement?.closest(".league-detail")
     )
       return;
@@ -99,6 +101,9 @@ export default function App() {
     case "/game":
       page = <Game search={route.search} />;
       break;
+    case "/team":
+      page = <Team search={route.search} signedIn={Boolean(session)} />;
+      break;
     case "/leagues":
       page = <Leagues />;
       break;
@@ -122,7 +127,7 @@ export default function App() {
         Skip to content
       </a>
       <nav aria-label="Main navigation">
-        {["/game", "/article", "/league"].includes(route.path) ? (
+        {["/game", "/article", "/league", "/team"].includes(route.path) ? (
           <button
             className="navbar-back"
             type="button"

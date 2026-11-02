@@ -1,3 +1,5 @@
+import { Link } from "../router.jsx";
+import { teamHref, hasTeamLeague } from "../teams.js";
 import { teamIdentity } from "../teamIdentity.js";
 import TeamLogo from "./TeamLogo.jsx";
 
@@ -10,7 +12,16 @@ export default function GameHeaderTeam({ team, league, postGame, side }) {
       <div className="gh-team-label">
         <h2 title={team?.fullName || team?.name || identity.shortName}>
           {team?.rank > 0 && <small>{team.rank} </small>}
-          {name}
+          {team?.id != null && hasTeamLeague(league) ? (
+            <Link
+              to={teamHref(league, team.id)}
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              {name}
+            </Link>
+          ) : (
+            name
+          )}
         </h2>
         {postGame && team?.record && (
           <p className="gh-team-record">{team.record}</p>

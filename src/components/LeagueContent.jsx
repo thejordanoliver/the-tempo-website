@@ -1,3 +1,4 @@
+import { teamHref, hasTeamLeague } from "../teams.js";
 import { Image, State, Table } from "../components.jsx";
 import { Link } from "../router.jsx";
 import GameCard from "./GameCard.jsx";
@@ -186,7 +187,15 @@ function StandingsName({ team, league }) {
   return (
     <span className="league-team-name">
       <TeamLogo team={team} league={league} />
-      <span>{team.name || team.shortName || team.code || "Team"}</span>
+      <span>
+        {team.id != null && hasTeamLeague(league) ? (
+          <Link to={teamHref(league, team.id)}>
+            {team.name || team.shortName || team.code || "Team"}
+          </Link>
+        ) : (
+          team.name || team.shortName || team.code || "Team"
+        )}
+      </span>
     </span>
   );
 }

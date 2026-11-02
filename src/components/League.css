@@ -105,12 +105,6 @@
 .league-tile-arrow svg {
   display: block;
 }
-.league-breadcrumb {
-  display: inline-block;
-  color: var(--muted);
-  margin-bottom: 24px;
-  text-decoration: none;
-}
 .league-detail-heading {
   display: flex;
   align-items: center;

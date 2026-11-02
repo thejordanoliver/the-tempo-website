@@ -1,3 +1,4 @@
+import { teamHref, hasTeamLeague } from "../teams.js";
 import Icon from "./Icon.jsx";
 import { favoriteLeagues } from "../favoriteLeagues.js";
 import { hasLeague, leagueHref } from "../leagues.js";
@@ -14,9 +15,6 @@ export default function FavoritesScroll({
   loading,
   error,
   onRetry,
-  selected,
-  onSelect,
-  supportedLeagues = [],
 }) {
   const rail = useRef(null);
   const scroll = (direction) =>
@@ -92,62 +90,60 @@ export default function FavoritesScroll({
             {leagues.some(hasLeague) && teams.length > 0 && (
               <span className="favorites-section-divider" aria-hidden="true" />
             )}
-            {teams.map((savedTeam) => {
-              const team = {
-                ...savedTeam,
-                ...favoriteTeamAssets[`${savedTeam.league}:${savedTeam.id}`],
-              };
-              const rawColor = team.primaryColor || team.color || "";
-              const color = /^#?[0-9a-f]{6}$/i.test(rawColor)
-                ? `#${rawColor.replace(/^#/, "")}`
-                : "var(--surface)";
-              const key = `${team.league}:${team.id}`,
-                name =
-                  team.shortName ||
-                  team.name ||
-                  team.fullName ||
-                  team.code ||
-                  "Team",
-                supported = supportedLeagues.includes(team.league);
-              return (
-                <button
-                  className="favorite-item"
-                  type="button"
-                  key={key}
-                  aria-pressed={selected === key}
-                  disabled={!supported}
-                  title={
-                    supported
-                      ? `Show ${name} games`
-                      : `${team.league.toUpperCase()} games are not available on the website yet`
-                  }
-                  onClick={() => onSelect(team)}
-                >
-                  <span
-                    className="favorite-logo"
-                    style={{ backgroundColor: color }}
+            {teams
+              .filter((team) => hasTeamLeague(team.league))
+              .map((savedTeam) => {
+                const team = {
+                  ...savedTeam,
+                  ...favoriteTeamAssets[`${savedTeam.league}:${savedTeam.id}`],
+                };
+                const rawColor = team.primaryColor || team.color || "";
+                const color = /^#?[0-9a-f]{6}$/i.test(rawColor)
+                  ? `#${rawColor.replace(/^#/, "")}`
+                  : "var(--surface)";
+                const key = `${team.league}:${team.id}`,
+                  name =
+                    team.shortName ||
+                    team.name ||
+                    team.fullName ||
+                    team.code ||
+                    "Team";
+                return (
+                  <Link
+                    className="favorite-item"
+                    key={key}
+                    to={teamHref(team.league, team.id)}
+                    title={`View ${name} team page`}
                   >
-                    <TeamLogo team={team} league={team.league} loading="lazy" />
-                  </span>
-                  <strong className="favorite-caption">
-                    {name}
-                    {["cfb", "mcbb", "wcbb", "cb", "sb"].includes(
-                      team.league,
-                    ) && (
-                      <>
-                        <span
-                          className="favorite-label-divider"
-                          aria-hidden="true"
-                        />
-                        <span className="favorite-league">
-                          {team.league.toUpperCase()}
-                        </span>
-                      </>
-                    )}
-                  </strong>
-                </button>
-              );
-            })}
+                    <span
+                      className="favorite-logo"
+                      style={{ backgroundColor: color }}
+                    >
+                      <TeamLogo
+                        team={team}
+                        league={team.league}
+                        loading="lazy"
+                      />
+                    </span>
+                    <strong className="favorite-caption">
+                      {name}
+                      {["cfb", "mcbb", "wcbb", "cb", "sb"].includes(
+                        team.league,
+                      ) && (
+                        <>
+                          <span
+                            className="favorite-label-divider"
+                            aria-hidden="true"
+                          />
+                          <span className="favorite-league">
+                            {team.league.toUpperCase()}
+                          </span>
+                        </>
+                      )}
+                    </strong>
+                  </Link>
+                );
+              })}
           </div>
         ) : (
           <p className="small">
