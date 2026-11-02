@@ -54,7 +54,7 @@
 }
 .gc-fallback {
   font:
-    700 14px Barlow,
+    700 14px Oswald,
     sans-serif;
   color: var(--muted);
 }

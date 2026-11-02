@@ -129,3 +129,25 @@ test("article displays every story paragraph without an original-article link", 
   assert(!html.includes("https://example.test/original"));
   assert(!html.includes("Read the original article"));
 });
+
+
+test("video articles render playable backend videos and safe watch links", () => {
+  const html = render("Story", { article: {
+    headline: "Highlights",
+    storyParagraphs: [{ segments: [{ text: "Match recap." }] }],
+    videos: [
+      { id: "one", title: "Winning shot", description: "The final point.", url: "https://example.test/highlight.mp4", thumbnail: "https://example.test/poster.jpg" },
+      { id: "two", title: "Interview", url: "https://example.test/interview.mp4" },
+      { id: "unsafe", url: "javascript:alert(1)" },
+    ],
+  }});
+  assert.equal((html.match(/<video /g) || []).length, 2);
+  assert(html.includes('controls=""'));
+  assert(html.includes('playsInline=""'));
+  assert(html.includes('preload="none"'));
+  assert(html.includes('poster="https://example.test/poster.jpg"'));
+  assert(html.includes('href="https://example.test/highlight.mp4"'));
+  assert(html.includes("Watch video in a new tab"));
+  assert(html.includes("Match recap."));
+  assert(!html.includes("javascript:"));
+});

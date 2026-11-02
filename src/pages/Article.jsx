@@ -1,6 +1,39 @@
 import { useMemo, useState } from "react";
 import { Link } from "../router.jsx";
 import { Image, State, safeURL, useResource } from "../components.jsx";
+import "./Article.css";
+
+function ArticleVideo({ video }) {
+  const [failed, setFailed] = useState(false);
+  const url = safeURL(video.url);
+  if (!url) return null;
+  const title = video.title || "Article video";
+  return (
+    <figure className="article-video">
+      {!failed && (
+        <video
+          key={url}
+          src={url}
+          poster={safeURL(video.thumbnail) || undefined}
+          controls
+          playsInline
+          preload="none"
+          aria-label={title}
+          onError={() => setFailed(true)}
+        >
+          <a href={url}>Watch video: {title}</a>
+        </video>
+      )}
+      <figcaption>
+        {video.title && <h2>{video.title}</h2>}
+        {video.description && <p>{video.description}</p>}
+        {failed && <p>Unable to play this video here. Open the video to watch it.</p>}
+        <a href={url} target="_blank" rel="noopener noreferrer">Watch video in a new tab</a>
+      </figcaption>
+    </figure>
+  );
+}
+
 function storyParagraphs(article) {
   if (article.storyParagraphs?.some((p) => p.segments?.length))
     return article.storyParagraphs;
@@ -24,7 +57,10 @@ function storyParagraphs(article) {
 export function Story({ article }) {
   const paragraphs = useMemo(() => storyParagraphs(article), [article]),
     date = new Date(article.published || ""),
-    hero = article.images?.[0];
+    hero = article.images?.[0],
+    videos = (Array.isArray(article.videos) ? article.videos : []).filter(
+      (video) => video && safeURL(video.url),
+    );
   return (
     <>
       <header className="article-header">
@@ -48,7 +84,10 @@ export function Story({ article }) {
             .join(" · ")}
         </p>
       </header>
-      {hero && (
+      {videos.map((video, index) => (
+        <ArticleVideo key={`${video.id || video.url}-${index}`} video={video} />
+      ))}
+      {!videos.length && hero && (
         <Image src={hero.url} alt={hero.alt || ""} className="article-image" />
       )}
       {article.caption && <p className="article-meta">{article.caption}</p>}
@@ -89,7 +128,7 @@ export function Story({ article }) {
               })}
             </p>
           ))
-        ) : (
+        ) : videos.length ? null : (
           <p>Article text is currently unavailable.</p>
         )}
       </div>

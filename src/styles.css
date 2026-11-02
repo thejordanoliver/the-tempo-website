@@ -16,12 +16,6 @@
   font-weight: 700;
   font-display: swap;
 }
-@font-face {
-  font-family: Barlow;
-  src: url("../assets/BarlowCondensed_700Bold.ttf");
-  font-weight: 700;
-  font-display: swap;
-}
 :root {
   color-scheme: light;
   --bg: #fff;
@@ -92,7 +86,7 @@ nav a {
 nav a:first-child {
   margin-right: auto;
   font:
-    700 36px/1 Barlow,
+    700 36px/1 Oswald,
     Impact,
     sans-serif;
   letter-spacing: -1px;
@@ -134,7 +128,7 @@ main {
   color: var(--muted);
 }
 .hero h1 {
-  font-family: Barlow, Impact, sans-serif;
+  font-family: Oswald, Impact, sans-serif;
   font-size: clamp(54px, 7.8vw, 96px);
   line-height: 0.98;
   letter-spacing: -1.5px;
@@ -185,7 +179,7 @@ main {
 }
 .wordmark {
   font:
-    700 34px Barlow,
+    700 34px Oswald,
     Impact,
     sans-serif;
 }
@@ -261,7 +255,7 @@ main {
   border-radius: 12px;
 }
 .feature .number {
-  font-family: Barlow, sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 32px;
   color: var(--muted);
   margin-bottom: 20px;
@@ -494,7 +488,7 @@ main {
 }
 .login-intro h1 {
   font:
-    700 clamp(60px, 7vw, 88px) / 1 Barlow,
+    700 clamp(60px, 7vw, 88px) / 1 Oswald,
     Impact,
     sans-serif;
   letter-spacing: -1px;
@@ -627,7 +621,7 @@ main {
 }
 .login-intro h1 {
   font:
-    700 clamp(60px, 6.5vw, 88px) / 0.98 Barlow,
+    700 clamp(60px, 6.5vw, 88px) / 0.98 Oswald,
     Impact,
     sans-serif;
   letter-spacing: -1.3px;
@@ -920,7 +914,7 @@ main {
   place-items: center;
   overflow: hidden;
   font:
-    700 38px Barlow,
+    700 38px Oswald,
     sans-serif;
 }
 .profile-avatar img {
@@ -1167,7 +1161,7 @@ nav a[aria-current="page"] {
 }
 .game-team strong {
   font:
-    700 28px Barlow,
+    700 28px Oswald,
     sans-serif;
 }
 .game-card .game-venue {
@@ -1342,7 +1336,7 @@ nav a[aria-current="page"] {
 }
 .score-team strong {
   font:
-    700 60px/1 Barlow,
+    700 60px/1 Oswald,
     sans-serif;
 }
 .score-team img {
@@ -1386,7 +1380,7 @@ nav a[aria-current="page"] {
 }
 .article-header h1 {
   font:
-    700 clamp(34px, 5vw, 52px) / 1.1 Barlow,
+    700 clamp(34px, 5vw, 52px) / 1.1 Oswald,
     sans-serif;
   overflow-wrap: anywhere;
 }

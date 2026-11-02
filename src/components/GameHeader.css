@@ -62,7 +62,7 @@
 }
 .gh-score {
   font:
-    700 clamp(32px, 5vw, 56px) / 1 Barlow,
+    700 clamp(32px, 5vw, 56px) / 1 Oswald,
     sans-serif;
 }
 .gh-pregame-record {

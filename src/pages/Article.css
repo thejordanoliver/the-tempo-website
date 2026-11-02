@@ -1,0 +1,25 @@
+.article-video {
+  margin: 0 0 28px;
+}
+.article-video video {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 8px;
+}
+.article-video figcaption {
+  margin-top: 12px;
+}
+.article-video h2 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+.article-video p {
+  margin-bottom: 8px;
+}
+.article-video a {
+  display: inline-block;
+  padding: 8px 0;
+}
