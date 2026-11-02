@@ -5,7 +5,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 await mkdir(".preview/tests", { recursive: true });
 const result = await build({
   stdin: {
-    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Landing from './src/pages/Landing.jsx';import Support from './src/pages/Support.jsx';import Privacy from './src/pages/Privacy.jsx';import Game from './src/pages/Game.jsx';import Article from './src/pages/Article.jsx';import {safeURL} from './src/components.jsx';import TeamLogo from './src/components/TeamLogo.jsx';import GameHeader from './src/components/GameHeader.jsx';import LineScore from './src/components/LineScore.jsx';import GameStats from './src/components/GameStats.jsx';import GameLeaders from './src/components/GameLeaders.jsx';import GameSummary from './src/components/GameSummary.jsx';import Home from './src/pages/Home.jsx';import GuestHome from './src/pages/GuestHome.jsx';import GameLocation from './src/components/GameLocation.jsx';import FavoritesScroll from './src/components/FavoritesScroll.jsx';export {safeURL};export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Landing,Support,Privacy,Game,Article,TeamLogo,GameHeader,LineScore,GameStats,GameLeaders,GameSummary,Home,GuestHome,GameLocation,FavoritesScroll}[name],props));`,
+    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Landing from './src/pages/Landing.jsx';import Support from './src/pages/Support.jsx';import Privacy from './src/pages/Privacy.jsx';import Game from './src/pages/Game.jsx';import Article, {Story} from './src/pages/Article.jsx';import {safeURL} from './src/components.jsx';import TeamLogo from './src/components/TeamLogo.jsx';import GameHeader from './src/components/GameHeader.jsx';import LineScore from './src/components/LineScore.jsx';import GameStats from './src/components/GameStats.jsx';import GameLeaders from './src/components/GameLeaders.jsx';import GameSummary from './src/components/GameSummary.jsx';import Home from './src/pages/Home.jsx';import GuestHome from './src/pages/GuestHome.jsx';import GameLocation from './src/components/GameLocation.jsx';import FavoritesScroll from './src/components/FavoritesScroll.jsx';export {safeURL};export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Landing,Support,Privacy,Game,Article,Story,TeamLogo,GameHeader,LineScore,GameStats,GameLeaders,GameSummary,Home,GuestHome,GameLocation,FavoritesScroll}[name],props));`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
@@ -117,3 +117,15 @@ test("favorites rail shows saved teams, selected state, dark logos and empty gui
 test("favorites displays saved leagues before teams with a section divider",()=>{const html=render("FavoritesScroll",{teams:[{id:57,name:"Florida",league:"cfb"}],leagues:["nfl","wnba"],supportedLeagues:["nfl","cfb"]});assert(html.indexOf(">NFL</strong>")<html.indexOf("Florida"));assert(html.includes(">WNBA</strong>"));assert(html.includes("favorites-section-divider"));assert(html.includes("favorite-label-divider"));assert(html.includes("#013369"));assert(html.includes("#FF6B00"));assert(html.includes('href="/league/?league=nfl"'));assert(html.includes('href="/league/?league=wnba"'));assert(html.includes('aria-label="View WNBA league page"'));assert(!html.includes('disabled=""'));});
 
 test("guest Home offers public sports browsing without account controls",()=>{const html=render("GuestHome");assert(html.includes("Around the game"));assert(html.includes('aria-label="League"'));assert(html.includes("Sign in to personalize Home"));assert(!html.includes("Sign out"));assert(!html.includes("Welcome back"));});
+
+test("article displays every story paragraph without an original-article link", () => {
+  const html = render("Story", { article: {
+    headline: "Full story",
+    link: "https://example.test/original",
+    storyParagraphs: Array.from({length: 30}, (_, i) => ({segments: [{text: `Story paragraph ${i + 1}.`}]})),
+  }});
+  assert(html.includes("Story paragraph 1."));
+  assert(html.includes("Story paragraph 30."));
+  assert(!html.includes("https://example.test/original"));
+  assert(!html.includes("Read the original article"));
+});

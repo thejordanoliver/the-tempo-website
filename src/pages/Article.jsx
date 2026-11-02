@@ -1,4 +1,3 @@
-import Icon from "../components/Icon.jsx";
 import { useMemo, useState } from "react";
 import { Link } from "../router.jsx";
 import { Image, State, safeURL, useResource } from "../components.jsx";
@@ -22,11 +21,10 @@ function storyParagraphs(article) {
       .filter(Boolean);
   return texts.map((text) => ({ segments: [{ text }] }));
 }
-function Story({ article }) {
+export function Story({ article }) {
   const paragraphs = useMemo(() => storyParagraphs(article), [article]),
     date = new Date(article.published || ""),
-    hero = article.images?.[0],
-    source = safeURL(article.link);
+    hero = article.images?.[0];
   return (
     <>
       <header className="article-header">
@@ -92,16 +90,7 @@ function Story({ article }) {
             </p>
           ))
         ) : (
-          <p>
-            The full story is not available here. Read the original article
-            below.
-          </p>
-        )}
-        {source && (
-          <a href={source} target="_blank" rel="noopener noreferrer">
-            Read the original article
-            <Icon name="open" className="icon-after" size={18} />
-          </a>
+          <p>Article text is currently unavailable.</p>
         )}
       </div>
     </>

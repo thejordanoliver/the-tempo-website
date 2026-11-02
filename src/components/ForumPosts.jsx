@@ -1,12 +1,16 @@
+import Icon from "./Icon.jsx";
+import { Link } from "../router.jsx";
 import { Image, safeURL } from "../components.jsx";
 import "./ForumPosts.css";
 const list = (value) => (Array.isArray(value) ? value : []);
-export default function ForumPosts({ posts }) {
+export default function ForumPosts({ posts, fullText = false, engagement = true }) {
   return (
     <div className="league-feed">
       {posts.map((post) => {
         const name = post.full_name || post.username || "Tempo fan",
           body = post.text ?? post.content;
+        const long = !fullText && typeof body === "string" && body.length > 320;
+        const destination = `/post/?id=${encodeURIComponent(post.id)}`;
         const date = new Date(post.created_at || ""),
           validDate = !Number.isNaN(date.valueOf());
         const images = [
@@ -49,7 +53,10 @@ export default function ForumPosts({ posts }) {
             </header>
             {post.title && <h3>{post.title}</h3>}
             {typeof body === "string" && body.trim() && (
-              <p className="league-post-text">{body}</p>
+              <div>
+                <p className="league-post-text">{long ? body.slice(0, 320).trimEnd() + "…" : body}</p>
+                {long && <Link className="forum-link" to={destination}>Read more</Link>}
+              </div>
             )}
             {images.length > 0 && (
               <div className="forum-media">
@@ -91,16 +98,14 @@ export default function ForumPosts({ posts }) {
                 </ul>
               </section>
             )}
-            <p className="small forum-counts">
-              <span>{post.likes ?? post.like_count ?? 0} likes</span>
-              <span>
-                {post.comments_count ?? post.comment_count ?? 0} comments
-              </span>
-              <span>{post.shares ?? 0} shares</span>
-              {post.bookmarks != null && (
-                <span>{post.bookmarks} bookmarks</span>
-              )}
-            </p>
+            {engagement && <div className="small forum-counts">
+              <span><Icon name="heart" size={18} />{post.likes ?? post.like_count ?? 0} likes</span>
+              <Link className="forum-link" to={destination + "#comments"}>
+                <Icon name="chatbubbles" size={18} />{post.comments_count ?? post.comment_count ?? 0} comments
+              </Link>
+              <span><Icon name="share" size={18} />{post.shares ?? 0} shares</span>
+              <span><Icon name="bookmark" size={18} />{post.bookmarks ?? 0} bookmarks</span>
+            </div>}
           </article>
         );
       })}

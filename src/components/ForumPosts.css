@@ -61,3 +61,19 @@
   border-radius: 8px;
   margin: 16px 0;
 }
+
+.league-feed > article { min-width: 0; }
+.forum-media { width: 100%; }
+.league-feed .forum-media img {
+  display: block;
+  width: 100%;
+  max-height: none;
+  height: auto;
+}
+.forum-counts > span, .forum-counts > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.forum-link, .forum-link:hover, .forum-link:visited { text-decoration: none; }
+.forum-replies { margin-left: 24px; border-left: 1px solid var(--line); padding-left: 16px; }

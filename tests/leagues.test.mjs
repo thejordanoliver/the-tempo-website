@@ -15,7 +15,7 @@ import {
 await mkdir(".preview/tests", { recursive: true });
 const result = await build({
   stdin: {
-    contents: `import React from 'react'; import {renderToStaticMarkup} from 'react-dom/server'; import Leagues from './src/pages/Leagues.jsx'; import League from './src/pages/League.jsx'; import Game from './src/pages/Game.jsx'; import {favoriteLeagues} from './src/favoriteLeagues.js'; import {LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords} from './src/components/LeagueContent.jsx'; export {favoriteLeagues}; export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Leagues,League,Game,LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords}[name],props));`,
+    contents: `import React from 'react'; import {renderToStaticMarkup} from 'react-dom/server'; import ForumPosts from './src/components/ForumPosts.jsx'; import {CommentsList} from './src/pages/Post.jsx'; import Leagues from './src/pages/Leagues.jsx'; import League from './src/pages/League.jsx'; import Game from './src/pages/Game.jsx'; import {favoriteLeagues} from './src/favoriteLeagues.js'; import {LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords} from './src/components/LeagueContent.jsx'; export {favoriteLeagues}; export const render=(name,props={})=>renderToStaticMarkup(React.createElement({ForumPosts,CommentsList,Leagues,League,Game,LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords}[name],props));`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
@@ -306,4 +306,33 @@ test("forum renders backend text, author identity, media and engagement counts",
   assert(html.includes("1 shares"));
   assert(html.includes("photo.png"));
   assert(!html.includes("javascript:"));
+});
+
+
+test("forum previews shorten long text and link to full posts and comments", () => {
+  const text = "Long post ".repeat(80) + "last sentence";
+  const posts = [{id: 42, text, bookmarks: 4}];
+  const preview = render("ForumPosts", {posts});
+  assert(!preview.includes("last sentence"));
+  assert(preview.includes("Read more"));
+  assert(preview.includes('href="/post/?id=42#comments"'));
+  assert(preview.includes("4 bookmarks"));
+  assert.equal((preview.match(/<svg/g) || []).length, 4);
+  const full = render("ForumPosts", {posts, fullText: true});
+  assert(full.includes("last sentence"));
+  assert(!full.includes("Read more"));
+});
+test("post comments show full text and nested replies without post engagement links", () => {
+  const html = render("CommentsList", {comments: [{id: 1, text: "Comment body", replies: [{id: 2, text: "Reply body"}]}]});
+  assert(html.includes("Comment body"));
+  assert(html.includes("Reply body"));
+  assert(html.includes("forum-replies"));
+  assert(!html.includes("#comments"));
+  assert(render("CommentsList").includes("No comments yet"));
+});
+test("college standings include a rankings section alongside conference tables", () => {
+  const html = render("LeagueStandings", {league: "cfb", data: {conferences: []}});
+  assert(html.includes('aria-label="College rankings"'));
+  const pro = render("LeagueStandings", {league: "nfl", data: {conferences: []}});
+  assert(!pro.includes('aria-label="College rankings"'));
 });

@@ -1,3 +1,4 @@
+import CollegeRankings from "./CollegeRankings.jsx";
 import ForumPosts from "./ForumPosts.jsx";
 import { teamHref, hasTeamLeague } from "../teams.js";
 import { Image, State, Table } from "../components.jsx";
@@ -248,6 +249,9 @@ const percentage = (value) =>
     ? Number(value).toFixed(3)
     : "—";
 export function LeagueStandings({ data, league }) {
+  return <><StandingsTables data={data} league={league} /><CollegeRankings league={league} /></>;
+}
+function StandingsTables({ data, league }) {
   if (leagueSports[league] === "volleyball")
     return <VolleyballStandings data={data} league={league} />;
   const groups = list(data?.conferences).filter(

@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { State, useResource } from "../components.jsx";
 import GameHeader from "../components/GameHeader.jsx";
-import HeadingTwo from "../components/HeadingTwo.jsx";
-import LineScore from "../components/LineScore.jsx";
 import GameLeaders from "../components/GameLeaders.jsx";
+import GameLocation from "../components/GameLocation.jsx";
 import GameStats from "../components/GameStats.jsx";
 import GameSummary from "../components/GameSummary.jsx";
-import GameLocation from "../components/GameLocation.jsx";
+import LineScore from "../components/LineScore.jsx";
 import { leagueSports } from "../leagues.js";
 const sports = Object.fromEntries(
   Object.entries(leagueSports).filter(([, sport]) =>
@@ -41,12 +40,6 @@ function GameData({ id, league }) {
       {!loading && !error && score?.home && score?.away && (
         <>
           <GameHeader score={score} details={details} league={league} />
-          {details.headline && (
-            <section className="detail-section">
-              <HeadingTwo>Game overview</HeadingTwo>
-              <p>{details.headline}</p>
-            </section>
-          )}
           <LineScore score={score} league={league} />
           <GameLeaders score={score} league={league} />
           <GameStats score={score} league={league} />

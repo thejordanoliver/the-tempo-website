@@ -1,3 +1,6 @@
+import HeartOutline from "react-ionicons/lib/HeartOutline.js";
+import ShareSocialOutline from "react-ionicons/lib/ShareSocialOutline.js";
+import BookmarkOutline from "react-ionicons/lib/BookmarkOutline.js";
 import ArrowBackOutline from "react-ionicons/lib/ArrowBackOutline.js";
 import ArrowDownOutline from "react-ionicons/lib/ArrowDownOutline.js";
 import ArrowForwardOutline from "react-ionicons/lib/ArrowForwardOutline.js";
@@ -13,6 +16,9 @@ import "./Icon.css";
 
 // Import individual icons to avoid bundling the package's entire icon catalog.
 const icons = {
+  heart: HeartOutline,
+  share: ShareSocialOutline,
+  bookmark: BookmarkOutline,
   "arrow-back": ArrowBackOutline,
   "arrow-down": ArrowDownOutline,
   "arrow-forward": ArrowForwardOutline,

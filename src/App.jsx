@@ -1,3 +1,4 @@
+import Post from "./pages/Post.jsx";
 import NavLinks from "./components/NavLinks.jsx";
 import GuestHome from "./pages/GuestHome.jsx";
 import Team from "./pages/Team.jsx";
@@ -41,6 +42,7 @@ export default function App() {
         "/privacy": "Privacy Policy",
         "/game": "Game",
         "/article": "Article",
+        "/post": "Post",
         "/leagues": "Leagues",
         "/team": "Team",
         "/league": hasLeague(new URLSearchParams(route.search).get("league"))
@@ -116,6 +118,9 @@ export default function App() {
     case "/league":
       page = <League search={route.search} signedIn={Boolean(session)} />;
       break;
+    case "/post":
+      page = <Post search={route.search} />;
+      break;
     case "/article":
       page = <Article search={route.search} />;
       break;
@@ -133,7 +138,7 @@ export default function App() {
         Skip to content
       </a>
       <nav aria-label="Main navigation">
-        {["/game", "/article", "/league", "/team"].includes(route.path) ? (
+        {["/game", "/article", "/league", "/team", "/post"].includes(route.path) ? (
           <button
             className="navbar-back"
             type="button"
