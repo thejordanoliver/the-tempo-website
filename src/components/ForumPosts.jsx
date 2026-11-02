@@ -1,4 +1,5 @@
 import Icon from "./Icon.jsx";
+import ForumPoll from "./ForumPoll.jsx";
 import { Link } from "../router.jsx";
 import { Image, safeURL } from "../components.jsx";
 import "./ForumPosts.css";
@@ -84,20 +85,7 @@ export default function ForumPosts({ posts, fullText = false, engagement = true 
                 />
               ) : null;
             })}
-            {post.poll && (
-              <section className="forum-poll" aria-label="Post poll">
-                <h3>{post.poll.question}</h3>
-                <ul>
-                  {list(post.poll.options).map((option) => (
-                    <li key={option.id}>
-                      {option.text}
-                      {option.vote_count != null &&
-                        ` · ${option.vote_count} votes`}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
+            {engagement && <ForumPoll key={post.id} postId={post.id} initialPoll={post.poll} />}
             {engagement && <div className="small forum-counts">
               <span><Icon name="heart" size={18} />{post.likes ?? post.like_count ?? 0} likes</span>
               <Link className="forum-link" to={destination + "#comments"}>

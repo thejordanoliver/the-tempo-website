@@ -390,3 +390,30 @@ test("standings dropdown defaults to AP and displays only the selected poll", ()
   assert(html.includes("AP leader"));
   assert(!html.includes("Coaches leader"));
 });
+
+
+test("forum polls render choices, selected results, and closed status", () => {
+ const html = render("ForumPosts", { posts: [{ id: 55, poll: {
+   question: "Who wins?", expires_at: "2020-01-01T00:00:00Z", options: [
+     { id: 1, text: "Florida", vote_count: 3, voted_by_current_user: true },
+     { id: 2, text: "Houston", vote_count: 1, voted_by_current_user: false },
+   ],
+ } }] });
+ assert(html.includes("Who wins?"));
+ assert(html.includes("Florida"));
+ assert(html.includes("Houston"));
+ assert(html.includes("75%"));
+ assert(html.includes("25%"));
+ assert(html.includes('aria-pressed="true"'));
+ assert(html.includes("Closed"));
+ assert(html.includes("votes"));
+});
+
+test("open polls show choices and a sign-in link without revealing percentages", () => {
+ const html = render("ForumPosts", { posts: [{ id: 56, poll: {
+   question: "Pick one", options: [{ id: 1, text: "Option A", vote_count: 2 }],
+ } }] });
+ assert(html.includes("Option A"));
+ assert(html.includes("Sign in to vote"));
+ assert(!html.includes("100%"));
+});

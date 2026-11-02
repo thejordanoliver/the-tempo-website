@@ -77,3 +77,28 @@
 }
 .forum-link, .forum-link:hover, .forum-link:visited { text-decoration: none; }
 .forum-replies { margin-left: 24px; border-left: 1px solid var(--line); padding-left: 16px; }
+
+.forum-poll-options { display: grid; gap: 8px; }
+.forum-poll-option {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--muted);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font: 400 16px/1.4 var(--font);
+}
+.forum-poll-option:disabled { opacity: 1; cursor: default; }
+.forum-poll-option[aria-pressed="true"] { border-color: #007aff; }
+.forum-poll-fill { position: absolute; inset: 0 auto 0 0; z-index: -1; background: var(--surface); }
+.forum-poll-option[aria-pressed="true"] .forum-poll-fill { background: #007aff30; }
+.forum-poll-footer { margin: 10px 0 0; }
