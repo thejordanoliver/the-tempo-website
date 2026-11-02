@@ -1612,3 +1612,7 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .nav-underline { transition: none; }
 }
+
+/* Keep dropdown chevrons inset consistently across native select controls. */
+select:not([multiple]) {appearance:none;-webkit-appearance:none;padding-inline-end:44px !important;background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpb25pY29uIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHRpdGxlPkNoZXZyb24gRG93bjwvdGl0bGU+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNTU1NTU1IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iNDgiIGQ9Ik0xMTIgMTg0bDE0NCAxNDQgMTQ0LTE0NCIvPjwvc3ZnPg==") !important;background-repeat:no-repeat !important;background-size:18px 18px !important;background-position:right 12px center !important;}
+@media(prefers-color-scheme:dark){select:not([multiple]){background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpb25pY29uIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHRpdGxlPkNoZXZyb24gRG93bjwvdGl0bGU+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYWFhYWFhIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iNDgiIGQ9Ik0xMTIgMTg0bDE0NCAxNDQgMTQ0LTE0NCIvPjwvc3ZnPg==") !important;}}

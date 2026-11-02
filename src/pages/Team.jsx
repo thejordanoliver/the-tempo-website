@@ -1,3 +1,4 @@
+import ConferenceBadge from "../components/ConferenceBadge.jsx";
 import { useEffect, useState } from "react";
 import { Image, State, Table, useResource } from "../components.jsx";
 import GameLocation from "../components/GameLocation.jsx";
@@ -85,7 +86,9 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
         rows={players.map((player) => [
           player.jersey_number,
           <span className="team-player">
-            <Image src={player.headshot_url} loading="lazy" />
+            <span className="team-headshot">
+              <Image src={player.headshot_url} loading="lazy" />
+            </span>
             <span>{player.full_name || player.short_name}</span>
           </span>,
           player.position,
@@ -125,7 +128,12 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
           {[
             ["Location", team.location],
             ["Established", team.established],
-            ["Conference", team.conference?.name],
+            [
+              "Conference",
+              team.conference ? (
+                <ConferenceBadge conference={team.conference} league={league} />
+              ) : null,
+            ],
             [
               "Coach",
               team.coach
@@ -233,8 +241,17 @@ function TeamData({ league, id, search, signedIn }) {
             <div>
               <p className="eyebrow">{favoriteLeagues[league].label}</p>
               <h1>{team.fullName || team.name || team.shortName}</h1>
-              <p>
-                {[team.conference?.name, team.location].filter(Boolean).join(" · ")}
+              <p className="team-header-meta">
+                {team.conference && (
+                  <ConferenceBadge
+                    conference={team.conference}
+                    league={league}
+                  />
+                )}
+                {team.conference && team.location && (
+                  <span aria-hidden="true">·</span>
+                )}
+                {team.location && <span>{team.location}</span>}
               </p>
             </div>
           </header>
