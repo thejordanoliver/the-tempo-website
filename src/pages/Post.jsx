@@ -20,7 +20,7 @@ function PostData({ id }) {
   }, [post.loading, comments.loading]);
   return <section className="detail-page">
     <h1>Post</h1>
-    <State {...post} onRetry={() => setVersion(v => v + 1)} />
+    <State {...post} error={post.error || (!post.loading && !post.data?.post ? "Post not found." : null)} onRetry={() => setVersion(v => v + 1)} />
     {!post.loading && !post.error && post.data?.post && <ForumPosts posts={[post.data.post]} fullText />}
     <section id="comments" aria-label="Comments">
       <h2>Comments</h2>
@@ -38,5 +38,5 @@ function PostData({ id }) {
 }
 export default function Post({ search = "" }) {
   const id = new URLSearchParams(search).get("id");
-  return /^\d+$/.test(id || "") ? <PostData key={id} id={id} /> : <State error="Select a forum post." />;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || "") ? <PostData key={id} id={id} /> : <State error="Select a forum post." />;
 }

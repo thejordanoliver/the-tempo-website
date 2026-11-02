@@ -1,0 +1,19 @@
+.draft-list { list-style: none; padding: 0; margin: 0; }
+.draft-card { position: relative; isolation: isolate; overflow: hidden; border-top: 1px solid var(--line); }
+.draft-card:last-child { border-bottom: 1px solid var(--line); }
+.draft-background { position: absolute; inset: 0 0 0 55%; z-index: -2; display: flex; align-items: center; justify-content: flex-end; overflow: hidden; }
+.draft-background .team-logo { display: block; width: 210px; height: 210px; flex: 0 0 auto; margin-right: -20px; }
+.draft-background img { width: 100%; height: 100%; object-fit: contain; }
+.draft-card::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, var(--bg) 40%, transparent 175%); pointer-events: none; }
+.draft-content { padding: 12px; display: grid; gap: 4px; }
+.draft-player-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.draft-player { display: flex; align-items: center; gap: 8px; }
+.draft-player h3 { margin: 0; font-size: 20px; line-height: 1.3; overflow-wrap: anywhere; }
+.draft-headshot { position: relative; display: grid; place-items: center; flex: 0 0 50px; width: 50px; height: 50px; border: 1px solid var(--muted); border-radius: 50%; overflow: hidden; background: var(--surface); font-size: 16px; color: var(--muted); }
+.draft-headshot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: var(--surface); }
+.draft-position { border-left: 1px solid var(--muted); padding-left: 8px; font-size: 14px; font-weight: 700; }
+.draft-pick { display: grid; place-items: center; flex: 0 0 auto; min-width: 44px; height: 44px; padding: 0 6px; border: 1px solid var(--muted); border-radius: 999px; backdrop-filter: blur(20px); background: color-mix(in srgb, var(--bg) 65%, transparent); font-size: 18px; font-weight: 700; box-shadow: 0 2px 3px #0004; }
+.draft-details { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0; }
+.draft-details, .draft-trade { margin: 0; font-size: 14px; line-height: 1.5; }
+.draft-details span + span { border-left: 1px solid var(--muted); padding-left: 6px; margin-left: 6px; }
+.draft-status { margin: 0; font-size: clamp(26px, 6vw, 50px); line-height: 1.2; }

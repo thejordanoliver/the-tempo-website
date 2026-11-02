@@ -417,3 +417,41 @@
 .leagues-page h1:focus {
   outline: none;
 }
+
+.league-detail .league-awards-section table {
+  table-layout: fixed;
+}
+.league-awards-section th,
+.league-awards-section td {
+  width: 50%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.league-stats-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.league-stats-headshot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+}
+.league-stats-headshot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--surface);
+}

@@ -25,3 +25,18 @@ test("volleyball supports its AVCA polls and conference groups", () => {
   assert.equal(defaultValue, "poll:0");
   assert(options.some(option => option.label === "SEC"));
 });
+
+test("coaches polls retain division names in dropdown labels", () => {
+  const polls = [
+    {...coaches, name: "AFCA FBS Coaches Poll", shortName: "AFCA"},
+    {...coaches, name: "AFCA FCS Coaches Poll", shortName: "AFCA"},
+    {...coaches, name: "AFCA Division II Coaches Poll"},
+    {...coaches, name: "AFCA Division III Coaches Poll"},
+    {...coaches, name: "Coaches Poll", shortName: "FCS Coaches Poll"},
+  ];
+  const {options} = collegeStandingsOptions(data, {rankings: polls}, "cfb");
+  assert.deepEqual(options.filter(option => option.kind === "poll").map(option => option.label), [
+    "AFCA FBS Coaches Poll", "AFCA FCS Coaches Poll", "AFCA Division II Coaches Poll",
+    "AFCA Division III Coaches Poll", "FCS Coaches Poll",
+  ]);
+});

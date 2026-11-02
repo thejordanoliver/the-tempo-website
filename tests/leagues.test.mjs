@@ -15,7 +15,7 @@ import {
 await mkdir(".preview/tests", { recursive: true });
 const result = await build({
   stdin: {
-    contents: `import React from 'react'; import {renderToStaticMarkup} from 'react-dom/server'; import {StandingsFilter} from './src/components/CollegeRankings.jsx'; import ForumPosts from './src/components/ForumPosts.jsx'; import {CommentsList} from './src/pages/Post.jsx'; import Leagues from './src/pages/Leagues.jsx'; import League from './src/pages/League.jsx'; import Game from './src/pages/Game.jsx'; import {favoriteLeagues} from './src/favoriteLeagues.js'; import {LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords} from './src/components/LeagueContent.jsx'; export {favoriteLeagues}; export const render=(name,props={})=>renderToStaticMarkup(React.createElement({StandingsFilter,ForumPosts,CommentsList,Leagues,League,Game,LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords}[name],props));`,
+    contents: `import React from 'react'; import {renderToStaticMarkup} from 'react-dom/server'; import {StandingsFilter} from './src/components/CollegeRankings.jsx'; import ForumPosts from './src/components/ForumPosts.jsx'; import Post, {CommentsList} from './src/pages/Post.jsx'; import Leagues from './src/pages/Leagues.jsx'; import League from './src/pages/League.jsx'; import Game from './src/pages/Game.jsx'; import {favoriteLeagues} from './src/favoriteLeagues.js'; import {LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords} from './src/components/LeagueContent.jsx'; export {favoriteLeagues}; export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Post,StandingsFilter,ForumPosts,CommentsList,Leagues,League,Game,LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords}[name],props));`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
@@ -416,4 +416,23 @@ test("open polls show choices and a sign-in link without revealing percentages",
  assert(html.includes("Option A"));
  assert(html.includes("Sign in to vote"));
  assert(!html.includes("100%"));
+});
+
+
+test("post links accept backend UUIDs and mount the post and comments page", () => {
+  const id = "8d9a2405-f501-4a3b-a615-d84da38d7f6a";
+  const preview = render("ForumPosts", { posts: [{ id, text: "Long post ".repeat(80), poll: null }] });
+  assert(preview.includes(`href="/post/?id=${id}"`));
+  assert(preview.includes(`href="/post/?id=${id}#comments"`));
+  for (const hash of ["", "#comments"]) {
+    const search = new URL(`https://example.test/post/?id=${id}${hash}`).search;
+    const html = render("Post", { search });
+    assert(!html.includes("Select a forum post."));
+    assert(html.includes("<h1>Post</h1>"));
+    assert(html.includes('id="comments"'));
+    assert(html.includes("Loading…"));
+  }
+  for (const search of ["", "?id=42", "?id=bad"]) {
+    assert(render("Post", { search }).includes("Select a forum post."));
+  }
 });

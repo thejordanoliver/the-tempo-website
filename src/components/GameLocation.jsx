@@ -5,6 +5,7 @@ import "./GameLocation.css";
 export default function GameLocation({
   details = {},
   title = "Game Location",
+  className = "",
 }) {
   const venue = details.venueInfo || {},
     fallback = details.venue || {},
@@ -49,7 +50,7 @@ export default function GameLocation({
   ].filter(([, value]) => value);
   const query = [name, formatted].filter(Boolean).join(", ");
   return (
-    <section className="detail-section">
+    <section className={`detail-section ${className}`}>
       <HeadingTwo>{title}</HeadingTwo>
       <div className="game-panel game-location">
         {image && (

@@ -164,12 +164,14 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
           <section className="league-table-section">
             <h3>Championships</h3>
             <Table
-              headers={["Season", "Notes"]}
-              rows={team.championships.map((row) => [row.season, row.notes])}
+              headers={[league === "nfl" ? "Super Bowl" : "Season"]}
+              rows={team.championships.map((row) => [
+                league === "nfl" ? row.notes : row.season,
+              ])}
             />
           </section>
         )}
-        <GameLocation title="Home Venue" details={{ venueInfo: team.venue }} />
+        <GameLocation className="home-venue" title="Home Venue" details={{ venueInfo: team.venue }} />
       </>
     );
   const more =

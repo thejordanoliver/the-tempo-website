@@ -1,3 +1,5 @@
+import { awardName } from "../awardNames.js";
+import DraftList from "./DraftList.jsx";
 import { hasCollegePolls } from "../collegeStandings.js";
 import CollegeRankings from "./CollegeRankings.jsx";
 import ForumPosts from "./ForumPosts.jsx";
@@ -335,7 +337,13 @@ export function LeagueStats({ data }) {
               headers={["Rank", "Player", category.abbreviation || "Value"]}
               rows={category.leaders.map((player, i) => [
                 player.rank ?? i + 1,
-                player.full_name || player.short_name,
+                <span className="league-stats-player">
+                  <span className="league-stats-headshot">
+                    <span aria-hidden="true">{(player.full_name || player.short_name || "").split(/\s+/).map((part) => part[0]).slice(0, 2).join("") || "—"}</span>
+                    <Image src={player.headshot} alt="" loading="lazy" />
+                  </span>
+                  <span>{player.full_name || player.short_name || "Unknown player"}</span>
+                </span>,
                 player.stat_value,
               ])}
             />
@@ -370,18 +378,7 @@ export function LeagueRecords({ data, tab, league }) {
         <p>
           {data.displayName} · {data.status?.label}
         </p>
-        <Table
-          headers={["Pick", "Round", "Player", "Team", "College"]}
-          rows={rows.map((pick) => [
-            pick.overall ?? pick.pick,
-            pick.round,
-            pick.athlete?.name || "Selection pending",
-            list(data.teams).find(
-              (team) => String(team.id) === String(pick.teamId),
-            )?.name,
-            pick.athlete?.college,
-          ])}
-        />
+        <DraftList data={data} league={league} />
       </>
     ) : (
       <Empty>Draft selections are not available for this year.</Empty>
@@ -419,15 +416,13 @@ export function LeagueRecords({ data, tab, league }) {
     return groups.length ? (
       <>
         {groups.map(([category, rows]) => (
-          <section className="league-table-section" key={category}>
-            <h3>{category.toUpperCase()}</h3>
+          <section className="league-table-section league-awards-section" key={category}>
+            <h3>{awardName(league, category)}</h3>
             <Table
-              headers={["Season", "Winner", "Team / school", "Summary"]}
+              headers={["Season", "Winner"]}
               rows={rows.map((row) => [
                 row.season,
                 row.player_name || row.coach,
-                row.award_team?.name || row.school,
-                row.summary,
               ])}
             />
           </section>
