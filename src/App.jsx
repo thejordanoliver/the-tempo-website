@@ -1,3 +1,4 @@
+import NavLinks from "./components/NavLinks.jsx";
 import GuestHome from "./pages/GuestHome.jsx";
 import Team from "./pages/Team.jsx";
 import Icon from "./components/Icon.jsx";
@@ -147,7 +148,7 @@ export default function App() {
             TEMPO
           </Link>
         )}
-        <div className="nav-links">
+        <NavLinks activeKey={`${route.path}:${Boolean(session)}`}>
           <Link
             to="/leagues/"
             aria-current={
@@ -177,7 +178,7 @@ export default function App() {
               Sign in
             </Link>
           )}
-        </div>
+        </NavLinks>
       </nav>
       <main id="content">{page}</main>
       <Footer />

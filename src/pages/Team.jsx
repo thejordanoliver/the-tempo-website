@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-import { Link, navigate } from "../router.jsx";
-import { State, Table, useResource, Image } from "../components.jsx";
-import { teamTabs, teamResource, hasTeamLeague } from "../teams.js";
-import { defaultSeason } from "../leagues.js";
-import { favoriteLeagues } from "../favoriteLeagues.js";
-import TeamLogo from "../components/TeamLogo.jsx";
+import { Image, State, Table, useResource } from "../components.jsx";
 import GameLocation from "../components/GameLocation.jsx";
-import {
-  LeagueScores,
-  LeagueNews,
-  LeagueStandings,
-  LeagueRecords,
-} from "../components/LeagueContent.jsx";
 import "../components/League.css";
+import {
+  LeagueNews,
+  LeagueRecords,
+  LeagueScores,
+  LeagueStandings,
+} from "../components/LeagueContent.jsx";
 import "../components/Team.css";
+import TeamLogo from "../components/TeamLogo.jsx";
+import { favoriteLeagues } from "../favoriteLeagues.js";
+import { defaultSeason } from "../leagues.js";
+import { Link, navigate } from "../router.jsx";
+import { hasTeamLeague, teamResource, teamTabs } from "../teams.js";
 const list = (value) => (Array.isArray(value) ? value : []);
 const label = (value) => value[0].toUpperCase() + value.slice(1);
 function TeamPanel({ league, id, tab, season, page, onPage, team }) {
@@ -123,11 +123,7 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
       <>
         <dl className="team-info">
           {[
-            [
-              "Location",
-              [team.city, team.state].filter(Boolean).join(", ") ||
-                team.location,
-            ],
+            ["Location", team.location],
             ["Established", team.established],
             ["Conference", team.conference?.name],
             [
@@ -238,7 +234,7 @@ function TeamData({ league, id, search, signedIn }) {
               <p className="eyebrow">{favoriteLeagues[league].label}</p>
               <h1>{team.fullName || team.name || team.shortName}</h1>
               <p>
-                {[team.conference?.name, team.city].filter(Boolean).join(" · ")}
+                {[team.conference?.name, team.location].filter(Boolean).join(" · ")}
               </p>
             </div>
           </header>

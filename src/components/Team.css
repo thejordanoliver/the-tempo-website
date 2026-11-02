@@ -54,6 +54,8 @@
 .team-player img {
   width: 36px;
   height: 36px;
+  border: 1px solid var(--text);
+  border-radius: 50%;
   object-fit: contain;
 }
 .team-info {

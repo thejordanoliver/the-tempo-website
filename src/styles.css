@@ -1595,3 +1595,20 @@ button {
 .game-detail-toolbar {
   justify-content: flex-end;
 }
+
+/* A single underline travels between navbar links. */
+.nav-links { position: relative; }
+.nav-links a[aria-current="page"] { text-decoration: none; }
+.nav-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text);
+  pointer-events: none;
+  transition: transform 200ms ease, width 200ms ease, opacity 120ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-underline { transition: none; }
+}

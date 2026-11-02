@@ -1,3 +1,4 @@
+import ForumPosts from "./ForumPosts.jsx";
 import { teamHref, hasTeamLeague } from "../teams.js";
 import { Image, State, Table } from "../components.jsx";
 import { Link } from "../router.jsx";
@@ -480,24 +481,7 @@ export function LeagueRecords({ data, tab, league }) {
   if (tab === "forum") {
     const posts = list(data?.posts);
     return posts.length ? (
-      <div className="league-feed">
-        {posts.map((post) => (
-          <article key={post.id}>
-            <header>
-              <strong>{post.full_name || post.username || "Tempo fan"}</strong>
-              <time>{readableDate(post.created_at)}</time>
-            </header>
-            {post.title && <h3>{post.title}</h3>}
-            <p className="league-post-text">{text(post.content)}</p>
-            <Image src={post.image_url} loading="lazy" />
-            {post.like_count != null && (
-              <p className="small">
-                {post.like_count} likes · {post.comment_count ?? 0} comments
-              </p>
-            )}
-          </article>
-        ))}
-      </div>
+      <ForumPosts posts={posts} />
     ) : (
       <Empty>No league conversations yet.</Empty>
     );

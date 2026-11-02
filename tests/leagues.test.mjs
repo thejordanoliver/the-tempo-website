@@ -279,3 +279,31 @@ test("volleyball standings display normalized nested groups and statistic column
   assert(html.includes("Wins"));
   assert(html.includes("<td>0</td>"));
 });
+
+test("forum renders backend text, author identity, media and engagement counts", () => {
+  const html = render("LeagueRecords", {
+    tab: "forum",
+    data: {
+      posts: [
+        {
+          id: 10,
+          full_name: "Test Fan",
+          username: "fan",
+          text: "Real post content",
+          likes: 3,
+          comments_count: 2,
+          shares: 1,
+          images: ["https://example.test/photo.png"],
+          videos: ["javascript:bad()"],
+        },
+      ],
+    },
+  });
+  assert(html.includes("Real post content"));
+  assert(html.includes("@fan"));
+  assert(html.includes("3 likes"));
+  assert(html.includes("2 comments"));
+  assert(html.includes("1 shares"));
+  assert(html.includes("photo.png"));
+  assert(!html.includes("javascript:"));
+});
