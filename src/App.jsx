@@ -5,7 +5,7 @@ import NavLinks from "./components/NavLinks.jsx";
 import GuestHome from "./pages/GuestHome.jsx";
 import Team from "./pages/Team.jsx";
 import Icon from "./components/Icon.jsx";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 import { Link, goBack, navigate, useRoute } from "./router.jsx";
 import { sessionStore } from "./session.js";
 import { Footer } from "./components.jsx";
@@ -22,6 +22,24 @@ import League from "./pages/League.jsx";
 import { favoriteLeagues } from "./favoriteLeagues.js";
 import { hasLeague } from "./leagues.js";
 export default function App() {
+  const navigationRef = useRef(null);
+  useLayoutEffect(() => {
+    const navigation = navigationRef.current;
+    if (!navigation) return;
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        "--navbar-height",
+        `${navigation.getBoundingClientRect().height}px`,
+      );
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(navigation);
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--navbar-height");
+    };
+  }, []);
   const route = useRoute(),
     session = useSyncExternalStore(
       sessionStore.subscribe,
@@ -139,7 +157,7 @@ export default function App() {
       <a className="skip" href="#content">
         Skip to content
       </a>
-      <nav aria-label="Main navigation">
+      <nav ref={navigationRef} aria-label="Main navigation">
         {["/game", "/article", "/league", "/team", "/post"].includes(route.path) ? (
           <button
             className="navbar-back"

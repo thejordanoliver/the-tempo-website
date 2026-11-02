@@ -1,5 +1,9 @@
 .game-header {
-  padding: 24px 0 28px;
+  position: sticky;
+  top: var(--navbar-height, 0px);
+  z-index: 20;
+  background: var(--bg);
+  padding: 12px 0;
   border-bottom: 1px solid var(--line);
 }
 .gh-matchup {

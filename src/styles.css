@@ -1650,3 +1650,11 @@ select.theme-selector:not([multiple]) { padding-inline-end: 26px !important; bac
   .mobile-menu-button { display: inline-flex; margin-left: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .mobile-sidebar[open] { animation: none; } }
+
+/* Keep navigation above the sticky game scoreboard. */
+nav[aria-label="Main navigation"] {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg);
+}
