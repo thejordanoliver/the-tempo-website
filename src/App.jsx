@@ -1,3 +1,4 @@
+import MobileNavigation from "./components/MobileNavigation.jsx";
 import ThemeSelector from "./components/ThemeSelector.jsx";
 import Post from "./pages/Post.jsx";
 import NavLinks from "./components/NavLinks.jsx";
@@ -186,6 +187,7 @@ export default function App() {
           )}
         </NavLinks>
         <ThemeSelector />
+        <MobileNavigation signedIn={Boolean(session)} path={route.path} routeKey={`${route.path}${route.search}${route.hash}:${Boolean(session)}`} />
       </nav>
       <main id="content">{page}</main>
       <Footer />
