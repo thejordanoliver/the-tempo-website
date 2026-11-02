@@ -1,3 +1,4 @@
+import Icon from "../components/Icon.jsx";
 import { useState } from "react";
 import { Link, navigate } from "../router.jsx";
 import { State, useResource } from "../components.jsx";
@@ -164,7 +165,8 @@ export default function League({ search = "", signedIn = false }) {
       style={{ "--league-color": config.color }}
     >
       <Link className="league-breadcrumb" to="/leagues/">
-        ‹ All leagues
+        <Icon name="chevron-back" className="icon-before" size={18} />
+        All leagues
       </Link>
       <header className="league-detail-heading">
         <LeagueLogo league={league} />

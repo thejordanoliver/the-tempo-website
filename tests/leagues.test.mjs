@@ -48,6 +48,11 @@ test("directory exposes every app league across all nine sports with theme logos
   for (const league of leagues)
     assert(html.includes(`/league/?league=${league}`), league);
   assert(html.includes("Search leagues"));
+  assert.equal((html.match(/<svg/g) || []).length, leagues.length);
+  assert(
+    html.includes('class="tempo-icon league-tile-arrow" aria-hidden="true"'),
+  );
+  assert(!html.includes("<ion-icon"));
   assert(html.includes("prefers-color-scheme: dark"));
 });
 test("scoreboards use normalized backend routes for every sport", () => {

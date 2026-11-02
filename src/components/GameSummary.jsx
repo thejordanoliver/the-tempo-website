@@ -1,3 +1,4 @@
+import Icon from "./Icon.jsx";
 import { useId, useState } from "react";
 import { gameCardModel } from "./gameCardModel.js";
 import HeadingTwo from "./HeadingTwo.jsx";
@@ -108,7 +109,11 @@ export default function GameSummary({ score, league }) {
                           {showLogo ? (
                             <TeamLogo team={team} league={league} />
                           ) : (
-                            <span className="summary-dot" />
+                            <Icon
+                              name="ellipse"
+                              className="summary-dot"
+                              size={8}
+                            />
                           )}
                         </div>
                       </div>

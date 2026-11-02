@@ -25,6 +25,8 @@
   gap: 4px;
 }
 .favorites-arrows button {
+  display: grid;
+  place-items: center;
   width: 32px;
   height: 32px;
   border: 0;
@@ -153,7 +155,9 @@
   height: 100%;
   display: block;
 }
-.favorite-logo picture > source { display: none; }
+.favorite-logo picture > source {
+  display: none;
+}
 .favorite-logo picture > img {
   position: absolute;
   top: 50%;

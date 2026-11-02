@@ -1,0 +1,21 @@
+.tempo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+  line-height: 0;
+  pointer-events: none;
+}
+.tempo-icon > span {
+  display: inline-flex;
+}
+.tempo-icon svg {
+  display: block;
+}
+.icon-before {
+  margin-inline-end: 6px;
+}
+.icon-after {
+  margin-inline-start: 6px;
+}

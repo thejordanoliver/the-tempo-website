@@ -1,3 +1,4 @@
+import Icon from "../components/Icon.jsx";
 import { useMemo, useState } from "react";
 import { Link } from "../router.jsx";
 import { Image, State, safeURL, useResource } from "../components.jsx";
@@ -98,7 +99,8 @@ function Story({ article }) {
         )}
         {source && (
           <a href={source} target="_blank" rel="noopener noreferrer">
-            Read the original article ↗
+            Read the original article
+            <Icon name="open" className="icon-after" size={18} />
           </a>
         )}
       </div>
@@ -111,7 +113,10 @@ function ArticleData({ id }) {
   return (
     <>
       <header className="detail-header">
-        <Link to="/home/">← Home</Link>
+        <Link to="/home/">
+          <Icon name="arrow-back" className="icon-before" size={18} />
+          Home
+        </Link>
         <button
           className="detail-button"
           disabled={state.loading}

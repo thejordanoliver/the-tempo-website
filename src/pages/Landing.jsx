@@ -1,3 +1,4 @@
+import Icon from "../components/Icon.jsx";
 import { Link } from "../router.jsx";
 export default function Landing() {
   return (
@@ -19,7 +20,8 @@ export default function Landing() {
               Sign in to Tempo
             </Link>
             <a className="tempo-button outline" href="#explore">
-              Explore Tempo ↓
+              Explore Tempo{" "}
+              <Icon name="arrow-down" className="icon-after" size={18} />
             </a>
           </div>
         </div>
@@ -40,7 +42,7 @@ export default function Landing() {
             </div>
             <div className="preview-row">
               <span className="sport-icon" aria-hidden="true">
-                ↗
+                <Icon name="trending-up" size={24} />
               </span>
               <div>
                 <b>Every game, at a glance</b>
@@ -49,7 +51,7 @@ export default function Landing() {
             </div>
             <div className="preview-row">
               <span className="sport-icon" aria-hidden="true">
-                ☆
+                <Icon name="star" size={24} />
               </span>
               <div>
                 <b>Your teams come first</b>
@@ -58,7 +60,7 @@ export default function Landing() {
             </div>
             <div className="preview-row">
               <span className="sport-icon" aria-hidden="true">
-                ☰
+                <Icon name="chatbubbles" size={24} />
               </span>
               <div>
                 <b>More than a final score</b>
@@ -119,7 +121,8 @@ export default function Landing() {
           </p>
         </div>
         <Link className="tempo-button" to="/support/">
-          Contact support →
+          Contact support{" "}
+          <Icon name="arrow-forward" className="icon-after" size={18} />
         </Link>
       </section>
     </>

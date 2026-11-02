@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Icon from "../components/Icon.jsx";
 import { Link } from "../router.jsx";
 import { favoriteLeagues } from "../favoriteLeagues.js";
 import { sportLeagues, leagueHref } from "../leagues.js";
@@ -67,7 +68,7 @@ export default function Leagues() {
                   <h3>{favoriteLeagues[league].label}</h3>
                   <span>Scores &amp; more</span>
                 </div>
-                <ion-icon name="chevron-forward-outline"/>
+                <Icon name="chevron-forward" className="league-tile-arrow" />
               </Link>
             ))}
           </div>

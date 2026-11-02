@@ -1,3 +1,4 @@
+import Icon from "./Icon.jsx";
 import HeadingTwo from "./HeadingTwo.jsx";
 import { Image, safeURL } from "../components.jsx";
 import "./GameLocation.css";
@@ -58,16 +59,7 @@ export default function GameLocation({ details = {} }) {
         )}
         <div className="game-location-content">
           <div className="game-location-heading">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              aria-hidden="true"
-            >
-              <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
+            <Icon name="location" size={26} />
             <div>
               <h3>{name || "Game venue"}</h3>
               {formatted && <address>{formatted}</address>}
@@ -90,7 +82,7 @@ export default function GameLocation({ details = {} }) {
             rel="noopener noreferrer"
           >
             View in Maps<span className="sr-only"> (opens in a new tab)</span>
-            <span aria-hidden="true"> ↗</span>
+            <Icon name="open" className="icon-after" size={18} />
           </a>
         </div>
       </div>

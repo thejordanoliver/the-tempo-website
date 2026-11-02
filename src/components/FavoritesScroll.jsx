@@ -1,3 +1,4 @@
+import Icon from "./Icon.jsx";
 import { favoriteLeagues } from "../favoriteLeagues.js";
 import { hasLeague, leagueHref } from "../leagues.js";
 import { Link } from "../router.jsx";
@@ -46,14 +47,14 @@ export default function FavoritesScroll({
             aria-label="Scroll favorites left"
             onClick={() => scroll(-1)}
           >
-            ‹
+            <Icon name="chevron-back" size={24} />
           </button>
           <button
             type="button"
             aria-label="Scroll favorites right"
             onClick={() => scroll(1)}
           >
-            ›
+            <Icon name="chevron-forward" size={24} />
           </button>
         </div>
       </div>

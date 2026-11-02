@@ -1,3 +1,4 @@
+import Icon from "../components/Icon.jsx";
 import { useEffect, useState } from "react";
 import FavoritesScroll from "../components/FavoritesScroll.jsx";
 import GameDatePicker from "../components/GameDatePicker.jsx";
@@ -100,7 +101,8 @@ export default function Home({ user, onLogout }) {
         <div className="home-section-heading">
           <h2 id="games-title">Scores</h2>
           <Link to={`/league/?league=${league}`}>
-            View {league.toUpperCase()} league page →
+            View {league.toUpperCase()} league page
+            <Icon name="arrow-forward" className="icon-after" size={18} />
           </Link>
         </div>
         <div className="games-controls">

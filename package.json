@@ -16,5 +16,11 @@
   "devDependencies": {
     "esbuild": "0.28.2",
     "prettier": "3.6.2"
+  },
+  "overrides": {
+    "react-ionicons": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
   }
 }

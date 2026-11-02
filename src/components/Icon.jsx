@@ -1,0 +1,43 @@
+import ArrowBackOutline from "react-ionicons/lib/ArrowBackOutline.js";
+import ArrowDownOutline from "react-ionicons/lib/ArrowDownOutline.js";
+import ArrowForwardOutline from "react-ionicons/lib/ArrowForwardOutline.js";
+import ChatbubblesOutline from "react-ionicons/lib/ChatbubblesOutline.js";
+import ChevronBackOutline from "react-ionicons/lib/ChevronBackOutline.js";
+import ChevronForwardOutline from "react-ionicons/lib/ChevronForwardOutline.js";
+import Ellipse from "react-ionicons/lib/Ellipse.js";
+import LocationOutline from "react-ionicons/lib/LocationOutline.js";
+import OpenOutline from "react-ionicons/lib/OpenOutline.js";
+import StarOutline from "react-ionicons/lib/StarOutline.js";
+import TrendingUpOutline from "react-ionicons/lib/TrendingUpOutline.js";
+import "./Icon.css";
+
+// Import individual icons to avoid bundling the package's entire icon catalog.
+const icons = {
+  "arrow-back": ArrowBackOutline,
+  "arrow-down": ArrowDownOutline,
+  "arrow-forward": ArrowForwardOutline,
+  chatbubbles: ChatbubblesOutline,
+  "chevron-back": ChevronBackOutline,
+  "chevron-forward": ChevronForwardOutline,
+  ellipse: Ellipse,
+  location: LocationOutline,
+  open: OpenOutline,
+  star: StarOutline,
+  "trending-up": TrendingUpOutline,
+};
+
+// Decorative icons inherit their parent's theme color. Buttons and links own
+// the accessible label, so screen readers don't announce the SVG separately.
+export default function Icon({ name, size = 22, className = "" }) {
+  if (!Object.hasOwn(icons, name)) return null;
+  const Component = icons[name];
+  return (
+    <span className={`tempo-icon ${className}`.trim()} aria-hidden="true">
+      <Component
+        color="currentColor"
+        width={`${size}px`}
+        height={`${size}px`}
+      />
+    </span>
+  );
+}

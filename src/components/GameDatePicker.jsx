@@ -1,3 +1,4 @@
+import Icon from "./Icon.jsx";
 import "./GameDatePicker.css";
 export function shiftGameDate(value, days) {
   const [year, month, day] = value.split("-").map(Number);
@@ -18,9 +19,7 @@ export default function GameDatePicker({ date, onChange }) {
           aria-label="Previous day"
           onClick={() => onChange(shiftGameDate(date, -1))}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m15 5-7 7 7 7" />
-          </svg>
+          <Icon name="chevron-back" size={24} />
         </button>
         <input
           type="date"
@@ -37,9 +36,7 @@ export default function GameDatePicker({ date, onChange }) {
           aria-label="Next day"
           onClick={() => onChange(shiftGameDate(date, 1))}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m9 5 7 7-7 7" />
-          </svg>
+          <Icon name="chevron-forward" size={24} />
         </button>
       </div>
     </div>

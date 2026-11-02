@@ -96,9 +96,14 @@
   font-size: 13px;
 }
 .league-tile-arrow {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
   margin-left: auto;
-  font-size: 24px;
   color: var(--muted);
+}
+.league-tile-arrow svg {
+  display: block;
 }
 .league-breadcrumb {
   display: inline-block;
