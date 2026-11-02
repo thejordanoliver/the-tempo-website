@@ -33,14 +33,6 @@ export default function FavoritesScroll({
     >
       <div className="favorites-heading">
         <HeadingTwo>Favorites</HeadingTwo>
-        <button
-          className="favorites-all-games"
-          type="button"
-          aria-pressed={!selected}
-          onClick={() => onSelect(null)}
-        >
-          All Games
-        </button>
         <div className="favorites-arrows">
           <button
             type="button"

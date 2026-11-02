@@ -8,10 +8,12 @@ export function shiftGameDate(value, days) {
   date.setUTCDate(date.getUTCDate() + days);
   return `${String(date.getUTCFullYear()).padStart(4, "0")}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`;
 }
-export default function GameDatePicker({ date, onChange }) {
+export default function GameDatePicker({ date, onChange, hideLabel = false }) {
   return (
     <div className="game-date-label">
-      <label htmlFor="game-date">Game date</label>
+      <label htmlFor="game-date" className={hideLabel ? "sr-only" : undefined}>
+        Game date
+      </label>
       <div className="game-date-controls">
         <button
           type="button"

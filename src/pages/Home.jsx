@@ -1,4 +1,6 @@
-import Icon from "../components/Icon.jsx";
+import useHomeScores from "../hooks/useHomeScores.js";
+import { leagueSports } from "../leagues.js";
+import { LeagueScores } from "../components/LeagueContent.jsx";
 import { useEffect, useState } from "react";
 import FavoritesScroll from "../components/FavoritesScroll.jsx";
 import GameDatePicker from "../components/GameDatePicker.jsx";
@@ -56,23 +58,25 @@ export default function Home({ user, onLogout }) {
         (t) => t && t.id != null && typeof t.league === "string",
       )
     : [];
-  const games = useResource(
-    `/api/games/${endpoints[league]}?date=${date.replaceAll("-", "")}`,
+  const games = useHomeScores(
+    favoriteTeams,
+    savedLeagues,
+    date,
     gamesVersion,
+    !favorites.loading && !favoriteSports.loading,
   );
   const feed = useResource(
     "/api/feed/for-you?newsLimit=12&postsLimit=1",
     newsVersion,
   );
-  const allGames = Array.isArray(games.data?.games) ? games.data.games : [],
-    gameList = selectedTeam
-      ? allGames.filter((g) =>
-          [g.home, g.away].some(
-            (t) => t?.id != null && String(t.id) === selectedTeam.split(":")[1],
-          ),
-        )
-      : allGames,
-    articles = Array.isArray(feed.data?.articles) ? feed.data.articles : [];
+  const gameList = selectedTeam
+    ? games.items.filter(({ game, league }) =>
+        [game.home, game.away].some(
+          (team) => team?.id != null && `${league}:${team.id}` === selectedTeam,
+        ),
+      )
+    : games.items;
+  const articles = Array.isArray(feed.data?.articles) ? feed.data.articles : [];
   return (
     <section className="home-screen">
       <header className="home-heading">
@@ -91,36 +95,22 @@ export default function Home({ user, onLogout }) {
         error={favorites.error || favoriteSports.error}
         onRetry={() => setFavoritesVersion((v) => v + 1)}
         selected={selectedTeam}
-        supportedLeagues={Object.keys(endpoints)}
+        supportedLeagues={Object.keys(leagueSports)}
         onSelect={(team) => {
-          setSelectedTeam(team ? `${team.league}:${team.id}` : null);
+          setSelectedTeam(
+            team && selectedTeam !== `${team.league}:${team.id}`
+              ? `${team.league}:${team.id}`
+              : null,
+          );
           if (team) setLeague(team.league);
         }}
       />
       <section aria-labelledby="games-title">
         <div className="home-section-heading">
           <h2 id="games-title">Scores</h2>
-          <Link to={`/league/?league=${league}`}>
-            View {league.toUpperCase()} league page
-            <Icon name="arrow-forward" className="icon-after" size={18} />
-          </Link>
         </div>
         <div className="games-controls">
-          <div className="league-filters" role="group" aria-label="League">
-            {Object.keys(endpoints).map((key) => (
-              <button
-                key={key}
-                aria-pressed={league === key}
-                onClick={() => {
-                  setLeague(key);
-                  setSelectedTeam(null);
-                }}
-              >
-                {key.toUpperCase()}
-              </button>
-            ))}
-          </div>
-          <GameDatePicker date={date} onChange={setDate} />
+          <GameDatePicker date={date} onChange={setDate} hideLabel />
         </div>
         <State
           {...games}
@@ -128,16 +118,32 @@ export default function Home({ user, onLogout }) {
             !gameList.length
               ? selectedTeam
                 ? "No games scheduled for this favorite team on the selected date."
-                : "No games scheduled for this league and date."
+                : "No favorite-team games or live games from favorite leagues for this date."
               : null
           }
           onRetry={() => setGamesVersion((v) => v + 1)}
         />
-        {!games.loading && !games.error && (
+        {!games.loading && (
           <div className="home-games">
-            {gameList.map((game) => (
-              <GameCard key={game.id} game={game} league={league} />
-            ))}
+            {gameList.map(({ game, league }) =>
+              ["tennis", "mma", "racing"].includes(leagueSports[league]) ? (
+                <LeagueScores
+                  key={`${league}:${game.id}`}
+                  league={league}
+                  data={
+                    leagueSports[league] === "tennis"
+                      ? { matches: [game] }
+                      : { events: [game] }
+                  }
+                />
+              ) : (
+                <GameCard
+                  key={`${league}:${game.id}`}
+                  game={game}
+                  league={league}
+                />
+              ),
+            )}
           </div>
         )}
       </section>
