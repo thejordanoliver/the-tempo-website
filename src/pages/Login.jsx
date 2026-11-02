@@ -4,6 +4,7 @@ import { API_URL, sessionStore } from "../session.js";
 export default function Login() {
   const [username, setUsername] = useState(""),
     [password, setPassword] = useState(""),
+    [rememberMe, setRememberMe] = useState(false),
     [show, setShow] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
@@ -13,7 +14,7 @@ export default function Login() {
     setBusy(true);
     setError("");
     try {
-      await sessionStore.login(username.trim(), password);
+      await sessionStore.login(username.trim(), password, rememberMe);
       navigate("/home/", { replace: true });
     } catch (err) {
       setError(
@@ -96,6 +97,10 @@ export default function Login() {
                 {show ? "Hide" : "Show"}
               </button>
             </div>
+            <label className="remember-me">
+              <input type="checkbox" name="rememberMe" checked={rememberMe} onChange={event => setRememberMe(event.target.checked)} />
+              Remember me
+            </label>
             <button type="submit" className="tempo-button">
               {busy ? "Signing in…" : "Sign in"}
             </button>

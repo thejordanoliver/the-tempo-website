@@ -5,28 +5,32 @@ export const API_URL =
 const KEY = "tempo.web.session.v1";
 export function createSessionStore({
   storage,
+  persistentStorage,
   fetcher = fetch,
   api = API_URL,
 } = {}) {
   let value = null,
     revision = 0,
-    refreshPromise = null;
+    refreshPromise = null,
+    remembered = false;
   const listeners = new Set();
-  try {
-    const saved = JSON.parse(storage?.getItem(KEY) || "null");
-    if (
-      saved?.user?.id != null &&
-      typeof saved.accessToken === "string" &&
-      typeof saved.refreshToken === "string"
-    )
-      value = saved;
-  } catch {}
+  for (const [candidate, persistent] of [[storage, false], [persistentStorage, true]]) {
+    try {
+      const saved = JSON.parse(candidate?.getItem(KEY) || "null");
+      if (saved?.user?.id != null && typeof saved.accessToken === "string" && typeof saved.refreshToken === "string") {
+        value = saved;
+        remembered = persistent;
+        break;
+      }
+    } catch {}
+  }
   function update(next) {
     value = next;
+    const active = remembered ? persistentStorage : storage;
+    const inactive = remembered ? storage : persistentStorage;
+    try { inactive?.removeItem(KEY); } catch {}
     try {
-      next
-        ? storage?.setItem(KEY, JSON.stringify(next))
-        : storage?.removeItem(KEY);
+      next ? active?.setItem(KEY, JSON.stringify(next)) : active?.removeItem(KEY);
     } catch {}
     listeners.forEach((fn) => fn());
   }
@@ -134,6 +138,14 @@ export function createSessionStore({
       return () => listeners.delete(fn);
     },
     clear,
+    syncPersistent() {
+      if (!remembered) return;
+      let saved = null;
+      try { saved = JSON.parse(persistentStorage?.getItem(KEY) || "null"); } catch {}
+      revision++;
+      value = saved?.user?.id != null && typeof saved.accessToken === "string" && typeof saved.refreshToken === "string" ? saved : null;
+      listeners.forEach(fn => fn());
+    },
     request,
     set(next) {
       revision++;
@@ -142,7 +154,7 @@ export function createSessionStore({
     setUser(user) {
       if (value) update({ ...value, user });
     },
-    async login(username, password) {
+    async login(username, password, rememberMe = false) {
       const data = await request("/api/login", {
         method: "POST",
         auth: false,
@@ -155,6 +167,7 @@ export function createSessionStore({
       )
         throw new Error("Incomplete sign-in response. Please try again.");
       revision++;
+      remembered = Boolean(rememberMe);
       update(data);
       return data;
     },
@@ -177,8 +190,14 @@ export function createSessionStore({
     },
   };
 }
-let storage;
+let storage, persistentStorage;
 try {
   if (typeof window !== "undefined") storage = window.sessionStorage;
 } catch {}
-export const sessionStore = createSessionStore({ storage });
+try {
+  if (typeof window !== "undefined") persistentStorage = window.localStorage;
+} catch {}
+export const sessionStore = createSessionStore({ storage, persistentStorage });
+if (typeof window !== "undefined") window.addEventListener("storage", event => {
+  if (event.key === KEY || event.key === null) sessionStore.syncPersistent();
+});

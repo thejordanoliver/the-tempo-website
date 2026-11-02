@@ -1626,3 +1626,6 @@ select.theme-selector:not([multiple]) { padding-inline-end: 26px !important; bac
   nav { flex-wrap: wrap; }
   .theme-selector { margin-left: auto; }
 }
+
+.login-panel .remember-me { display: flex; align-items: center; gap: 8px; margin: 16px 0; cursor: pointer; }
+.login-panel .remember-me input { width: 18px; height: 18px; min-height: 0; margin: 0; padding: 0; accent-color: var(--text); }

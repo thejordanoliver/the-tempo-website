@@ -35,7 +35,7 @@ React handles the homepage, sign-in, Home, profile, Support, Privacy Policy, gam
 
 Browse `/leagues/` to search all 32 leagues across nine sports. League detail links use `/league/?league=nba`, with optional `tab`, `date`, `season`, `week`, and `page` parameters preserved by Back/Forward and reload. Scores, news, standings, and sport-specific sections use the existing backend and session request layer; league forums require sign-in.
 
-Session tokens and basic account details stay in this browser tab's `sessionStorage`, and access tokens refresh when needed. Support and other page navigation preserve sign-in. Signing out clears the saved session immediately. Passwords are never persisted.
+Session tokens and basic account details use tab-only `sessionStorage` by default. Selecting Remember me on sign-in uses `localStorage` to restore sign-in across browser visits until sign-out or refresh-token expiry. Access tokens refresh when needed. Support and other page navigation preserve sign-in. Signing out clears the saved session immediately. Passwords are never persisted.
 
 Sports data and articles come only from the backend. Article HTML is converted to text and safe links; untrusted HTML is never inserted into the page.
 

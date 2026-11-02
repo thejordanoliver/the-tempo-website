@@ -130,3 +130,24 @@ test("sign-in stores tokens but never the password; logout clears local state on
   assert.equal(await store.logout(), false);
   assert.equal(store.getSnapshot(), null);
 });
+
+test("remember me restores a session after the tab closes and sign-out clears it", async () => {
+  const persistent = storage();
+  const store = createSessionStore({storage: storage(), persistentStorage: persistent, fetcher: async () => response(200, sample)});
+  await store.login("fan", "secret", true);
+  const reopened = createSessionStore({storage: storage(), persistentStorage: persistent});
+  assert.equal(reopened.getSnapshot().user.id, 1);
+  reopened.clear();
+  store.syncPersistent();
+  assert.equal(store.getSnapshot(), null);
+  assert.equal(createSessionStore({storage: storage(), persistentStorage: persistent}).getSnapshot(), null);
+  assert(!JSON.stringify(persistent.getItem("tempo.web.session.v1")).includes("secret"));
+});
+test("unchecked remember me removes previous persistence and stays tab-only", async () => {
+  const tab = storage(), persistent = storage();
+  const store = createSessionStore({storage: tab, persistentStorage: persistent, fetcher: async () => response(200, sample)});
+  await store.login("fan", "secret", true);
+  await store.login("fan", "secret", false);
+  assert.equal(createSessionStore({storage: tab, persistentStorage: persistent}).getSnapshot().user.id, 1);
+  assert.equal(createSessionStore({storage: storage(), persistentStorage: persistent}).getSnapshot(), null);
+});
