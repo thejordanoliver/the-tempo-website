@@ -1,6 +1,6 @@
 # Tempo website
 
-React website for Tempo, hosted on GitHub Pages. The source lives in `src/`; the root HTML files and `web-assets/` are generated output.
+React website for Tempo, hosted on GitHub Pages. The source lives in `src/`; the root HTML files and `web-assets/` are generated output. See [the architecture guide](docs/architecture.md) for file ownership and conventions.
 
 ## Development
 
@@ -39,9 +39,17 @@ Session tokens and basic account details use tab-only `sessionStorage` by defaul
 
 Sports data and articles come only from the backend. Article HTML is converted to text and safe links; untrusted HTML is never inserted into the page.
 
+## Home and live scores
+
+Home groups scores into named league sections, with favorite-team leagues and saved leagues first. Home shows at most 10 games per sport across those league sections. Each section has a theme-aware logo, game count and a link to that league’s full schedule on the selected date. Guest Home keeps its league selector.
+
+Home scoreboards, league scores/fights and game details use the backend’s `/sports-live` Socket.IO namespace after the initial HTTP request. Subscriptions follow date, week and game selections, pause while the tab is hidden, and rejoin on return or reconnect. All sports data continues to come from the Tempo backend.
+
 ## Verify and publish
 
 ```sh
+npm run format
+npm run format:check
 npm test
 npm run build
 ```

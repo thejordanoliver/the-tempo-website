@@ -1,8 +1,26 @@
-import { build } from "esbuild";
+import { readFileSync } from "node:fs";
 import { mkdir, writeFile, rm, readdir } from "node:fs/promises";
 import path from "node:path";
-import { readFileSync } from "node:fs";
 import { parseEnv } from "node:util";
+
+import { build } from "esbuild";
+
+const SITE_ROUTES = [
+  "",
+  "home",
+  "login",
+  "profile",
+  "support",
+  "privacy",
+  "game",
+  "article",
+  "post",
+  "leagues",
+  "league",
+  "team",
+  "player",
+  "fighter",
+];
 
 export function getApiUrl({ env = process.env, envPath = ".env" } = {}) {
   let fileEnv = {};
@@ -52,22 +70,7 @@ export async function buildSite({
   const outputs = Object.keys(result.metafile.outputs),
     js = path.basename(outputs.find((p) => p.endsWith(".js"))),
     css = path.basename(outputs.find((p) => p.endsWith(".css")));
-  for (const route of [
-    "",
-    "home",
-    "login",
-    "profile",
-    "support",
-    "privacy",
-    "game",
-    "article",
-    "post",
-    "leagues",
-    "league",
-    "team",
-    "player",
-    "fighter",
-  ]) {
+  for (const route of SITE_ROUTES) {
     const prefix = route ? "../" : "./";
     const title = route
       ? route[0].toUpperCase() + route.slice(1)
@@ -80,22 +83,7 @@ export async function buildSite({
   }
   await writeFile(path.join(outdir, ".nojekyll"), "");
   // Old uploaded subfolder URLs redirect to canonical routes without duplicating the app.
-  for (const route of [
-    "",
-    "home",
-    "login",
-    "profile",
-    "support",
-    "privacy",
-    "game",
-    "article",
-    "post",
-    "leagues",
-    "league",
-    "team",
-    "player",
-    "fighter",
-  ]) {
+  for (const route of SITE_ROUTES) {
     const prefix = route ? "../../" : "../";
     const destination = prefix + (route ? route + "/" : "");
     const folder = path.join(outdir, "tempo-website", route);

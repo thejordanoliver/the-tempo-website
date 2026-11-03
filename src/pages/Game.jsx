@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { State, useResource } from "../components.jsx";
-import GameHeader from "../components/GameHeader.jsx";
-import GameLeaders from "../components/GameLeaders.jsx";
-import GameLocation from "../components/GameLocation.jsx";
-import GameStats from "../components/GameStats.jsx";
-import GameSummary from "../components/GameSummary.jsx";
-import LineScore from "../components/LineScore.jsx";
-import { leagueSports } from "../leagues.js";
+
+import GameHeader from "../components/games/GameHeader.jsx";
+import GameLeaders from "../components/games/GameLeaders.jsx";
+import GameLocation from "../components/games/GameLocation.jsx";
+import GameStats from "../components/games/GameStats.jsx";
+import GameSummary from "../components/games/GameSummary.jsx";
+import LineScore from "../components/games/LineScore.jsx";
+import { State } from "../components/ui/State.jsx";
+import { leagueSports } from "../data/leagues/leagues.js";
+import { useResource } from "../hooks/useResource.js";
 const sports = Object.fromEntries(
   Object.entries(leagueSports).filter(([, sport]) =>
     [
@@ -24,6 +26,7 @@ function GameData({ id, league }) {
     { data, loading, error } = useResource(
       `/api/${sports[league]}/details?league=${league}&gameId=${id}`,
       version,
+      { kind: "game", payload: { sport: sports[league], league, gameId: id } },
     );
   const score = data?.score,
     details = data?.details || {};

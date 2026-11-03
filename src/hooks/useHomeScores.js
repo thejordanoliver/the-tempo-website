@@ -1,21 +1,67 @@
-import { useEffect, useState } from "react";
-import { sessionStore } from "../session.js";
-import { hasLeague, leagueSports, scorePath, scoreGroups } from "../leagues.js";
+import { useEffect, useRef, useState } from "react";
+
+import { hasLeague, leagueSports, scorePath } from "../data/leagues/leagues.js";
+import { sessionStore } from "../services/session.js";
+import { scoreboardItems } from "../utils/homeScores.js";
+import useLiveSportsSubscription from "./useLiveSportsSubscription.js";
 
 export default function useHomeScores(teams, leagues, date, version, enabled) {
-  const teamKeys = teams.map((team) => `${team.league}:${team.id}`);
   const leagueKeys = [
-    ...new Set([...teams.map((team) => team.league), ...leagues, ...Object.keys(leagueSports)]),
+    ...new Set([
+      ...teams.map((team) => team.league),
+      ...leagues,
+      ...Object.keys(leagueSports),
+    ]),
   ].filter(hasLeague);
-  const key = JSON.stringify([teamKeys, leagues, date, version, enabled]);
+  const key = JSON.stringify([
+    teams.map((team) => `${team.league}:${team.id}`),
+    leagues,
+    date,
+    version,
+    enabled,
+    sessionStore.getSnapshot()?.user?.id,
+  ]);
+  const live = useRef({ key, snapshots: new Map() });
   const [state, setState] = useState({
     key: null,
     items: [],
     loading: false,
     error: null,
   });
+  useLiveSportsSubscription({
+    enabled,
+    subscriptions: leagueKeys.map((league) => ({
+      kind: "scoreboard",
+      payload: {
+        sport: leagueSports[league],
+        league,
+        date: date.replaceAll("-", ""),
+      },
+    })),
+    onUpdate(data, envelope) {
+      if (!leagueKeys.includes(envelope.league)) return;
+      if (live.current.key !== key)
+        live.current = { key, snapshots: new Map() };
+      const items = scoreboardItems(data, envelope.league);
+      live.current.snapshots.set(envelope.league, items);
+      setState((previous) =>
+        previous.key === key
+          ? {
+              ...previous,
+              items: [
+                ...previous.items.filter(
+                  ({ league }) => league !== envelope.league,
+                ),
+                ...items,
+              ],
+            }
+          : previous,
+      );
+    },
+  });
   useEffect(() => {
     const controller = new AbortController();
+    live.current = { key, snapshots: new Map() };
     if (!enabled) return () => controller.abort();
     setState({ key, items: [], loading: true, error: null });
     async function load() {
@@ -30,46 +76,35 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
               ]),
             },
           );
-          return scoreGroups(data, leagueSports[league])
-            .flatMap((group) => group.games)
-            .map((game) => ({ game, league }));
+          return scoreboardItems(data, league);
         }),
       );
       if (controller.signal.aborted) return;
-      const favorite = [],
-        preferred = [],
-        other = [],
-        seen = new Set();
-      for (const result of results) {
-        if (result.status !== "fulfilled") continue;
-        for (const item of result.value) {
-          const id = `${item.league}:${item.game.id}`;
-          if (seen.has(id)) continue;
-          const isFavorite = [item.game.home, item.game.away].some(
-            (team) =>
-              team?.id != null &&
-              teamKeys.includes(`${item.league}:${team.id}`),
-          );
-          if (isFavorite) favorite.push(item);
-          else if (leagues.includes(item.league)) preferred.push(item);
-          else other.push(item);
-          seen.add(id);
-        }
-      }
-      const failures = results.filter((result) => result.status === "rejected");
+      const snapshots =
+        live.current.key === key ? live.current.snapshots : new Map();
+      const items = leagueKeys.flatMap(
+        (league, index) =>
+          snapshots.get(league) ??
+          (results[index].status === "fulfilled" ? results[index].value : []),
+      );
+      const failed = leagueKeys.some(
+        (league, index) =>
+          results[index].status === "rejected" && !snapshots.has(league),
+      );
       setState({
         key,
-        items: [...favorite, ...preferred, ...other],
+        items,
         loading: false,
-        error: failures.length
+        error: failed
           ? "Some scores could not be loaded. Please try again."
           : null,
       });
     }
     void load();
     return () => controller.abort();
-    // The serialized key tracks all inputs without refetching on every render.
+    // The serialized key captures request identity without refetching on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
-  return state.key === key ? state : { items: [], loading: true, error: null };
+  const { key: _key, ...result } = state;
+  return state.key === key ? result : { items: [], loading: true, error: null };
 }

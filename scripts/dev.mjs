@@ -1,8 +1,9 @@
-import { buildSite } from "./build.mjs";
 import { watch } from "node:fs";
-import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
+import { createServer } from "node:http";
 import { resolve, extname, sep } from "node:path";
+
+import { buildSite } from "./build.mjs";
 await buildSite({ minify: false });
 const root = process.cwd(),
   port = Number(process.env.PORT || 8766),

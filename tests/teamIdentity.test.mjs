@@ -1,10 +1,11 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
-import { build } from "esbuild";
 import { mkdir } from "node:fs/promises";
+import { test } from "node:test";
+
+import { build } from "esbuild";
 await mkdir(".preview/tests", { recursive: true });
 await build({
-  entryPoints: ["src/teamIdentity.js"],
+  entryPoints: ["src/data/teams/teamIdentity.js"],
   outfile: ".preview/tests/team-identity.mjs",
   bundle: true,
   platform: "node",

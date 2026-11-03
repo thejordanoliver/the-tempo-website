@@ -1,8 +1,12 @@
-import usePlayerTeams from "../hooks/usePlayerTeams.js";
-import TeamLogo from "../components/TeamLogo.jsx";
 import { useState } from "react";
-import { Image, State, Table, useResource } from "../components.jsx";
-import { Link } from "../router.jsx";
+
+import { Link } from "../app/router.jsx";
+import PlayerLink from "../components/players/PlayerLink.jsx";
+import TeamLogo from "../components/teams/TeamLogo.jsx";
+import { Image } from "../components/ui/Image.jsx";
+import { State } from "../components/ui/State.jsx";
+import { Table } from "../components/ui/Table.jsx";
+import { favoriteLeagues } from "../data/leagues/favoriteLeagues.js";
 import {
   playerApiLeague,
   playerHref,
@@ -10,12 +14,12 @@ import {
   seasonStatGroups,
   statLabel,
   validPlayerId,
-} from "../players.js";
-import { favoriteLeagues } from "../favoriteLeagues.js";
-import { teamIdentity } from "../teamIdentity.js";
-import { teamHref } from "../teams.js";
-import PlayerLink from "../components/PlayerLink.jsx";
-import "../components/Player.css";
+} from "../data/players/players.js";
+import { teamIdentity } from "../data/teams/teamIdentity.js";
+import { teamHref } from "../data/teams/teams.js";
+import usePlayerTeams from "../hooks/usePlayerTeams.js";
+import { useResource } from "../hooks/useResource.js";
+import "../components/players/Player.css";
 
 export function LogResult({ result, score }) {
   const outcome = String(result || "")

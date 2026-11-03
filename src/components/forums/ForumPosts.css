@@ -1,0 +1,134 @@
+.forum-post-header {
+  align-items: center;
+  flex-wrap: wrap;
+}
+.forum-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.forum-avatar-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface);
+  flex: none;
+}
+.league-feed .forum-avatar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.forum-username {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+.forum-media {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+.forum-media img {
+  width: 100%;
+}
+.league-feed video {
+  display: block;
+  width: 100%;
+  max-height: 480px;
+  margin: 16px 0;
+  border-radius: 8px;
+  background: var(--surface);
+}
+.forum-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+.forum-poll {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.league-feed > article {
+  min-width: 0;
+}
+.forum-media {
+  width: 100%;
+}
+.league-feed .forum-media img {
+  display: block;
+  width: 100%;
+  max-height: none;
+  height: auto;
+}
+.forum-counts > span,
+.forum-counts > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.forum-link,
+.forum-link:hover,
+.forum-link:visited {
+  text-decoration: none;
+}
+.forum-replies {
+  margin-left: 24px;
+  border-left: 1px solid var(--line);
+  padding-left: 16px;
+}
+
+.forum-poll-options {
+  display: grid;
+  gap: 8px;
+}
+.forum-poll-option {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--muted);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font: 400 16px/1.4 var(--font);
+}
+.forum-poll-option:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.forum-poll-option[aria-pressed="true"] {
+  border-color: #007aff;
+}
+.forum-poll-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: -1;
+  background: var(--surface);
+}
+.forum-poll-option[aria-pressed="true"] .forum-poll-fill {
+  background: #007aff30;
+}
+.forum-poll-footer {
+  margin: 10px 0 0;
+}

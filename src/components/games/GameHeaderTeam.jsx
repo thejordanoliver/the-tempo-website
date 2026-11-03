@@ -1,0 +1,32 @@
+import { Link } from "../../app/router.jsx";
+import { teamIdentity } from "../../data/teams/teamIdentity.js";
+import { teamHref, hasTeamLeague } from "../../data/teams/teams.js";
+import TeamLogo from "../teams/TeamLogo.jsx";
+
+export default function GameHeaderTeam({ team, league, postGame, side }) {
+  const identity = teamIdentity(team, league);
+  const name = team?.code || identity.shortName || "TBD";
+  return (
+    <div className={`gh-team gh-team-${side}`}>
+      <TeamLogo team={team} league={league} />
+      <div className="gh-team-label">
+        <h2 title={team?.fullName || team?.name || identity.shortName}>
+          {team?.rank > 0 && <small>{team.rank} </small>}
+          {team?.id != null && hasTeamLeague(league) ? (
+            <Link
+              to={teamHref(league, team.id)}
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              {name}
+            </Link>
+          ) : (
+            name
+          )}
+        </h2>
+        {postGame && team?.record && (
+          <p className="gh-team-record">{team.record}</p>
+        )}
+      </div>
+    </div>
+  );
+}

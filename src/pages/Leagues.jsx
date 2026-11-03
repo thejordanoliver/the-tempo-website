@@ -1,20 +1,12 @@
-import ThemeSource from "../components/ThemeSource.jsx";
 import { useState } from "react";
-import Icon from "../components/Icon.jsx";
-import { Link } from "../router.jsx";
-import { favoriteLeagues } from "../favoriteLeagues.js";
-import { sportLeagues, leagueHref } from "../leagues.js";
-import "../components/League.css";
 
-export function LeagueLogo({ league }) {
-  const config = favoriteLeagues[league];
-  return (
-    <picture className="league-logo">
-      <ThemeSource srcSet={config.logoDark} />
-      <img src={config.logo} alt="" loading="lazy" />
-    </picture>
-  );
-}
+import { Link } from "../app/router.jsx";
+import { LeagueLogo } from "../components/leagues/LeagueLogo.jsx";
+import Icon from "../components/ui/Icon.jsx";
+import { favoriteLeagues } from "../data/leagues/favoriteLeagues.js";
+import { sportLeagues, leagueHref } from "../data/leagues/leagues.js";
+import "../components/leagues/League.css";
+
 export default function Leagues() {
   const [query, setQuery] = useState("");
   const groups = Object.entries(sportLeagues)

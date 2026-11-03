@@ -1,0 +1,48 @@
+.tc-card:hover {
+  opacity: 1;
+}
+.tc-card:active {
+  opacity: 1;
+}
+.tc-flags {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+.tc-flag {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.tc-flag + .tc-flag {
+  margin-left: -20px;
+}
+.tc-flag img {
+  width: 68px;
+  height: 68px;
+  object-fit: cover;
+  max-width: none;
+}
+.tc-status-part {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tc-serving {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #177901;
+}
+:root[data-theme="dark"] .tc-serving {
+  background: #2fff00;
+}

@@ -1,8 +1,9 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { test } from "node:test";
+
 import { getApiUrl } from "../scripts/build.mjs";
 
 test("build loads the HTTPS API from .env and allows explicit environment overrides", () => {

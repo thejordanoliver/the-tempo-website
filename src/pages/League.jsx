@@ -1,9 +1,17 @@
-import UFCEvents from "../components/UFCEvents.jsx";
-import FootballScores from "../components/FootballScores.jsx";
 import { useState } from "react";
-import { Link, navigate } from "../router.jsx";
-import { State, useResource } from "../components.jsx";
-import { favoriteLeagues } from "../favoriteLeagues.js";
+
+import { Link, navigate } from "../app/router.jsx";
+import FootballScores from "../components/leagues/FootballScores.jsx";
+import { LeagueLogo } from "../components/leagues/LeagueLogo.jsx";
+import { LeagueNews } from "../components/leagues/LeagueNews.jsx";
+import { LeagueRecords } from "../components/leagues/LeagueRecords.jsx";
+import { LeagueScores } from "../components/leagues/LeagueScores.jsx";
+import { LeagueStandings } from "../components/leagues/LeagueStandings.jsx";
+import { LeagueStats } from "../components/leagues/LeagueStats.jsx";
+import UFCEvents from "../components/mma/UFCEvents.jsx";
+import GameDatePicker from "../components/ui/GameDatePicker.jsx";
+import { State } from "../components/ui/State.jsx";
+import { favoriteLeagues } from "../data/leagues/favoriteLeagues.js";
 import {
   hasLeague,
   leagueHref,
@@ -11,18 +19,10 @@ import {
   leagueSports,
   leagueResource,
   defaultSeason,
-} from "../leagues.js";
-import { LeagueLogo } from "./Leagues.jsx";
-import { localDate } from "./Home.jsx";
-import GameDatePicker from "../components/GameDatePicker.jsx";
-import {
-  LeagueNews,
-  LeagueScores,
-  LeagueStandings,
-  LeagueStats,
-  LeagueRecords,
-} from "../components/LeagueContent.jsx";
-import "../components/League.css";
+} from "../data/leagues/leagues.js";
+import { useResource } from "../hooks/useResource.js";
+import { localDate } from "../utils/dates.js";
+import "../components/leagues/League.css";
 
 const yearTabs = [
   "standings",
@@ -37,9 +37,29 @@ const yearTabs = [
 ];
 const label = (tab) =>
   tab === "stats" ? "Stats" : tab[0].toUpperCase() + tab.slice(1);
-function ResourcePanel({ path, league, tab, page, onPageChange, season, conference, onConferenceChange, eventId, onEventChange }) {
+function ResourcePanel({
+  path,
+  league,
+  tab,
+  page,
+  onPageChange,
+  season,
+  conference,
+  onConferenceChange,
+  eventId,
+  onEventChange,
+}) {
   const [version, setVersion] = useState(0);
-  const resource = useResource(path, version),
+  const liveParams = Object.fromEntries(
+    new URL(path, "https://tempo.invalid").searchParams,
+  );
+  const liveSubscription = ["scores", "fights"].includes(tab)
+    ? {
+        kind: "scoreboard",
+        payload: { sport: leagueSports[league], league, ...liveParams },
+      }
+    : null;
+  const resource = useResource(path, version, liveSubscription),
     { data, loading, error } = resource;
   const more =
     tab === "news"
@@ -62,7 +82,13 @@ function ResourcePanel({ path, league, tab, page, onPageChange, season, conferen
           {tab === "fights" && league === "ufc" ? (
             <UFCEvents data={data} eventId={eventId} onChange={onEventChange} />
           ) : tab === "scores" && leagueSports[league] === "football" ? (
-            <FootballScores data={data} league={league} season={season} conference={conference} onChange={onConferenceChange} />
+            <FootballScores
+              data={data}
+              league={league}
+              season={season}
+              conference={conference}
+              onChange={onConferenceChange}
+            />
           ) : tab === "news" ? (
             <LeagueNews data={data} />
           ) : ["scores", "fights", "playoffs", "bracket"].includes(tab) ? (
@@ -114,7 +140,8 @@ export default function League({ search = "", signedIn = false }) {
     );
   const config = favoriteLeagues[league],
     tabs = leagueTabs(league);
-  const requestedTab = params.get("tab") === "rankings" ? "standings" : params.get("tab");
+  const requestedTab =
+    params.get("tab") === "rankings" ? "standings" : params.get("tab");
   const tab = tabs.includes(requestedTab) ? requestedTab : tabs[0];
   const requestedDate = params.get("date"),
     date =
@@ -139,7 +166,9 @@ export default function League({ search = "", signedIn = false }) {
   );
   const week = /^([1-9]|1[0-9]|2[0-2])$/.test(params.get("week") || "")
     ? params.get("week")
-    : leagueSports[league] === "football" ? "1" : "";
+    : leagueSports[league] === "football"
+      ? "1"
+      : "";
   const seasonType = ["1", "2", "3"].includes(params.get("seasontype"))
     ? params.get("seasontype")
     : "2";
@@ -152,16 +181,17 @@ export default function League({ search = "", signedIn = false }) {
       if (next[key] == null || next[key] === "") delete next[key];
     navigate(leagueHref(league, next));
   }
-  const path = league === "ufc" && tab === "fights"
-    ? `/api/games/mma/ufc?dates=${season}0101-${season}1231&limit=1000`
-    : leagueResource(league, tab, {
-    date,
-    season,
-    page,
-    week,
-    seasonType,
-    conferenceId: params.get("conference"),
-  });
+  const path =
+    league === "ufc" && tab === "fights"
+      ? `/api/games/mma/ufc?dates=${season}0101-${season}1231&limit=1000`
+      : leagueResource(league, tab, {
+          date,
+          season,
+          page,
+          week,
+          seasonType,
+          conferenceId: params.get("conference"),
+        });
   return (
     <section
       className="leagues-page league-detail"
@@ -227,19 +257,24 @@ export default function League({ search = "", signedIn = false }) {
         ))}
       </div>
       <div className="league-controls">
-        {["scores", "fights"].includes(tab) && leagueSports[league] !== "football" && league !== "ufc" && (
-          <GameDatePicker
-            date={date}
-            onChange={(value) => update({ date: value, week: null })}
-          />
-        )}
-        {(yearTabs.includes(tab) || (league === "ufc" && tab === "fights") ||
+        {["scores", "fights"].includes(tab) &&
+          leagueSports[league] !== "football" &&
+          league !== "ufc" && (
+            <GameDatePicker
+              date={date}
+              onChange={(value) => update({ date: value, week: null })}
+            />
+          )}
+        {(yearTabs.includes(tab) ||
+          (league === "ufc" && tab === "fights") ||
           (leagueSports[league] === "football" && tab === "scores")) && (
           <label>
             Season / year
             <select
               value={season}
-              onChange={(event) => update({ season: event.target.value, event: null })}
+              onChange={(event) =>
+                update({ season: event.target.value, event: null })
+              }
             >
               {Array.from(
                 { length: 32 },
@@ -263,7 +298,6 @@ export default function League({ search = "", signedIn = false }) {
                 value={week}
                 onChange={(event) => update({ week: event.target.value })}
               >
-
                 {Array.from({ length: 22 }, (_, index) => (
                   <option key={index + 1} value={index + 1}>
                     Week {index + 1}
@@ -288,7 +322,7 @@ export default function League({ search = "", signedIn = false }) {
             )}
           </>
         )}
-        <div id="league-extra-controls" style={{display: "contents"}} />
+        <div id="league-extra-controls" style={{ display: "contents" }} />
       </div>
       <section
         id="league-panel"
@@ -313,7 +347,7 @@ export default function League({ search = "", signedIn = false }) {
             page={page}
             season={season}
             conference={params.get("conference") || ""}
-            onConferenceChange={(value) => update({conference: value})}
+            onConferenceChange={(value) => update({ conference: value })}
             onPageChange={(value) => update({ page: value })}
           />
         )}

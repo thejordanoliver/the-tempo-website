@@ -1,13 +1,15 @@
-import test from "node:test";
 import assert from "node:assert/strict";
-import { build } from "esbuild";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
+import test from "node:test";
+
+import { build } from "esbuild";
+
 import {
   playerApiLeague,
   playerHref,
   playerResource,
   seasonStatGroups,
-} from "../src/players.js";
+} from "../src/data/players/players.js";
 
 test("player profiles use existing backend endpoints and soccer/fighter aliases", () => {
   assert.equal(playerResource("nba", 1), "/api/roster/player/1");
@@ -58,7 +60,25 @@ test("season stat mapping preserves actual zeros and omits unavailable/internal 
 await mkdir(".preview/tests", { recursive: true });
 const bundled = await build({
   stdin: {
-    contents: `import React from 'react'; import {renderToStaticMarkup} from 'react-dom/server'; import Player, {PlayerProfile, PlayerSeasonStats, FighterHistory, SeasonTeam} from './src/pages/Player.jsx'; export const render=(name,props)=>renderToStaticMarkup(React.createElement({Player,PlayerProfile,PlayerSeasonStats,FighterHistory,SeasonTeam}[name],props));`,
+    contents: `
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import Player, {
+  PlayerProfile,
+  PlayerSeasonStats,
+  FighterHistory,
+  SeasonTeam,
+} from "./src/pages/Player.jsx";
+export const render = (name, props) =>
+  renderToStaticMarkup(
+    React.createElement(
+      { Player, PlayerProfile, PlayerSeasonStats, FighterHistory, SeasonTeam }[
+        name
+      ],
+      props,
+    ),
+  );
+`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },

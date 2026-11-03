@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { Image, State, useResource } from "../components.jsx";
-import { Link } from "../router.jsx";
-import { sessionStore } from "../session.js";
+
+import { Link } from "../app/router.jsx";
+import { Image } from "../components/ui/Image.jsx";
+import { State } from "../components/ui/State.jsx";
+import { useResource } from "../hooks/useResource.js";
+import { sessionStore } from "../services/session.js";
 
 export default function Profile({ user, onLogout }) {
   const [version, setVersion] = useState(0);

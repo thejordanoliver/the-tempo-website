@@ -1,4 +1,4 @@
-import { Link } from "../router.jsx";
+import { Link } from "../app/router.jsx";
 export default function Privacy() {
   return (
     <article className="tempo-info" aria-labelledby="tempo-privacy-title">

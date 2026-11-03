@@ -1,12 +1,13 @@
-import test from "node:test";
 import assert from "node:assert/strict";
+import test from "node:test";
+
 import {
   hasTeamLeague,
   teamHref,
   teamTabs,
   teamResource,
   teamConferenceStandings,
-} from "../src/teams.js";
+} from "../src/data/teams/teams.js";
 test("team pages accept team sports and reject individual sports and invalid IDs", () => {
   for (const league of ["nba", "nfl", "cb", "epl", "mcvb", "nhl"])
     assert(hasTeamLeague(league));
@@ -61,15 +62,23 @@ test("tabs omit unavailable data and retain schedule, discussions and team infor
 
 test("college team standings use conference endpoints", () => {
   for (const league of ["cfb", "mcbb", "wcbb"]) {
-    assert.equal(teamResource(league, 57, "standings", 2026), `/api/standings/${league}/conference?season=2026&seasontype=2`);
+    assert.equal(
+      teamResource(league, 57, "standings", 2026),
+      `/api/standings/${league}/conference?season=2026&seasontype=2`,
+    );
   }
 });
 
 test("team standings retain the full matching conference and omit other conferences", () => {
-  const data = {conferences: [
-    {name: "SEC", divisions: [{name: "Overall", teams: [{id: 57}, {id: 2}]}]},
-    {name: "ACC", divisions: [{name: "Overall", teams: [{id: 3}]}]},
-  ]};
+  const data = {
+    conferences: [
+      {
+        name: "SEC",
+        divisions: [{ name: "Overall", teams: [{ id: 57 }, { id: 2 }] }],
+      },
+      { name: "ACC", divisions: [{ name: "Overall", teams: [{ id: 3 }] }] },
+    ],
+  };
   const result = teamConferenceStandings(data, "57");
   assert.deepEqual(result.conferences, [data.conferences[0]]);
   assert.equal(result.conferences[0].divisions[0].teams.length, 2);
@@ -77,7 +86,21 @@ test("team standings retain the full matching conference and omit other conferen
   assert.equal(data.conferences.length, 2);
 });
 test("team standings match professional and volleyball conference team IDs", () => {
-  assert.equal(teamConferenceStandings({conferences: [{name: "East", standings: [{id: 13}]}]}, "13").conferences.length, 1);
-  const groups = [{name: "NCAA", children: [{name: "SEC", standings: [{team: {id: 57}}]}, {name: "ACC", standings: [{team: {id: 3}}]}]}];
-  assert.equal(teamConferenceStandings({groups}, 57).groups[0].name, "SEC");
+  assert.equal(
+    teamConferenceStandings(
+      { conferences: [{ name: "East", standings: [{ id: 13 }] }] },
+      "13",
+    ).conferences.length,
+    1,
+  );
+  const groups = [
+    {
+      name: "NCAA",
+      children: [
+        { name: "SEC", standings: [{ team: { id: 57 } }] },
+        { name: "ACC", standings: [{ team: { id: 3 } }] },
+      ],
+    },
+  ];
+  assert.equal(teamConferenceStandings({ groups }, 57).groups[0].name, "SEC");
 });

@@ -1,6 +1,7 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
-import { gameCardModel } from "../src/components/gameCardModel.js";
+import { test } from "node:test";
+
+import { gameCardModel } from "../src/components/games/gameCardModel.js";
 const base = {
   date: "2026-10-15T23:00:00Z",
   home: { score: 112, record: "2-0" },

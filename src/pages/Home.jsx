@@ -1,13 +1,16 @@
-import useHomeScores from "../hooks/useHomeScores.js";
-import { leagueSports } from "../leagues.js";
-import { LeagueScores } from "../components/LeagueContent.jsx";
 import { useEffect, useState } from "react";
-import FavoritesScroll from "../components/FavoritesScroll.jsx";
-import GameDatePicker from "../components/GameDatePicker.jsx";
-import GameCard from "../components/GameCard.jsx";
-import TennisGameCard from "../components/TennisGameCard.jsx";
-import { Link } from "../router.jsx";
-import { Image, State, useResource } from "../components.jsx";
+
+import { Link } from "../app/router.jsx";
+import FavoritesScroll from "../components/home/FavoritesScroll.jsx";
+import HomeScoreSections from "../components/home/HomeScoreSections.jsx";
+import GameDatePicker from "../components/ui/GameDatePicker.jsx";
+import { Image } from "../components/ui/Image.jsx";
+import { State } from "../components/ui/State.jsx";
+import { leagueSports } from "../data/leagues/leagues.js";
+import useHomeScores from "../hooks/useHomeScores.js";
+import { useResource } from "../hooks/useResource.js";
+import { localDate } from "../utils/dates.js";
+import { groupHomeScores } from "../utils/homeScores.js";
 const endpoints = {
   nba: "basketball/nba",
   nfl: "football/nfl",
@@ -15,10 +18,6 @@ const endpoints = {
   mlb: "baseball",
   nhl: "hockey",
 };
-export function localDate() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-}
 export default function Home({ user, onLogout }) {
   const [league, setLeague] = useState(() => {
       const saved = globalThis.history?.state?.tempoHome?.league;
@@ -125,29 +124,10 @@ export default function Home({ user, onLogout }) {
           onRetry={() => setGamesVersion((v) => v + 1)}
         />
         {!games.loading && (
-          <div className="home-games">
-            {gameList.map(({ game, league }) =>
-              leagueSports[league] === "tennis" ? (
-                <TennisGameCard key={`${league}:${game.id}`} match={game} />
-              ) : ["mma", "racing"].includes(leagueSports[league]) ? (
-                <LeagueScores
-                  key={`${league}:${game.id}`}
-                  league={league}
-                  data={
-                    leagueSports[league] === "tennis"
-                      ? { matches: [game] }
-                      : { events: [game] }
-                  }
-                />
-              ) : (
-                <GameCard
-                  key={`${league}:${game.id}`}
-                  game={game}
-                  league={league}
-                />
-              ),
-            )}
-          </div>
+          <HomeScoreSections
+            sections={groupHomeScores(gameList, favoriteTeams, savedLeagues)}
+            date={date}
+          />
         )}
       </section>
       <section className="home-news" aria-labelledby="news-title">

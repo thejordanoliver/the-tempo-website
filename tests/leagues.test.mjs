@@ -1,7 +1,9 @@
-import test from "node:test";
 import assert from "node:assert/strict";
-import { build } from "esbuild";
 import { mkdir, writeFile } from "node:fs/promises";
+import test from "node:test";
+
+import { build } from "esbuild";
+
 import {
   sportLeagues,
   leagueSports,
@@ -10,12 +12,48 @@ import {
   defaultSeason,
   scoreGroups,
   playoffGroups,
-} from "../src/leagues.js";
+} from "../src/data/leagues/leagues.js";
 
 await mkdir(".preview/tests", { recursive: true });
 const result = await build({
   stdin: {
-    contents: `import React from 'react'; import {renderToStaticMarkup} from 'react-dom/server'; import {StandingsFilter} from './src/components/CollegeRankings.jsx'; import ForumPosts from './src/components/ForumPosts.jsx'; import Post, {CommentsList} from './src/pages/Post.jsx'; import Leagues from './src/pages/Leagues.jsx'; import League from './src/pages/League.jsx'; import Game from './src/pages/Game.jsx'; import {favoriteLeagues} from './src/favoriteLeagues.js'; import {LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords} from './src/components/LeagueContent.jsx'; export {favoriteLeagues}; export const render=(name,props={})=>renderToStaticMarkup(React.createElement({Post,StandingsFilter,ForumPosts,CommentsList,Leagues,League,Game,LeagueScores,LeagueStandings,LeagueStats,LeagueNews,LeagueRecords}[name],props));`,
+    contents: `
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { StandingsFilter } from "./src/components/leagues/CollegeRankings.jsx";
+import ForumPosts from "./src/components/forums/ForumPosts.jsx";
+import Post, { CommentsList } from "./src/pages/Post.jsx";
+import Leagues from "./src/pages/Leagues.jsx";
+import League from "./src/pages/League.jsx";
+import Game from "./src/pages/Game.jsx";
+import { favoriteLeagues } from "./src/data/leagues/favoriteLeagues.js";
+import { LeagueScores } from "./src/components/leagues/LeagueScores.jsx";
+import { LeagueStandings } from "./src/components/leagues/LeagueStandings.jsx";
+import { LeagueStats } from "./src/components/leagues/LeagueStats.jsx";
+import { LeagueNews } from "./src/components/leagues/LeagueNews.jsx";
+import { LeagueRecords } from "./src/components/leagues/LeagueRecords.jsx";
+export { favoriteLeagues };
+export const render = (name, props = {}) =>
+  renderToStaticMarkup(
+    React.createElement(
+      {
+        Post,
+        StandingsFilter,
+        ForumPosts,
+        CommentsList,
+        Leagues,
+        League,
+        Game,
+        LeagueScores,
+        LeagueStandings,
+        LeagueStats,
+        LeagueNews,
+        LeagueRecords,
+      }[name],
+      props,
+    ),
+  );
+`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
@@ -309,22 +347,25 @@ test("forum renders backend text, author identity, media and engagement counts",
   assert(!html.includes("javascript:"));
 });
 
-
 test("forum previews shorten long text and link to full posts and comments", () => {
   const text = "Long post ".repeat(80) + "last sentence";
-  const posts = [{id: 42, text, bookmarks: 4}];
-  const preview = render("ForumPosts", {posts});
+  const posts = [{ id: 42, text, bookmarks: 4 }];
+  const preview = render("ForumPosts", { posts });
   assert(!preview.includes("last sentence"));
   assert(preview.includes("Read more"));
   assert(preview.includes('href="/post/?id=42#comments"'));
   assert(preview.includes("4 bookmarks"));
   assert.equal((preview.match(/<svg/g) || []).length, 4);
-  const full = render("ForumPosts", {posts, fullText: true});
+  const full = render("ForumPosts", { posts, fullText: true });
   assert(full.includes("last sentence"));
   assert(!full.includes("Read more"));
 });
 test("post comments show full text and nested replies without post engagement links", () => {
-  const html = render("CommentsList", {comments: [{id: 1, text: "Comment body", replies: [{id: 2, text: "Reply body"}]}]});
+  const html = render("CommentsList", {
+    comments: [
+      { id: 1, text: "Comment body", replies: [{ id: 2, text: "Reply body" }] },
+    ],
+  });
   assert(html.includes("Comment body"));
   assert(html.includes("Reply body"));
   assert(html.includes("forum-replies"));
@@ -332,24 +373,55 @@ test("post comments show full text and nested replies without post engagement li
   assert(render("CommentsList").includes("No comments yet"));
 });
 test("college standings include a rankings section alongside conference tables", () => {
-  const html = render("LeagueStandings", {league: "cfb", data: {conferences: []}});
+  const html = render("LeagueStandings", {
+    league: "cfb",
+    data: { conferences: [] },
+  });
   assert(html.includes('aria-label="College standings and polls"'));
-  const pro = render("LeagueStandings", {league: "nfl", data: {conferences: []}});
+  const pro = render("LeagueStandings", {
+    league: "nfl",
+    data: { conferences: [] },
+  });
   assert(!pro.includes('aria-label="College standings and polls"'));
 });
-
 
 test("college polls are accessed through standings instead of a separate tab", () => {
   for (const league of ["cfb", "mcbb", "wcbb", "mcvb", "wcvb"]) {
     assert(!leagueTabs(league).includes("rankings"), league);
-    assert.equal(leagueResource(league, "rankings", {season: 2026}), null);
+    assert.equal(leagueResource(league, "rankings", { season: 2026 }), null);
   }
 });
 test("college rankings render multiple polls with ranked teams and points", () => {
-  const html = render("LeagueRecords", {league: "cfb", tab: "rankings", data: {rankings: [
-    {name: "AP Top 25", ranks: [{current: 1, team: {id: 57, name: "Florida Gators"}, recordSummary: "8-0", points: 1500}]},
-    {name: "Coaches Poll", ranks: [{current: 2, team: {id: 57, name: "Florida Gators"}, recordSummary: "8-0", points: 1400}]},
-  ]}});
+  const html = render("LeagueRecords", {
+    league: "cfb",
+    tab: "rankings",
+    data: {
+      rankings: [
+        {
+          name: "AP Top 25",
+          ranks: [
+            {
+              current: 1,
+              team: { id: 57, name: "Florida Gators" },
+              recordSummary: "8-0",
+              points: 1500,
+            },
+          ],
+        },
+        {
+          name: "Coaches Poll",
+          ranks: [
+            {
+              current: 2,
+              team: { id: 57, name: "Florida Gators" },
+              recordSummary: "8-0",
+              points: 1400,
+            },
+          ],
+        },
+      ],
+    },
+  });
   assert(html.includes("AP Top 25"));
   assert(html.includes("Coaches Poll"));
   assert(html.includes("Florida Gators"));
@@ -357,10 +429,12 @@ test("college rankings render multiple polls with ranked teams and points", () =
   assert(html.includes("1400"));
 });
 
-
 test("college standings call conference endpoints without a separate rankings tab", () => {
   for (const league of ["cfb", "mcbb", "wcbb"]) {
-    assert.equal(leagueResource(league, "standings", {season: 2026}), `/api/standings/${league}/conference?season=2026&seasontype=2`);
+    assert.equal(
+      leagueResource(league, "standings", { season: 2026 }),
+      `/api/standings/${league}/conference?season=2026&seasontype=2`,
+    );
   }
   for (const league of ["cfb", "mcbb", "wcbb", "mcvb", "wcvb"]) {
     const tabs = leagueTabs(league);
@@ -368,60 +442,147 @@ test("college standings call conference endpoints without a separate rankings ta
   }
 });
 test("college conference standings render division teams and conference records", () => {
-  const html = render("LeagueStandings", {league: "cfb", showRankings: false, data: {conferences: [{name: "SEC", divisions: [{name: "Overall", teams: [{id: 57, name: "Florida Gators", rank: 1, confOverall: "4-0", overall: "7-1", homeOverall: "4-0", awayOverall: "3-1", streak: "W5"}]}]}]}});
-  for (const value of ["SEC", "Florida Gators", "4-0", "7-1", "3-1", "W5"]) assert(html.includes(value));
+  const html = render("LeagueStandings", {
+    league: "cfb",
+    showRankings: false,
+    data: {
+      conferences: [
+        {
+          name: "SEC",
+          divisions: [
+            {
+              name: "Overall",
+              teams: [
+                {
+                  id: 57,
+                  name: "Florida Gators",
+                  rank: 1,
+                  confOverall: "4-0",
+                  overall: "7-1",
+                  homeOverall: "4-0",
+                  awayOverall: "3-1",
+                  streak: "W5",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  });
+  for (const value of ["SEC", "Florida Gators", "4-0", "7-1", "3-1", "W5"])
+    assert(html.includes(value));
   assert(!html.includes("No standings available"));
 });
 
 test("team profiles can render conference standings without rankings", () => {
-  const html = render("LeagueStandings", {league: "cfb", showRankings: false, data: {conferences: [{name: "SEC", divisions: [{name: "Overall", teams: [{id: 57, name: "Florida", overall: "7-1"}]}]}]}});
+  const html = render("LeagueStandings", {
+    league: "cfb",
+    showRankings: false,
+    data: {
+      conferences: [
+        {
+          name: "SEC",
+          divisions: [
+            {
+              name: "Overall",
+              teams: [{ id: 57, name: "Florida", overall: "7-1" }],
+            },
+          ],
+        },
+      ],
+    },
+  });
   assert(html.includes("SEC"));
   assert(html.includes("Florida"));
   assert(!html.includes('aria-label="College standings and polls"'));
 });
 
 test("standings dropdown defaults to AP and displays only the selected poll", () => {
-  const html = render("StandingsFilter", {league: "cfb", data: {conferences: [{name: "SEC", divisions: []}]}, rankings: {rankings: [
-    {type: "coaches", name: "Coaches Poll", ranks: [{current: 1, team: {id: 2, name: "Coaches leader"}}]},
-    {type: "ap", name: "AP Top 25", ranks: [{current: 1, team: {id: 57, name: "AP leader"}}]},
-  ]}});
-  assert(html.includes('<option value="poll:1" selected="">AP Top 25</option>'));
+  const html = render("StandingsFilter", {
+    league: "cfb",
+    data: { conferences: [{ name: "SEC", divisions: [] }] },
+    rankings: {
+      rankings: [
+        {
+          type: "coaches",
+          name: "Coaches Poll",
+          ranks: [{ current: 1, team: { id: 2, name: "Coaches leader" } }],
+        },
+        {
+          type: "ap",
+          name: "AP Top 25",
+          ranks: [{ current: 1, team: { id: 57, name: "AP leader" } }],
+        },
+      ],
+    },
+  });
+  assert(
+    html.includes('<option value="poll:1" selected="">AP Top 25</option>'),
+  );
   assert(html.includes('<option value="conference:0">SEC</option>'));
   assert(html.includes("AP leader"));
   assert(!html.includes("Coaches leader"));
 });
 
-
 test("forum polls render choices, selected results, and closed status", () => {
- const html = render("ForumPosts", { posts: [{ id: 55, poll: {
-   question: "Who wins?", expires_at: "2020-01-01T00:00:00Z", options: [
-     { id: 1, text: "Florida", vote_count: 3, voted_by_current_user: true },
-     { id: 2, text: "Houston", vote_count: 1, voted_by_current_user: false },
-   ],
- } }] });
- assert(html.includes("Who wins?"));
- assert(html.includes("Florida"));
- assert(html.includes("Houston"));
- assert(html.includes("75%"));
- assert(html.includes("25%"));
- assert(html.includes('aria-pressed="true"'));
- assert(html.includes("Closed"));
- assert(html.includes("votes"));
+  const html = render("ForumPosts", {
+    posts: [
+      {
+        id: 55,
+        poll: {
+          question: "Who wins?",
+          expires_at: "2020-01-01T00:00:00Z",
+          options: [
+            {
+              id: 1,
+              text: "Florida",
+              vote_count: 3,
+              voted_by_current_user: true,
+            },
+            {
+              id: 2,
+              text: "Houston",
+              vote_count: 1,
+              voted_by_current_user: false,
+            },
+          ],
+        },
+      },
+    ],
+  });
+  assert(html.includes("Who wins?"));
+  assert(html.includes("Florida"));
+  assert(html.includes("Houston"));
+  assert(html.includes("75%"));
+  assert(html.includes("25%"));
+  assert(html.includes('aria-pressed="true"'));
+  assert(html.includes("Closed"));
+  assert(html.includes("votes"));
 });
 
 test("open polls show choices and a sign-in link without revealing percentages", () => {
- const html = render("ForumPosts", { posts: [{ id: 56, poll: {
-   question: "Pick one", options: [{ id: 1, text: "Option A", vote_count: 2 }],
- } }] });
- assert(html.includes("Option A"));
- assert(html.includes("Sign in to vote"));
- assert(!html.includes("100%"));
+  const html = render("ForumPosts", {
+    posts: [
+      {
+        id: 56,
+        poll: {
+          question: "Pick one",
+          options: [{ id: 1, text: "Option A", vote_count: 2 }],
+        },
+      },
+    ],
+  });
+  assert(html.includes("Option A"));
+  assert(html.includes("Sign in to vote"));
+  assert(!html.includes("100%"));
 });
-
 
 test("post links accept backend UUIDs and mount the post and comments page", () => {
   const id = "8d9a2405-f501-4a3b-a615-d84da38d7f6a";
-  const preview = render("ForumPosts", { posts: [{ id, text: "Long post ".repeat(80), poll: null }] });
+  const preview = render("ForumPosts", {
+    posts: [{ id, text: "Long post ".repeat(80), poll: null }],
+  });
   assert(preview.includes(`href="/post/?id=${id}"`));
   assert(preview.includes(`href="/post/?id=${id}#comments"`));
   for (const hash of ["", "#comments"]) {
@@ -438,21 +599,112 @@ test("post links accept backend UUIDs and mount the post and comments page", () 
 });
 
 test("UFC champions match app division order, select one title holder and show fighter details", () => {
-  const fighter = {id: 1, full_name: "Test Champion", nickname: "The Champ", headshot_url: "https://example.test/headshot.png", flag_url: "https://example.test/flag.png", citizenship: "Brazil", weight: 205, stance_text: "Orthodox", association_name: "Test Camp"};
-  const html = render("LeagueRecords", {tab: "champions", league: "ufc", data: {data: {
-    "Women's Flyweight": [{accolade_name: "Interim Title", fighter: {...fighter, full_name: "Interim Fighter"}}],
-    Heavyweight: [{accolade_name: "Former Title", fighter: {...fighter, full_name: "Former Fighter"}}, {is_current: true, accolade_name: "Title", fighter}],
-  }}});
+  const fighter = {
+    id: 1,
+    full_name: "Test Champion",
+    nickname: "The Champ",
+    headshot_url: "https://example.test/headshot.png",
+    flag_url: "https://example.test/flag.png",
+    citizenship: "Brazil",
+    weight: 205,
+    stance_text: "Orthodox",
+    association_name: "Test Camp",
+  };
+  const html = render("LeagueRecords", {
+    tab: "champions",
+    league: "ufc",
+    data: {
+      data: {
+        "Women's Flyweight": [
+          {
+            accolade_name: "Interim Title",
+            fighter: { ...fighter, full_name: "Interim Fighter" },
+          },
+        ],
+        Heavyweight: [
+          {
+            accolade_name: "Former Title",
+            fighter: { ...fighter, full_name: "Former Fighter" },
+          },
+          { is_current: true, accolade_name: "Title", fighter },
+        ],
+      },
+    },
+  });
   assert(html.indexOf("Heavyweight") < html.indexOf("W Flyweight"));
-  for (const text of ["Test Champion", "headshot.png", "flag.png", "Brazil", "205 lbs", "Orthodox", "Test Camp", "TITLE HOLDER", "INTERIM TITLE"]) assert(html.includes(text));
+  for (const text of [
+    "Test Champion",
+    "headshot.png",
+    "flag.png",
+    "Brazil",
+    "205 lbs",
+    "Orthodox",
+    "Test Camp",
+    "TITLE HOLDER",
+    "INTERIM TITLE",
+  ])
+    assert(html.includes(text));
   assert(!html.includes("Former Fighter"));
-  assert(render("LeagueRecords", {tab: "champions", league: "ufc", data: {data: {}}}).includes("No champions available"));
+  assert(
+    render("LeagueRecords", {
+      tab: "champions",
+      league: "ufc",
+      data: { data: {} },
+    }).includes("No champions available"),
+  );
 });
 
 test("UFC fight cards show headshots, records, flags and final results", () => {
-  const html = render("LeagueScores", {league: "ufc", data: {events: [{id: 1, name: "UFC Test", date: "2026-11-01", fights: [{id: 2, method: "Submission", weightClass: "Heavyweight", status: {description: "Final"}, competitors: [
-    {name: "Winner Fighter", headshot: "https://example.test/winner.png", flag: "https://example.test/flag.png", record: "12-0", winner: true},
-    {name: "Other Fighter", headshot: "https://example.test/other.png", record: "10-2", winner: false},
-  ]}]}]}});
-  for (const value of ["ufc-fight-card", "winner.png", "other.png", "flag.png", "12-0", "10-2", "SUB", "Heavyweight", "ufc-fight-loser", "ufc-fight-winner", "ufc-fight-final", "ufc-event-fights", "ufc-fight-left", "ufc-fight-right"]) assert(html.includes(value));
+  const html = render("LeagueScores", {
+    league: "ufc",
+    data: {
+      events: [
+        {
+          id: 1,
+          name: "UFC Test",
+          date: "2026-11-01",
+          fights: [
+            {
+              id: 2,
+              method: "Submission",
+              weightClass: "Heavyweight",
+              status: { description: "Final" },
+              competitors: [
+                {
+                  name: "Winner Fighter",
+                  headshot: "https://example.test/winner.png",
+                  flag: "https://example.test/flag.png",
+                  record: "12-0",
+                  winner: true,
+                },
+                {
+                  name: "Other Fighter",
+                  headshot: "https://example.test/other.png",
+                  record: "10-2",
+                  winner: false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  });
+  for (const value of [
+    "ufc-fight-card",
+    "winner.png",
+    "other.png",
+    "flag.png",
+    "12-0",
+    "10-2",
+    "SUB",
+    "Heavyweight",
+    "ufc-fight-loser",
+    "ufc-fight-winner",
+    "ufc-fight-final",
+    "ufc-event-fights",
+    "ufc-fight-left",
+    "ufc-fight-right",
+  ])
+    assert(html.includes(value));
 });

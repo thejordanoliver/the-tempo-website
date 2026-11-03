@@ -1,5 +1,5 @@
-import Icon from "../components/Icon.jsx";
-import { Link } from "../router.jsx";
+import { Link } from "../app/router.jsx";
+import Icon from "../components/ui/Icon.jsx";
 export default function Landing() {
   return (
     <>

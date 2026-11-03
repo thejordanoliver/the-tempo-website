@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { sessionStore } from "../session.js";
-import { hasTeamLeague } from "../teams.js";
+
+import { hasTeamLeague } from "../data/teams/teams.js";
+import { sessionStore } from "../services/session.js";
 
 // Fetch each distinct team once, even when several seasons share the same team.
 export default function usePlayerTeams(league, ids) {

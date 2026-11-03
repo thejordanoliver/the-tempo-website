@@ -1,4 +1,4 @@
-import { Link } from "../router.jsx";
+import { Link } from "../app/router.jsx";
 export default function Support() {
   return (
     <article className="tempo-info" aria-labelledby="tempo-support-title">

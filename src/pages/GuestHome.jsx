@@ -1,22 +1,45 @@
 import { useState } from "react";
-import { Link } from "../router.jsx";
-import { State, useResource } from "../components.jsx";
-import { favoriteLeagues } from "../favoriteLeagues.js";
-import { scorePath, leagueSports } from "../leagues.js";
-import { LeagueScores, LeagueNews } from "../components/LeagueContent.jsx";
-import GameDatePicker from "../components/GameDatePicker.jsx";
-import { localDate } from "./Home.jsx";
+
+import { Link } from "../app/router.jsx";
+import HomeScoreSections from "../components/home/HomeScoreSections.jsx";
+import { LeagueNews } from "../components/leagues/LeagueNews.jsx";
+import GameDatePicker from "../components/ui/GameDatePicker.jsx";
+import { State } from "../components/ui/State.jsx";
+import { favoriteLeagues } from "../data/leagues/favoriteLeagues.js";
+import { scorePath, leagueSports } from "../data/leagues/leagues.js";
+import { useResource } from "../hooks/useResource.js";
+import { localDate } from "../utils/dates.js";
+import { groupHomeScores, scoreboardItems } from "../utils/homeScores.js";
 function GuestScores({ league, date }) {
   const [version, setVersion] = useState(0),
     scores = useResource(
       `${scorePath(league)}?date=${date.replaceAll("-", "")}`,
       version,
+      {
+        kind: "scoreboard",
+        payload: {
+          sport: leagueSports[league],
+          league,
+          date: date.replaceAll("-", ""),
+        },
+      },
     );
   return (
     <>
-      <State {...scores} onRetry={() => setVersion((v) => v + 1)} />
+      <State
+        {...scores}
+        empty={
+          !scoreboardItems(scores.data, league).length
+            ? "No games scheduled for the selected date."
+            : null
+        }
+        onRetry={() => setVersion((v) => v + 1)}
+      />
       {!scores.loading && !scores.error && (
-        <LeagueScores data={scores.data} league={league} />
+        <HomeScoreSections
+          sections={groupHomeScores(scoreboardItems(scores.data, league))}
+          date={date}
+        />
       )}
     </>
   );

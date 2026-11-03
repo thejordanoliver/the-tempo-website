@@ -1,6 +1,7 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createSessionStore } from "../src/session.js";
+import { test } from "node:test";
+
+import { createSessionStore } from "../src/services/session.js";
 function storage() {
   const values = new Map();
   return {
@@ -133,35 +134,86 @@ test("sign-in stores tokens but never the password; logout clears local state on
 
 test("remember me restores a session after the tab closes and sign-out clears it", async () => {
   const persistent = storage();
-  const store = createSessionStore({storage: storage(), persistentStorage: persistent, fetcher: async () => response(200, sample)});
+  const store = createSessionStore({
+    storage: storage(),
+    persistentStorage: persistent,
+    fetcher: async () => response(200, sample),
+  });
   await store.login("fan", "secret", true);
-  const reopened = createSessionStore({storage: storage(), persistentStorage: persistent});
+  const reopened = createSessionStore({
+    storage: storage(),
+    persistentStorage: persistent,
+  });
   assert.equal(reopened.getSnapshot().user.id, 1);
   reopened.clear();
   store.syncPersistent();
   assert.equal(store.getSnapshot(), null);
-  assert.equal(createSessionStore({storage: storage(), persistentStorage: persistent}).getSnapshot(), null);
-  assert(!JSON.stringify(persistent.getItem("tempo.web.session.v1")).includes("secret"));
+  assert.equal(
+    createSessionStore({
+      storage: storage(),
+      persistentStorage: persistent,
+    }).getSnapshot(),
+    null,
+  );
+  assert(
+    !JSON.stringify(persistent.getItem("tempo.web.session.v1")).includes(
+      "secret",
+    ),
+  );
 });
 test("unchecked remember me removes previous persistence and stays tab-only", async () => {
-  const tab = storage(), persistent = storage();
-  const store = createSessionStore({storage: tab, persistentStorage: persistent, fetcher: async () => response(200, sample)});
+  const tab = storage(),
+    persistent = storage();
+  const store = createSessionStore({
+    storage: tab,
+    persistentStorage: persistent,
+    fetcher: async () => response(200, sample),
+  });
   await store.login("fan", "secret", true);
   await store.login("fan", "secret", false);
-  assert.equal(createSessionStore({storage: tab, persistentStorage: persistent}).getSnapshot().user.id, 1);
-  assert.equal(createSessionStore({storage: storage(), persistentStorage: persistent}).getSnapshot(), null);
+  assert.equal(
+    createSessionStore({
+      storage: tab,
+      persistentStorage: persistent,
+    }).getSnapshot().user.id,
+    1,
+  );
+  assert.equal(
+    createSessionStore({
+      storage: storage(),
+      persistentStorage: persistent,
+    }).getSnapshot(),
+    null,
+  );
 });
 
 test("remembered session refreshes expired access on a later visit and persists rotation", async () => {
   const persistent = storage();
-  const first = createSessionStore({storage: storage(), persistentStorage: persistent, fetcher: async () => response(200, sample)});
+  const first = createSessionStore({
+    storage: storage(),
+    persistentStorage: persistent,
+    fetcher: async () => response(200, sample),
+  });
   await first.login("fan", "secret", true);
-  const reopened = createSessionStore({storage: storage(), persistentStorage: persistent, fetcher: async (url, options) => {
-    if (url.endsWith("/api/refresh")) return response(200, {accessToken: "rotated-access", refreshToken: "rotated-refresh"});
-    return options.headers.Authorization === "Bearer rotated-access" ? response(200, {id: 1}) : response(401);
-  }});
+  const reopened = createSessionStore({
+    storage: storage(),
+    persistentStorage: persistent,
+    fetcher: async (url, options) => {
+      if (url.endsWith("/api/refresh"))
+        return response(200, {
+          accessToken: "rotated-access",
+          refreshToken: "rotated-refresh",
+        });
+      return options.headers.Authorization === "Bearer rotated-access"
+        ? response(200, { id: 1 })
+        : response(401);
+    },
+  });
   assert.equal((await reopened.request("/api/users/me")).id, 1);
-  const later = createSessionStore({storage: storage(), persistentStorage: persistent});
+  const later = createSessionStore({
+    storage: storage(),
+    persistentStorage: persistent,
+  });
   assert.equal(later.getSnapshot().accessToken, "rotated-access");
   assert.equal(later.getSnapshot().refreshToken, "rotated-refresh");
 });

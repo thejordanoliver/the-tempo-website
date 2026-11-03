@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
-import { Link } from "../router.jsx";
-import { Image, State, safeURL, useResource } from "../components.jsx";
+
+import { Link } from "../app/router.jsx";
+import { Image } from "../components/ui/Image.jsx";
+import { State } from "../components/ui/State.jsx";
+import { useResource } from "../hooks/useResource.js";
+import { safeURL } from "../utils/urls.js";
 import "./Article.css";
 
 function ArticleVideo({ video }) {
@@ -27,8 +31,12 @@ function ArticleVideo({ video }) {
       <figcaption>
         {video.title && <h2>{video.title}</h2>}
         {video.description && <p>{video.description}</p>}
-        {failed && <p>Unable to play this video here. Open the video to watch it.</p>}
-        <a href={url} target="_blank" rel="noopener noreferrer">Watch video in a new tab</a>
+        {failed && (
+          <p>Unable to play this video here. Open the video to watch it.</p>
+        )}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Watch video in a new tab
+        </a>
       </figcaption>
     </figure>
   );

@@ -1,21 +1,28 @@
-import PlayerLink from "../components/PlayerLink.jsx";
-import ConferenceBadge from "../components/ConferenceBadge.jsx";
 import { useEffect, useState } from "react";
-import { Image, State, Table, useResource } from "../components.jsx";
-import GameLocation from "../components/GameLocation.jsx";
-import "../components/League.css";
+
+import GameLocation from "../components/games/GameLocation.jsx";
+import ConferenceBadge from "../components/leagues/ConferenceBadge.jsx";
+import PlayerLink from "../components/players/PlayerLink.jsx";
+import { Image } from "../components/ui/Image.jsx";
+import { State } from "../components/ui/State.jsx";
+import { Table } from "../components/ui/Table.jsx";
+import { useResource } from "../hooks/useResource.js";
+import "../components/leagues/League.css";
+import { LeagueNews } from "../components/leagues/LeagueNews.jsx";
+import { LeagueRecords } from "../components/leagues/LeagueRecords.jsx";
+import { LeagueScores } from "../components/leagues/LeagueScores.jsx";
+import { LeagueStandings } from "../components/leagues/LeagueStandings.jsx";
+import "../components/teams/Team.css";
+import { Link, navigate } from "../app/router.jsx";
+import TeamLogo from "../components/teams/TeamLogo.jsx";
+import { favoriteLeagues } from "../data/leagues/favoriteLeagues.js";
+import { defaultSeason } from "../data/leagues/leagues.js";
 import {
-  LeagueNews,
-  LeagueRecords,
-  LeagueScores,
-  LeagueStandings,
-} from "../components/LeagueContent.jsx";
-import "../components/Team.css";
-import TeamLogo from "../components/TeamLogo.jsx";
-import { favoriteLeagues } from "../favoriteLeagues.js";
-import { defaultSeason } from "../leagues.js";
-import { Link, navigate } from "../router.jsx";
-import { hasTeamLeague, teamResource, teamTabs, teamConferenceStandings } from "../teams.js";
+  hasTeamLeague,
+  teamResource,
+  teamTabs,
+  teamConferenceStandings,
+} from "../data/teams/teams.js";
 const list = (value) => (Array.isArray(value) ? value : []);
 const label = (value) => value[0].toUpperCase() + value.slice(1);
 function TeamPanel({ league, id, tab, season, page, onPage, team }) {
@@ -76,40 +83,67 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
     );
   } else if (tab === "news") content = <LeagueNews data={data} />;
   else if (tab === "standings")
-    content = <LeagueStandings data={teamConferenceStandings(data, id)} league={league} showRankings={false} />;
+    content = (
+      <LeagueStandings
+        data={teamConferenceStandings(data, id)}
+        league={league}
+        showRankings={false}
+      />
+    );
   else if (tab === "forum")
     content = <LeagueRecords data={data} tab="forum" league={league} />;
   else if (tab === "roster") {
     const players = Array.isArray(data) ? data : list(data?.players);
-    const sections = list(data?.sections).filter((section) => list(section.data).length);
-    const groups = sections.length ? sections : [{ title: "Players", data: players }];
-    const college = ["cfb", "mcbb", "wcbb"].includes(league);
-    content = players.length || sections.length ? (
-      groups.map((section) => (
-        <section className="league-table-section" key={section.title}>
-          <h3>{section.title}</h3>
-          <Table
-            headers={["#", "Player", "Position", "Height", "Weight", college ? "Year" : "College", "Hometown"]}
-            rows={section.data.map((player) => [
-              player.jersey_number,
-              <PlayerLink league={league} id={player.id || player.player_id} className="team-player">
-                <span className="team-headshot">
-                  <Image src={player.headshot_url} loading="lazy" />
-                </span>
-                <span>{player.full_name || player.short_name}</span>
-              </PlayerLink>,
-              player.position,
-              player.height,
-              player.weight != null && player.weight !== "" ? `${player.weight} lbs` : null,
-              college ? player.experience_display || player.experience_abbr : player.college,
-              player.birth_display,
-            ])}
-          />
-        </section>
-      ))
-    ) : (
-      <State empty="No roster available for this team." />
+    const sections = list(data?.sections).filter(
+      (section) => list(section.data).length,
     );
+    const groups = sections.length
+      ? sections
+      : [{ title: "Players", data: players }];
+    const college = ["cfb", "mcbb", "wcbb"].includes(league);
+    content =
+      players.length || sections.length ? (
+        groups.map((section) => (
+          <section className="league-table-section" key={section.title}>
+            <h3>{section.title}</h3>
+            <Table
+              headers={[
+                "#",
+                "Player",
+                "Position",
+                "Height",
+                "Weight",
+                college ? "Year" : "College",
+                "Hometown",
+              ]}
+              rows={section.data.map((player) => [
+                player.jersey_number,
+                <PlayerLink
+                  league={league}
+                  id={player.id || player.player_id}
+                  className="team-player"
+                >
+                  <span className="team-headshot">
+                    <Image src={player.headshot_url} loading="lazy" />
+                  </span>
+                  <span>{player.full_name || player.short_name}</span>
+                </PlayerLink>,
+                player.position,
+                player.height,
+                player.weight != null && player.weight !== ""
+                  ? `${player.weight} lbs`
+                  : null,
+                college
+                  ? player.experience_display || player.experience_abbr
+                  : player.college,
+                player.birth_display,
+              ])}
+            />
+          </section>
+        ))
+      ) : (
+        <State empty="No roster available for this team." />
+      );
   } else if (tab === "stats") {
     const groups = Object.values(data?.stats || {}).filter(
       (group) => list(group?.stats).length,
@@ -172,7 +206,11 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
             />
           </section>
         )}
-        <GameLocation className="home-venue" title="Home Venue" details={{ venueInfo: team.venue }} />
+        <GameLocation
+          className="home-venue"
+          title="Home Venue"
+          details={{ venueInfo: team.venue }}
+        />
       </>
     );
   const more =

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link, navigate } from "../router.jsx";
-import { API_URL, sessionStore } from "../session.js";
+
+import { Link, navigate } from "../app/router.jsx";
+import { API_URL, sessionStore } from "../services/session.js";
 export default function Login() {
   const [username, setUsername] = useState(""),
     [password, setPassword] = useState(""),
@@ -98,7 +99,12 @@ export default function Login() {
               </button>
             </div>
             <label className="remember-me">
-              <input type="checkbox" name="rememberMe" checked={rememberMe} onChange={event => setRememberMe(event.target.checked)} />
+              <input
+                type="checkbox"
+                name="rememberMe"
+                checked={rememberMe}
+                onChange={(event) => setRememberMe(event.target.checked)}
+              />
               Remember me
             </label>
             <button type="submit" className="tempo-button">
