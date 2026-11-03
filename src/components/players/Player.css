@@ -1,8 +1,16 @@
 .player-heading {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin: 24px 0 28px;
+  gap: 28px;
+  min-height: 240px;
+  padding: 32px;
+  margin: 12px 0 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--bg);
 }
 .player-portrait {
   position: relative;
@@ -50,8 +58,8 @@ nav.player-tabs {
   overflow-x: auto;
   justify-content: flex-start;
 }
-nav.player-tabs a,
-nav.player-tabs a:first-child {
+nav.player-tabs .player-tab-links a,
+nav.player-tabs .player-tab-links a:first-child {
   flex: none;
   margin: 0;
   padding: 10px 0;
@@ -65,7 +73,7 @@ nav.player-tabs a:first-child {
 }
 nav.player-tabs a[aria-current="page"] {
   color: var(--text);
-  border-color: var(--text);
+  text-decoration: none;
 }
 .player-section {
   margin-bottom: 28px;
@@ -82,8 +90,9 @@ nav.player-tabs a[aria-current="page"] {
   margin: 0;
 }
 .player-bio > div {
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+  padding: 16px 18px;
+  background: var(--surface);
+  border-radius: 10px;
 }
 .player-bio dt {
   font-size: 13px;
@@ -185,4 +194,138 @@ a.player-season-team:hover {
 }
 :root[data-theme="dark"] .player-result-loss {
   color: #ff4444;
+}
+
+.player-team-watermark {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-12deg);
+  width: min(42%, 360px);
+  aspect-ratio: 1;
+  opacity: 0.08;
+}
+.player-team-watermark .team-logo,
+.player-team-watermark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.player-heading .player-identity {
+  position: relative;
+}
+.player-identity .player-team-name {
+  margin-top: 8px;
+  font-size: 18px;
+  color: var(--text);
+}
+.player-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.player-section-heading h2,
+.player-section-heading p {
+  margin-bottom: 0;
+}
+.player-section-heading .eyebrow {
+  margin-bottom: 6px;
+}
+.player-section-count {
+  color: var(--muted);
+  font-size: 14px;
+}
+.player-awards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.player-award-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+.player-award-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+}
+.player-award-label {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.player-award-card h3 {
+  margin: 4px 0 0;
+  font-size: 18px;
+  line-height: 1.4;
+}
+.player-detail .table-scroll {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.player-detail .table-scroll th,
+.player-detail .table-scroll td {
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .player-heading {
+    padding: 22px 18px;
+    min-height: 180px;
+    gap: 16px;
+  }
+  .player-team-watermark {
+    width: 60%;
+    right: -36px;
+    opacity: 0.06;
+  }
+  nav.player-tabs {
+    gap: 20px;
+  }
+  .player-bio {
+    gap: 10px;
+  }
+  .player-bio > div {
+    padding: 12px;
+  }
+  .player-awards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.player-section th abbr {
+  text-decoration: none;
+  cursor: help;
+  white-space: nowrap;
+}
+
+nav.player-tabs .player-tab-links {
+  flex: 0 0 auto;
+  margin-left: 0;
+  gap: 28px;
+}
+.player-tab-links .nav-underline {
+  height: 3px;
+  border-radius: 0;
+}
+@media (max-width: 600px) {
+  nav.player-tabs .player-tab-links {
+    gap: 20px;
+  }
 }

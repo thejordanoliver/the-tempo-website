@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 import { Link } from "../app/router.jsx";
+import PlayerAwards from "../components/players/PlayerAwards.jsx";
+import NavLinks from "../components/layout/NavLinks.jsx";
 import PlayerLink from "../components/players/PlayerLink.jsx";
 import TeamLogo from "../components/teams/TeamLogo.jsx";
 import { Image } from "../components/ui/Image.jsx";
@@ -12,11 +14,12 @@ import {
   playerHref,
   playerResource,
   seasonStatGroups,
+  seasonPhase,
   statLabel,
   validPlayerId,
 } from "../data/players/players.js";
+import { shortStatLabel } from "../data/players/statHeaders.js";
 import { teamIdentity } from "../data/teams/teamIdentity.js";
-import { teamHref } from "../data/teams/teams.js";
 import usePlayerTeams from "../hooks/usePlayerTeams.js";
 import { useResource } from "../hooks/useResource.js";
 import "../components/players/Player.css";
@@ -119,16 +122,7 @@ export function PlayerOverview({ player, fighter }) {
           <State empty="Biographical details are not available yet." />
         )}
       </section>
-      {awards.length > 0 && (
-        <section className="player-section">
-          <h2>Awards &amp; honors</h2>
-          <ul>
-            {[...new Set(awards)].map((award) => (
-              <li key={award}>{award}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <PlayerAwards awards={awards} />
     </>
   );
 }
@@ -148,21 +142,13 @@ export function SeasonTeam({ season, league, teams = {} }) {
       <span>{code}</span>
     </>
   );
-  return league && /^\d+$/.test(String(id || "")) ? (
-    <Link
-      className="player-season-team"
-      to={teamHref(league, id)}
-      title={team.fullName || team.name || code}
-    >
-      {content}
-    </Link>
-  ) : (
-    <span className="player-season-team">{content}</span>
-  );
+  return <span className="player-season-team">{content}</span>;
 }
 
 export function PlayerSeasonStats({ data, league }) {
-  const seasons = list(data?.seasons);
+  const allSeasons = list(data?.seasons);
+  const [phase, setPhase] = useState("regular");
+  const seasons = allSeasons.filter((season) => seasonPhase(season) === phase);
   const teamLeague = data?.league || league;
   const teams = usePlayerTeams(
     teamLeague,
@@ -182,41 +168,76 @@ export function PlayerSeasonStats({ data, league }) {
       ),
     ),
   ];
-  if (!seasons.length || !columns.length)
+  if (!allSeasons.length)
     return (
       <State empty="Season statistics are not available for this player yet." />
     );
   return (
     <section className="player-section">
       <h2>Season stats</h2>
-      <label className="player-filter">
-        Category
-        <select
-          value={category}
-          onChange={(event) => setSelected(event.target.value)}
-        >
-          {categories.map((value) => (
-            <option key={value} value={value}>
-              {statLabel(value)}
-            </option>
-          ))}
-        </select>
-      </label>
-      <Table
-        headers={["Season", "Type", "Team", ...columns.map(statLabel)]}
-        rows={seasons
-          .filter(
-            (season) =>
-              Object.keys(seasonStatGroups(season)[category] || {}).length,
-          )
-          .map((season) => [
-            season.display_season || season.season,
-            season.season_type_label ||
-              statLabel(String(season.season_type || "Regular season")),
-            <SeasonTeam season={season} league={teamLeague} teams={teams} />,
-            ...columns.map((key) => seasonStatGroups(season)[category]?.[key]),
-          ])}
-      />
+      <div className="player-filters">
+        <label className="player-filter">
+          Season type
+          <select
+            value={phase}
+            onChange={(event) => setPhase(event.target.value)}
+          >
+            <option value="regular">Regular Season</option>
+            <option value="postseason">Postseason</option>
+            {allSeasons.some(
+              (season) => seasonPhase(season) === "preseason",
+            ) && <option value="preseason">Preseason</option>}
+          </select>
+        </label>
+        {categories.length > 0 && (
+          <label className="player-filter">
+            Category
+            <select
+              value={category}
+              onChange={(event) => setSelected(event.target.value)}
+            >
+              {categories.map((value) => (
+                <option key={value} value={value}>
+                  {statLabel(value)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </div>
+      {columns.length ? (
+        <Table
+          headers={[
+            "Season",
+            "Team",
+            ...columns.map((key) => (
+              <abbr
+                key={key}
+                title={statLabel(key)}
+                aria-label={statLabel(key)}
+              >
+                {shortStatLabel(key)}
+              </abbr>
+            )),
+          ]}
+          rows={seasons
+            .filter(
+              (season) =>
+                Object.keys(seasonStatGroups(season)[category] || {}).length,
+            )
+            .map((season) => [
+              season.display_season || season.season,
+              <SeasonTeam season={season} league={teamLeague} teams={teams} />,
+              ...columns.map(
+                (key) => seasonStatGroups(season)[category]?.[key],
+              ),
+            ])}
+        />
+      ) : (
+        <State
+          empty={`No ${phase === "postseason" ? "postseason" : phase === "preseason" ? "preseason" : "regular season"} statistics available.`}
+        />
+      )}
     </section>
   );
 }
@@ -270,7 +291,15 @@ function GameLog({ league, id }) {
                 "Date",
                 "Opponent",
                 "Result",
-                ...list(data.columns).map((column) => column.label),
+                ...list(data.columns).map((column) => (
+                  <abbr
+                    key={column.key}
+                    title={column.label}
+                    aria-label={column.label}
+                  >
+                    {shortStatLabel(column.label)}
+                  </abbr>
+                )),
               ]}
               rows={data.games.map((game) => [
                 dateLabel(game.date),
@@ -383,6 +412,11 @@ export function PlayerProfile({
   return (
     <>
       <header className="player-heading">
+        {team?.logo && (
+          <div className="player-team-watermark" aria-hidden="true">
+            <TeamLogo team={{ id: player.team_id }} league={league} />
+          </div>
+        )}
         <div className="player-portrait">
           <span aria-hidden="true">
             {name
@@ -394,13 +428,7 @@ export function PlayerProfile({
           <Image src={player.headshot_url} alt={`${name} headshot`} />
         </div>
         <div className="player-identity">
-          {league !== "cfb" && (
-            <p className="eyebrow">
-              {fighter
-                ? "UFC · Fighter"
-                : `${favoriteLeagues[league]?.label || "Soccer"} · Player`}
-            </p>
-          )}
+          {fighter && <p className="eyebrow">UFC · Fighter</p>}
           <h1>{name}</h1>
           {fighter && player.nickname && <p>&quot;{player.nickname}&quot;</p>}
           <p>
@@ -412,9 +440,9 @@ export function PlayerProfile({
               .join(" · ")}
           </p>
           {team && (
-            <Link to={teamHref(league, player.team_id)}>
-              {team.shortName === "TBD" ? "View team" : team.shortName}
-            </Link>
+            <p className="player-team-name">
+              {team.shortName === "TBD" ? "" : team.shortName}
+            </p>
           )}
           {fighter && player.citizenship && <p>{player.citizenship}</p>}
         </div>
@@ -432,16 +460,18 @@ export function PlayerProfile({
           fighter ? "Fighter profile sections" : "Player profile sections"
         }
       >
-        {tabs.map(([value, label]) => (
-          <Link
-            key={value}
-            to={`${playerHref(league, id)}&tab=${value}`}
-            aria-current={active === value ? "page" : undefined}
-            onClick={onTabChange}
-          >
-            {label}
-          </Link>
-        ))}
+        <NavLinks activeKey={active} className="player-tab-links">
+          {tabs.map(([value, label]) => (
+            <Link
+              key={value}
+              to={`${playerHref(league, id)}&tab=${value}`}
+              aria-current={active === value ? "page" : undefined}
+              onClick={onTabChange}
+            >
+              {label}
+            </Link>
+          ))}
+        </NavLinks>
       </nav>
       {active === "overview" ? (
         <PlayerOverview player={player} fighter={fighter} />

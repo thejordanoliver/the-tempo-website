@@ -9,6 +9,7 @@ import {
   playerHref,
   playerResource,
   seasonStatGroups,
+  seasonPhase,
 } from "../src/data/players/players.js";
 
 test("player profiles use existing backend endpoints and soccer/fighter aliases", () => {
@@ -114,9 +115,11 @@ test("profiles show bios, images, honors and sport-specific sections", () => {
     "Most Valuable Player",
     "Season Stats",
     "Game Log",
-    "/team/?league=nba&amp;id=1",
   ])
     assert(html.includes(value));
+  assert(!html.includes("/team/?"));
+  assert(html.includes('class="player-team-watermark"'));
+  assert(html.includes('class="player-award-card"'));
   const fighter = render("PlayerProfile", {
     player: {
       ...player,
@@ -190,9 +193,21 @@ test("season stats keep regular and postseason rows distinguishable", () => {
       ],
     },
   });
-  assert(html.includes("Playoffs"));
-  assert(html.includes("Avg Points"));
-  assert(html.includes(">0<"));
+  assert(html.includes('value="postseason"'));
+  assert(html.includes('value="regular"'));
+  assert(html.includes("No regular season statistics available"));
+  const regular = render("PlayerSeasonStats", {
+    data: {
+      seasons: [
+        { season: 2026, season_type: 2, averages: { avgPoints: 0 } },
+        { season: 2026, season_type: 3, averages: { avgPoints: 42 } },
+      ],
+    },
+  });
+  assert(regular.includes("Avg Points"));
+  assert(regular.includes(">0<"));
+  assert(!regular.includes(">42<"));
+  assert(!regular.includes(">Type<"));
   assert(
     render("PlayerSeasonStats", { data: { seasons: [] } }).includes(
       "not available",
@@ -223,5 +238,22 @@ test("college football removes the profile eyebrow and season teams use codes an
   });
   assert(team.includes("florida.png"));
   assert(team.includes(">FLA<"));
-  assert(team.includes("/team/?league=cfb&amp;id=57"));
+  assert(!team.includes("/team/?"));
+});
+
+test("season phases recognize normalized labels and numeric season types", () => {
+  for (const season of [
+    { season_type: 3 },
+    { season_type: "3" },
+    { season_type_label: "Postseason" },
+    { season_type_label: "Playoffs" },
+  ])
+    assert.equal(seasonPhase(season), "postseason");
+  for (const season of [
+    { season_type: 2 },
+    { season_type_label: "Regular Season" },
+    {},
+  ])
+    assert.equal(seasonPhase(season), "regular");
+  assert.equal(seasonPhase({ season_type: 1 }), "preseason");
 });

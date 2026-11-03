@@ -77,3 +77,12 @@ export function seasonStatGroups(season) {
       .filter(([, values]) => Object.keys(values).length),
   );
 }
+
+/** View filter for the backend's normalized season-type fields. */
+export function seasonPhase(season) {
+  const type = String(season.season_type ?? "").toLowerCase();
+  const label = String(season.season_type_label ?? type).toLowerCase();
+  if (type === "3" || /post|playoff/.test(label)) return "postseason";
+  if (type === "1" || /preseason|pre-season/.test(label)) return "preseason";
+  return "regular";
+}

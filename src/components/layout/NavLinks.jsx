@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-export default function NavLinks({ activeKey, children }) {
+export default function NavLinks({ activeKey, children, className = "" }) {
   const ref = useRef(null),
     [indicator, setIndicator] = useState({ x: 0, width: 0, visible: false });
   useLayoutEffect(() => {
@@ -40,7 +40,7 @@ export default function NavLinks({ activeKey, children }) {
     };
   }, [activeKey]);
   return (
-    <div ref={ref} className="nav-links">
+    <div ref={ref} className={`nav-links ${className}`.trim()}>
       {children}
       <span
         aria-hidden="true"
