@@ -126,7 +126,11 @@ export async function hookHarness(file) {
     live,
     AbortController,
     AbortSignal,
+    crypto,
+    setTimeout,
+    clearTimeout,
     URL,
+    URLSearchParams,
     console,
   });
   function render() {

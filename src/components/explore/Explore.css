@@ -1,0 +1,485 @@
+.explore-page {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 36px 28px;
+}
+.explore-heading,
+.explore-board-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.explore-heading h1 {
+  margin-bottom: 10px;
+}
+.explore-heading p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+.explore-search {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-bottom: 36px;
+}
+.explore-search h2 {
+  font-size: 24px;
+}
+.explore-search-label {
+  display: block;
+}
+.explore-search input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+.explore-search-scopes,
+.explore-actions,
+.explore-widget-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.explore-search-scopes {
+  margin: 16px 0;
+}
+.explore-search-scopes button,
+.explore-edit-controls button {
+  font: inherit;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  background: var(--bg);
+  cursor: pointer;
+}
+.explore-search-scopes button[aria-pressed="true"] {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+.explore-search h3 {
+  font-size: 16px;
+  color: var(--muted);
+}
+.explore-results,
+.explore-picks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.explore-results li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+}
+.explore-results li > a,
+.explore-results li > div {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 0;
+  flex: 1;
+  color: var(--text);
+  text-decoration: none;
+}
+.explore-results small,
+.explore-results strong {
+  display: block;
+}
+.explore-results small {
+  color: var(--muted);
+}
+.explore-results button {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 24px;
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.explore-result-image {
+  display: grid;
+  place-items: center;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  background: var(--surface);
+  border-radius: 50%;
+  overflow: hidden;
+}
+.explore-result-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.explore-board-heading h2 {
+  margin: 0;
+}
+.explore-board-heading .eyebrow {
+  margin: 0 0 6px;
+}
+.explore-board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+.explore-widget {
+  display: flex;
+  flex-direction: column;
+  height: 480px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+  overflow: hidden;
+}
+.explore-widget-small {
+  grid-column: span 2;
+}
+.explore-widget-medium {
+  grid-column: span 3;
+}
+.explore-widget-large {
+  grid-column: 1/-1;
+  height: 580px;
+}
+.explore-widget > header {
+  flex: 0 0 auto;
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding: 18px 20px;
+}
+.explore-widget h3 {
+  font-size: 20px;
+  margin: 0;
+}
+.explore-widget-body {
+  flex: 1;
+  min-height: 0;
+  padding: 18px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.explore-widget .page-state {
+  padding: 18px;
+  font-size: 15px;
+}
+.explore-edit-controls {
+  display: flex;
+  gap: 6px;
+}
+.explore-edit-controls button {
+  padding: 4px 10px;
+}
+.explore-widget-filter,
+.explore-widget-filters label,
+.explore-composer label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.explore-widget > .explore-widget-filter {
+  margin: 16px 20px 0;
+}
+.explore-widget select,
+.explore-widget textarea {
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  font: inherit;
+}
+.explore-widget textarea {
+  resize: vertical;
+  width: 100%;
+}
+.explore-widget .favorites-section {
+  padding: 0;
+  margin: 0;
+}
+.explore-widget .table-scroll {
+  max-width: 100%;
+}
+.explore-game-list {
+  display: grid;
+  gap: 12px;
+}
+.explore-picks li {
+  border-top: 1px solid var(--line);
+}
+.explore-picks a {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  color: var(--text);
+  text-decoration: none;
+}
+.explore-picks small,
+.explore-picks span {
+  color: var(--muted);
+}
+.explore-pick-record {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.explore-pick-record strong {
+  font-size: 36px;
+}
+.explore-text-button {
+  background: none;
+  border: 0;
+  color: var(--link);
+  text-decoration: underline;
+  font: inherit;
+  min-height: 44px;
+  cursor: pointer;
+}
+.explore-widget-catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 0 0 24px;
+}
+.explore-widget-catalog button {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.explore-widget-catalog span,
+.explore-widget-catalog small {
+  color: var(--muted);
+}
+.explore-page button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+@media (max-width: 900px) {
+  .explore-widget-small,
+  .explore-widget-medium {
+    grid-column: span 3;
+  }
+}
+@media (max-width: 600px) {
+  .explore-page {
+    padding: 24px 16px;
+  }
+  .explore-search {
+    padding: 18px;
+  }
+  .explore-board {
+    grid-template-columns: 1fr;
+  }
+  .explore-widget-small,
+  .explore-widget-medium,
+  .explore-widget-large {
+    grid-column: 1;
+  }
+  .explore-actions {
+    width: 100%;
+  }
+  .explore-widget-body {
+    max-height: 460px;
+  }
+  .explore-heading h1 {
+    font-size: 40px;
+  }
+}
+
+.explore-league-options {
+  margin: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  font-size: 14px;
+}
+.explore-league-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+}
+
+/* Keep short guest prompts compact and align the final pair of default widgets. */
+.explore-board.is-guest:not(.is-editing)
+  .explore-widget:not([data-widget-type="standings"]):not(
+    [data-widget-type="college_polls"]
+  ) {
+  height: 220px;
+}
+.explore-widget-small:last-child {
+  grid-column: span 3;
+}
+.explore-sign-in {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+}
+.explore-sign-in p {
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+.explore-widget-body > .explore-widget-filter {
+  margin-bottom: 18px;
+}
+.explore-widget-filters {
+  align-items: flex-end;
+}
+.explore-widget-filters label {
+  flex: 1;
+  min-width: 130px;
+}
+.explore-widget-filter select,
+.explore-widget-filters select,
+.explore-composer select {
+  width: 100%;
+}
+.explore-widget .league-table-section + .league-table-section {
+  margin-top: 24px;
+}
+.explore-widget .league-table-section h3 {
+  font-size: 17px;
+  margin-bottom: 12px;
+}
+.explore-widget table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.explore-widget th,
+.explore-widget td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+}
+.explore-widget thead {
+  background: var(--surface);
+  color: var(--muted);
+}
+.explore-widget th:nth-child(2),
+.explore-widget td:nth-child(2) {
+  text-align: left;
+}
+.explore-widget tbody th {
+  font-weight: 400;
+}
+.explore-widget tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.explore-widget .league-team-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.explore-widget .league-team-name .team-logo,
+.explore-widget .league-team-name img {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+}
+.explore-widget .league-team-name a {
+  text-decoration: none;
+  color: var(--text);
+}
+.explore-widget .league-team-name a:hover {
+  text-decoration: underline;
+}
+.explore-board.is-editing .explore-widget {
+  height: auto;
+  min-height: 480px;
+}
+.explore-board.is-editing .explore-widget-body {
+  flex: 1 1 320px;
+  max-height: 420px;
+}
+.explore-widget .explore-league-options {
+  flex: 0 0 auto;
+}
+.explore-widget .favorites-heading {
+  flex-wrap: wrap;
+}
+.explore-widget .favorites-scroll {
+  padding: 12px 0;
+}
+.explore-widget .favorites-arrows {
+  margin-left: auto;
+}
+@media (max-width: 600px) {
+  .explore-board {
+    gap: 16px;
+  }
+  .explore-widget,
+  .explore-widget-large,
+  .explore-board.is-guest:not(.is-editing)
+    .explore-widget:not([data-widget-type="standings"]):not(
+      [data-widget-type="college_polls"]
+    ),
+  .explore-board.is-editing .explore-widget {
+    height: auto;
+    min-height: 0;
+  }
+  .explore-widget-small:last-child {
+    grid-column: 1;
+  }
+  .explore-widget > header {
+    padding: 16px;
+  }
+  .explore-widget-body {
+    flex: 0 1 auto;
+    padding: 16px;
+  }
+  .explore-board.is-editing .explore-widget-body {
+    flex: 0 1 auto;
+  }
+  .explore-sign-in {
+    min-height: 120px;
+  }
+  .explore-widget th,
+  .explore-widget td {
+    padding: 10px 7px;
+  }
+  .explore-actions > button {
+    flex: 1;
+  }
+}

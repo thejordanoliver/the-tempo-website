@@ -28,6 +28,7 @@ export default function MobileNavigation({ signedIn, path, routeKey }) {
   }, [open]);
   const links = [
     ["/home/", "Home", path === "/home"],
+    ["/explore/", "Explore", path === "/explore"],
     ["/leagues/", "Leagues", ["/league", "/leagues"].includes(path)],
     signedIn
       ? ["/profile/", "Profile", path === "/profile"]

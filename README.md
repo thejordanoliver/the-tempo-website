@@ -45,6 +45,14 @@ Home groups scores into named league sections, with favorite-team leagues and sa
 
 Home scoreboards, league scores/fights and game details use the backend’s `/sports-live` Socket.IO namespace after the initial HTTP request. Subscriptions follow date, week and game selections, pause while the tab is hidden, and rejoin on return or reconnect. All sports data continues to come from the Tempo backend.
 
+## Explore
+
+`/explore/` brings the app's search and widget board to the website. Search players, teams and fans with category filters, debounced requests and recent sports searches. Results open supported player, team and public fan profiles; unavailable web profiles are labeled instead of linking to a broken route. User results are not persisted in browser storage.
+
+Add, remove, resize and reorder six widget types: Favorite Games, Favorite Teams, My Picks, Standings, College Polls and Create Post. Guest layouts are saved locally. Signed-in layouts read and save the app's schema-v2 account settings, preserve existing widget options, and use revision checks to prevent overwriting another device's layout. Public standings and polls work without signing in; personal widgets and posting require an account. The web board uses readable lists and tables in place of the app's autoplay sliders.
+
+Favorite games receive live backend game snapshots. The post widget opens a text composer for league discussions. No posts are created until the user submits the form.
+
 ## Verify and publish
 
 ```sh

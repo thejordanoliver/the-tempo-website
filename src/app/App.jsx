@@ -13,6 +13,8 @@ import ThemeSelector from "../components/ui/ThemeSelector.jsx";
 import { favoriteLeagues } from "../data/leagues/favoriteLeagues.js";
 import { hasLeague } from "../data/leagues/leagues.js";
 import Article from "../pages/Article.jsx";
+import Explore from "../pages/Explore.jsx";
+import User from "../pages/User.jsx";
 import Game from "../pages/Game.jsx";
 import GuestHome from "../pages/GuestHome.jsx";
 import Home from "../pages/Home.jsx";
@@ -63,6 +65,8 @@ export default function App() {
       {
         "/": "Your game. Your Tempo.",
         "/home": "Home",
+        "/explore": "Explore",
+        "/user": "Fan profile",
         "/profile": "Your Profile",
         "/login": "Sign In",
         "/support": "Help & Support",
@@ -132,6 +136,12 @@ export default function App() {
         <GuestHome />
       );
       break;
+    case "/explore":
+      page = <Explore userId={session?.user?.id ?? null} />;
+      break;
+    case "/user":
+      page = <User search={route.search} />;
+      break;
     case "/profile":
       page = session ? <Profile user={session.user} onLogout={logout} /> : null;
       break;
@@ -181,6 +191,7 @@ export default function App() {
           "/post",
           "/player",
           "/fighter",
+          "/user",
         ].includes(route.path) ? (
           <button
             className="navbar-back"
@@ -210,6 +221,12 @@ export default function App() {
             aria-current={route.path === "/home" ? "page" : undefined}
           >
             Home
+          </Link>
+          <Link
+            to="/explore/"
+            aria-current={route.path === "/explore" ? "page" : undefined}
+          >
+            Explore
           </Link>
           {session ? (
             <Link

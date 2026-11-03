@@ -708,3 +708,50 @@ test("UFC fight cards show headshots, records, flags and final results", () => {
   ])
     assert(html.includes(value));
 });
+
+test("standings and polls display team codes while retaining full accessible names and links", () => {
+  const standings = render("LeagueStandings", {
+    league: "nba",
+    data: {
+      conferences: [
+        {
+          name: "East",
+          standings: [
+            {
+              id: 20,
+              name: "Philadelphia 76ers",
+              code: "PHI",
+              wins: 7,
+              losses: 1,
+            },
+          ],
+        },
+      ],
+    },
+  });
+  assert(standings.includes(">PHI</a>"));
+  assert(!standings.includes(">Philadelphia 76ers</a>"));
+  assert(standings.includes('aria-label="Philadelphia 76ers"'));
+  assert(standings.includes("/team/?league=nba&amp;id=20"));
+  const polls = render("LeagueRecords", {
+    league: "cfb",
+    tab: "rankings",
+    data: {
+      rankings: [
+        {
+          name: "AP Poll",
+          ranks: [
+            {
+              current: 1,
+              team: { id: 57, name: "Florida Gators", abbreviation: "FLA" },
+              recordSummary: "7-1",
+            },
+          ],
+        },
+      ],
+    },
+  });
+  assert(polls.includes(">FLA</a>"));
+  assert(!polls.includes(">Florida Gators</a>"));
+  assert(polls.includes('aria-label="Florida Gators"'));
+});

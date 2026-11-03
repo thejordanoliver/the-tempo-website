@@ -49,3 +49,11 @@ The root route directories, `index.html`, `web-assets/`, `.nojekyll` and legacy 
 Run `npm run format` to format the entire editable repository, and `npm run format:check` to verify it. Generated HTML and bundles, local state and dependencies are excluded. Scores, news, standings, stats and records have separate league components; static standings tables are shared without circular imports.
 
 Run `npm test` and `npm run build` after changing imports or moving files. No hosting configuration or production deployment is needed for source development.
+
+## Explore
+
+`src/pages/Explore.jsx` composes search and the widget board; `src/components/explore/` owns their presentation. `useExploreSearch` cancels superseded requests, waits 400 ms before searching, and scopes recent sports searches by account. Public fan profiles are in `src/pages/User.jsx`; only the backend's public fields are displayed.
+
+`useExploreBoard` loads account settings before enabling edits, serializes saves, sends `X-Tempo-User-Id` and the expected revision, and blocks saves after a 409 conflict until settings are reloaded. Failed saves keep local edits for retry. The page keys search and board instances by account, so pending responses and local edits cannot populate a different user's board. Widget configuration uses the same field names and six types as the app; flags the web board does not use are retained when saving.
+
+Widget data uses the shared request/session layer. Only Favorite Games subscribes to live game feeds, and only for its ten visible games. Unmounting or hiding the tab follows the shared sports socket lifecycle. Post creation is an explicit form action through the existing forum endpoint; previews and tests do not submit posts.

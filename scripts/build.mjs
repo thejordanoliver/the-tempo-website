@@ -8,6 +8,8 @@ import { build } from "esbuild";
 const SITE_ROUTES = [
   "",
   "home",
+  "explore",
+  "user",
   "login",
   "profile",
   "support",
