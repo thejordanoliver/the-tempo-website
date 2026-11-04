@@ -9,6 +9,8 @@ import {
 import useExploreSearch from "../../hooks/useExploreSearch.js";
 import { Image } from "../ui/Image.jsx";
 import { State } from "../ui/State.jsx";
+import ThemeSource from "../ui/ThemeSource.jsx";
+import { safeURL } from "../../utils/urls.js";
 export default function ExploreSearch({ userId }) {
   const [query, setQuery] = useState(""),
     [scope, setScope] = useState("all"),
@@ -79,12 +81,19 @@ export default function ExploreSearch({ userId }) {
               const url = resultHref(item);
               const content = (
                 <>
-                  <span className="explore-result-image">
-                    <Image
-                      src={
-                        item.headshot_url || item.logo || item.profileImageUrl
-                      }
-                    />
+                  <span
+                    className={`explore-result-image explore-result-image--${item.type}`}
+                  >
+                    {item.type === "team" ? (
+                      <picture>
+                        <ThemeSource
+                          srcSet={safeURL(item.logoDark || item.logo)}
+                        />
+                        <Image src={item.logo || item.logoDark} />
+                      </picture>
+                    ) : (
+                      <Image src={item.headshot_url || item.profileImageUrl} />
+                    )}
                   </span>
                   <span>
                     <strong>{resultName(item)}</strong>

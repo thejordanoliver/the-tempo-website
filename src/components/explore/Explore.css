@@ -214,10 +214,26 @@
   overflow: hidden;
   background: var(--surface);
 }
+.explore-result-image picture,
 .explore-result-image img {
+  display: block;
   width: 100%;
   height: 100%;
+}
+.explore-result-image img {
   object-fit: contain;
+}
+.explore-result-image--team {
+  background: transparent;
+  border-radius: 0;
+}
+.explore-result-image--player {
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+}
+.explore-result-image--player img {
+  object-fit: cover;
+  object-position: center top;
 }
 .explore-search > .tempo-button {
   margin-top: 16px;
