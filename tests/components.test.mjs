@@ -93,10 +93,18 @@ test("external media/link validation rejects executable URLs", () => {
   );
 });
 
-test("shared team logo provides a dark-mode source for game screens and cards", () => {
-  const html = render("TeamLogo", { team: { id: 26 }, league: "nba" });
-  assert(html.includes('media="(prefers-color-scheme: dark)"'));
-  assert(html.includes("srcSet="));
+test("team logos have one image source without a competing picture source", () => {
+  const team = {
+    id: 150,
+    logo: "https://example.test/normal.png",
+    logoDark: "https://example.test/dark.png",
+  };
+  const light = render("TeamLogo", { team, league: "mcbb" });
+  const dark = render("TeamLogo", { team, league: "mcbb", forceDark: true });
+  assert(light.includes('src="https://example.test/normal.png"'));
+  assert(dark.includes('src="https://example.test/dark.png"'));
+  assert(!dark.includes("<source"));
+  assert(!light.includes("<source"));
 });
 
 const headerGame = {
@@ -178,7 +186,8 @@ test("team stats align by team ID and highlight fewer turnovers", () => {
   assert(
     html.includes('class="stat-trailing"><span class="sr-only">PHI </span>15'),
   );
-  assert(html.includes('media="(prefers-color-scheme: dark)"'));
+  assert(html.includes('class="team-logo"'));
+  assert(!/<picture class="team-logo">\s*<source/.test(html));
 });
 test("leaders render backend player statistics and accessible tabs", () => {
   const html = render("GameLeaders", { score: sectionScore, league: "nba" });
@@ -231,7 +240,8 @@ test("summary shows period tabs, neutral events, dark logos and event scores", (
   assert(html.includes("4th"));
   assert(html.includes("summary-dot"));
   assert(html.includes("Away 120, home 122"));
-  assert(html.includes('media="(prefers-color-scheme: dark)"'));
+  assert(html.includes('class="team-logo"'));
+  assert(!/<picture class="team-logo">\s*<source/.test(html));
   assert(
     html.indexOf("End of the 4th Quarter") < html.indexOf("Player makes layup"),
   );
@@ -456,5 +466,6 @@ test("Home renders distinct league headings, counts and date-preserving links fo
   assert.equal((html.match(/class="home-league-section"/g) || []).length, 3);
   assert(html.includes("1 game"));
   assert(html.includes("1 match"));
-  assert(html.includes('media="(prefers-color-scheme: dark)"'));
+  assert(html.includes('class="team-logo"'));
+  assert(!/<picture class="team-logo">\s*<source/.test(html));
 });

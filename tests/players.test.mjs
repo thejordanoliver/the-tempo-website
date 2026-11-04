@@ -257,3 +257,35 @@ test("season phases recognize normalized labels and numeric season types", () =>
     assert.equal(seasonPhase(season), "regular");
   assert.equal(seasonPhase({ season_type: 1 }), "preseason");
 });
+
+test("season tables wait for team identities instead of flashing slug or missing-logo rows", () => {
+  const html = render("PlayerSeasonStats", {
+    league: "nba",
+    data: {
+      seasons: [
+        {
+          season: 2026,
+          team_id: 1,
+          team_slug: "atlanta-hawks",
+          averages: { avgPoints: 25 },
+        },
+      ],
+    },
+  });
+  assert(html.includes("Loading…"));
+  assert(!html.includes("<table"));
+  assert(!html.includes("atlanta-hawks"));
+});
+
+test("resolved team code and logos override stale season metadata", () => {
+  const html = render("SeasonTeam", {
+    league: "nba",
+    season: { team: { id: 1, code: "OLD", logo: null } },
+    teams: {
+      1: { id: 1, code: "ATL", logo: "https://example.test/resolved.png" },
+    },
+  });
+  assert(html.includes(">ATL<"));
+  assert(!html.includes(">OLD<"));
+  assert(html.includes("resolved.png"));
+});

@@ -34,6 +34,14 @@ export async function hookHarness(file) {
     });
   };
   const react = {
+    useSyncExternalStore(subscribe, snapshot) {
+      const [value, setValue] = react.useState(snapshot);
+      react.useEffect(
+        () => subscribe(() => setValue(snapshot())),
+        [subscribe, snapshot],
+      );
+      return value;
+    },
     useRef(value) {
       const i = index++;
       return (slots[i] ??= { current: value });
@@ -66,7 +74,22 @@ export async function hookHarness(file) {
       });
     },
   };
+  const cached = new Map(),
+    sessionListeners = new Set();
+  let scope = 0;
   const session = {
+    getCacheScope: () => scope,
+    subscribe(listener) {
+      sessionListeners.add(listener);
+      return () => sessionListeners.delete(listener);
+    },
+    setScope(value) {
+      scope = value;
+      cached.clear();
+      sessionListeners.forEach((listener) => listener());
+    },
+    peek: (path) => cached.get(path) || null,
+    cacheResponse: (path, data) => cached.set(path, { data, fresh: true }),
     getSnapshot: () => ({ user: { id: 1 } }),
     request(path, options) {
       const pending = deferred();
@@ -140,6 +163,7 @@ export async function hookHarness(file) {
   }
   return {
     requests,
+    session,
     subscriptions,
     start(name, values) {
       hook = module.exports[name];

@@ -20,6 +20,7 @@ import {
 } from "../data/players/players.js";
 import { shortStatLabel } from "../data/players/statHeaders.js";
 import { teamIdentity } from "../data/teams/teamIdentity.js";
+import useVisitedTabs from "../hooks/useVisitedTabs.js";
 import usePlayerTeams from "../hooks/usePlayerTeams.js";
 import { useResource } from "../hooks/useResource.js";
 import "../components/players/Player.css";
@@ -128,7 +129,7 @@ export function PlayerOverview({ player, fighter }) {
 }
 export function SeasonTeam({ season, league, teams = {} }) {
   const id = season.team?.id || season.team_id;
-  const team = { ...teams[String(id)], ...season.team, id };
+  const team = { ...season.team, ...teams[String(id)], id };
   const code =
     team.code ||
     team.abbreviation ||
@@ -138,7 +139,7 @@ export function SeasonTeam({ season, league, teams = {} }) {
     "—";
   const content = (
     <>
-      <TeamLogo team={team} league={league} loading="lazy" />
+      <TeamLogo team={team} league={league} />
       <span>{code}</span>
     </>
   );
@@ -150,9 +151,9 @@ export function PlayerSeasonStats({ data, league }) {
   const [phase, setPhase] = useState("regular");
   const seasons = allSeasons.filter((season) => seasonPhase(season) === phase);
   const teamLeague = data?.league || league;
-  const teams = usePlayerTeams(
+  const teamResource = usePlayerTeams(
     teamLeague,
-    seasons.map((season) => season.team?.id || season.team_id),
+    allSeasons.map((season) => season.team?.id || season.team_id),
   );
   const [selected, setSelected] = useState("");
   const categories = [
@@ -205,7 +206,9 @@ export function PlayerSeasonStats({ data, league }) {
           </label>
         )}
       </div>
-      {columns.length ? (
+      {teamResource.loading || teamResource.error ? (
+        <State {...teamResource} onRetry={teamResource.retry} />
+      ) : columns.length ? (
         <Table
           headers={[
             "Season",
@@ -227,7 +230,11 @@ export function PlayerSeasonStats({ data, league }) {
             )
             .map((season) => [
               season.display_season || season.season,
-              <SeasonTeam season={season} league={teamLeague} teams={teams} />,
+              <SeasonTeam
+                season={season}
+                league={teamLeague}
+                teams={teamResource.teams}
+              />,
               ...columns.map(
                 (key) => seasonStatGroups(season)[category]?.[key],
               ),
@@ -400,6 +407,7 @@ export function PlayerProfile({
           : []),
       ];
   const active = tabs.some(([value]) => value === tab) ? tab : "overview";
+  const visited = useVisitedTabs(active);
   const name =
     player.full_name ||
     [player.first_name, player.last_name].filter(Boolean).join(" ") ||
@@ -473,33 +481,49 @@ export function PlayerProfile({
           ))}
         </NavLinks>
       </nav>
-      {active === "overview" ? (
-        <PlayerOverview player={player} fighter={fighter} />
-      ) : fighter ? (
-        <Resource path={playerResource(league, id, "fightlog")}>
-          {(data) => (
-            <FighterHistory data={data} career={active === "career"} />
-          )}
-        </Resource>
-      ) : active === "stats" ? (
-        <Resource path={playerResource(league, id, "stats")}>
-          {(data) => (
-            <>
-              <PlayerSeasonStats data={data} league={league} />
-              {list(data?.collegeStats?.seasons).length > 0 && (
-                <section className="player-college-stats">
-                  <h2>College career</h2>
-                  <PlayerSeasonStats
-                    data={data.collegeStats}
-                    league={data.collegeStats.league}
-                  />
-                </section>
+      <div hidden={active !== "overview"}>
+        {visited.includes("overview") && (
+          <PlayerOverview player={player} fighter={fighter} />
+        )}
+      </div>
+      {fighter ? (
+        <div hidden={active === "overview"}>
+          {visited.some(
+            (value) => value === "career" || value === "fightlog",
+          ) && (
+            <Resource path={playerResource(league, id, "fightlog")}>
+              {(data) => (
+                <FighterHistory data={data} career={active === "career"} />
               )}
-            </>
+            </Resource>
           )}
-        </Resource>
+        </div>
       ) : (
-        <GameLog league={league} id={id} />
+        <>
+          <div hidden={active !== "stats"}>
+            {visited.includes("stats") && (
+              <Resource path={playerResource(league, id, "stats")}>
+                {(data) => (
+                  <>
+                    <PlayerSeasonStats data={data} league={league} />
+                    {list(data?.collegeStats?.seasons).length > 0 && (
+                      <section className="player-college-stats">
+                        <h2>College career</h2>
+                        <PlayerSeasonStats
+                          data={data.collegeStats}
+                          league={data.collegeStats.league}
+                        />
+                      </section>
+                    )}
+                  </>
+                )}
+              </Resource>
+            )}
+          </div>
+          <div hidden={active !== "gamelog"}>
+            {visited.includes("gamelog") && <GameLog league={league} id={id} />}
+          </div>
+        </>
       )}
     </>
   );

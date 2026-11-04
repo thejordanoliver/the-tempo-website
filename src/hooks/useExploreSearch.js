@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import useSessionScope from "./useSessionScope.js";
 import { sessionStore } from "../services/session.js";
 import { resultKey, resultHref } from "../data/explore/explore.js";
 
 export default function useExploreSearch(query, scope, userId, limit = 5) {
+  const sessionScope = useSessionScope();
   const normalized = query.trim().replace(/\s+/g, " ");
-  const key = JSON.stringify([normalized, scope, userId, limit]);
+  const key = JSON.stringify([normalized, scope, userId, limit, sessionScope]);
   const storageKey = `tempo.explore.recent:${userId ?? "guest"}`;
   const [recent, setRecent] = useState(() => {
     try {
@@ -24,22 +26,33 @@ export default function useExploreSearch(query, scope, userId, limit = 5) {
     loading: false,
     error: null,
   });
+  const path = `/api/explore/search?${new URLSearchParams({ query: normalized, scope, limit: String(limit) })}`;
+  const hit =
+    normalized.length >= 2 && normalized.length <= 80
+      ? sessionStore.peek(path)
+      : null;
   useEffect(() => {
     const controller = new AbortController();
     if (normalized.length < 2 || normalized.length > 80)
       return () => controller.abort();
+    if (hit) {
+      setState({
+        key,
+        results: hit.data?.results || [],
+        loading: false,
+        error: null,
+      });
+      return () => controller.abort();
+    }
     const timer = setTimeout(() => {
       setState({ key, results: [], loading: true, error: null });
       sessionStore
-        .request(
-          `/api/explore/search?${new URLSearchParams({ query: normalized, scope, limit: String(limit) })}`,
-          {
-            signal: AbortSignal.any([
-              controller.signal,
-              AbortSignal.timeout(20000),
-            ]),
-          },
-        )
+        .request(path, {
+          signal: AbortSignal.any([
+            controller.signal,
+            AbortSignal.timeout(20000),
+          ]),
+        })
         .then((data) => {
           if (!controller.signal.aborted)
             setState({
@@ -63,7 +76,7 @@ export default function useExploreSearch(query, scope, userId, limit = 5) {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [key, normalized, scope, limit]);
+  }, [key, normalized, scope, limit, path]);
   function persist(next) {
     setRecent(next);
     try {
@@ -71,11 +84,11 @@ export default function useExploreSearch(query, scope, userId, limit = 5) {
     } catch {}
   }
   return {
-    results: state.key === key ? state.results : [],
+    results: state.key === key ? state.results : hit?.data?.results || [],
     loading:
       normalized.length >= 2 &&
       normalized.length <= 80 &&
-      (state.key !== key || state.loading),
+      (state.key !== key ? !hit : state.loading && !hit),
     error:
       normalized.length > 80
         ? "Use no more than 80 characters."

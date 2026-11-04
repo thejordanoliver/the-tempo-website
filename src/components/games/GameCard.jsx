@@ -1,5 +1,5 @@
 import Football from "../../../assets/Football.png";
-import FootballLight from "../../../assets/FootballLight.png";
+import FootballLight from "../../../assets/FootballDark.png";
 import { Link } from "../../app/router.jsx";
 import { teamIdentity } from "../../data/teams/teamIdentity.js";
 import ThemeSource from "../ui/ThemeSource.jsx";

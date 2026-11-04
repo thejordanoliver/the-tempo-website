@@ -1,6 +1,7 @@
-import { teamIdentity } from "../../data/teams/teamIdentity.js";
+import { useSyncExternalStore } from "react";
+import { getResolvedTheme, subscribeTheme } from "../../app/theme.js";
+import { teamIdentity, teamLogoSource } from "../../data/teams/teamIdentity.js";
 import { Image } from "../ui/Image.jsx";
-import ThemeSource from "../ui/ThemeSource.jsx";
 export default function TeamLogo({
   team,
   league,
@@ -9,13 +10,15 @@ export default function TeamLogo({
   ...props
 }) {
   const identity = teamIdentity(team, league);
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    getResolvedTheme,
+    () => "system",
+  );
   return (
     <picture className="team-logo">
-      {!forceDark && identity.logoDark && (
-        <ThemeSource srcSet={identity.logoDark} />
-      )}
       <Image
-        src={forceDark ? identity.logoDark || identity.logo : identity.logo}
+        src={teamLogoSource(identity, theme, forceDark)}
         alt={alt}
         {...props}
       />

@@ -3,9 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { hasLeague, leagueSports, scorePath } from "../data/leagues/leagues.js";
 import { sessionStore } from "../services/session.js";
 import { scoreboardItems } from "../utils/homeScores.js";
+import useSessionScope from "./useSessionScope.js";
 import useLiveSportsSubscription from "./useLiveSportsSubscription.js";
 
 export default function useHomeScores(teams, leagues, date, version, enabled) {
+  const scope = useSessionScope();
   const leagueKeys = [
     ...new Set([
       ...teams.map((team) => team.league),
@@ -14,6 +16,7 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
     ]),
   ].filter(hasLeague);
   const key = JSON.stringify([
+    scope,
     teams.map((team) => `${team.league}:${team.id}`),
     leagues,
     date,
@@ -22,12 +25,27 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
     sessionStore.getSnapshot()?.user?.id,
   ]);
   const live = useRef({ key, snapshots: new Map() });
-  const [state, setState] = useState({
-    key: null,
-    items: [],
-    loading: false,
-    error: null,
-  });
+  const pathFor = (league) =>
+    `${scorePath(league)}?date=${date.replaceAll("-", "")}`;
+  function cachedScores() {
+    const cached = new Map();
+    if (enabled && !version)
+      for (const league of leagueKeys) {
+        const hit = sessionStore.peek(pathFor(league), { allowStale: true });
+        if (hit) cached.set(league, scoreboardItems(hit.data, league));
+      }
+    return cached;
+  }
+  function initial() {
+    const cached = cachedScores();
+    return {
+      key,
+      items: [...cached.values()].flat(),
+      loading: !cached.size,
+      error: null,
+    };
+  }
+  const [state, setState] = useState(initial);
   useLiveSportsSubscription({
     enabled,
     subscriptions: leagueKeys.map((league) => ({
@@ -42,6 +60,7 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
       if (!leagueKeys.includes(envelope.league)) return;
       if (live.current.key !== key)
         live.current = { key, snapshots: new Map() };
+      sessionStore.cacheResponse(pathFor(envelope.league), data);
       const items = scoreboardItems(data, envelope.league);
       live.current.snapshots.set(envelope.league, items);
       setState((previous) =>
@@ -63,19 +82,18 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
     const controller = new AbortController();
     live.current = { key, snapshots: new Map() };
     if (!enabled) return () => controller.abort();
-    setState({ key, items: [], loading: true, error: null });
+    const cached = cachedScores();
+    setState(initial());
     async function load() {
       const results = await Promise.allSettled(
         leagueKeys.map(async (league) => {
-          const data = await sessionStore.request(
-            `${scorePath(league)}?date=${date.replaceAll("-", "")}`,
-            {
-              signal: AbortSignal.any([
-                controller.signal,
-                AbortSignal.timeout(20000),
-              ]),
-            },
-          );
+          const data = await sessionStore.request(pathFor(league), {
+            cache: version ? "reload" : undefined,
+            signal: AbortSignal.any([
+              controller.signal,
+              AbortSignal.timeout(20000),
+            ]),
+          });
           return scoreboardItems(data, league);
         }),
       );
@@ -85,7 +103,9 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
       const items = leagueKeys.flatMap(
         (league, index) =>
           snapshots.get(league) ??
-          (results[index].status === "fulfilled" ? results[index].value : []),
+          (results[index].status === "fulfilled"
+            ? results[index].value
+            : cached.get(league) || []),
       );
       const failed = leagueKeys.some(
         (league, index) =>
@@ -106,5 +126,7 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
   const { key: _key, ...result } = state;
-  return state.key === key ? result : { items: [], loading: true, error: null };
+  if (state.key === key) return result;
+  const { key: _ignored, ...next } = initial();
+  return next;
 }

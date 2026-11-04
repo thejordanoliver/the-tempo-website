@@ -1,3 +1,4 @@
+import { favoriteTeamAssets } from "./favoriteTeamAssets.js";
 import { wnbaTeams } from "./wnbaTeams.js";
 // Team names and logos reused from the Tempo mobile app.
 import asset92 from "../../assets/team-logos/mlb-Angels.png";
@@ -832,21 +833,35 @@ export const TEAM_PLACEHOLDER =
   "https://res.cloudinary.com/dm3qtdhag/image/upload/v1781619331/placeholder/team.png";
 
 export function teamIdentity(team, league) {
-  const local = teams[league]?.[String(team?.id)];
+  const local =
+    teams[league]?.[String(team?.id)] ||
+    favoriteTeamAssets[`${league}:${team?.id}`];
   return {
     ...team,
     shortName:
-      local?.name || team?.shortName || team?.name || team?.code || "TBD",
-    logo: local?.logo || team?.logo || TEAM_PLACEHOLDER,
+      local?.name ||
+      local?.shortName ||
+      team?.shortName ||
+      team?.name ||
+      team?.code ||
+      "TBD",
+    logo: team?.logo || local?.logo || TEAM_PLACEHOLDER,
     // The app’s logoLight assets are designed for dark backgrounds.
     logoDark:
-      local?.logoLight ||
-      local?.logo ||
       team?.logoDark ||
       team?.logoLight ||
+      local?.logoDark ||
+      local?.logoLight ||
       team?.logo ||
+      local?.logo ||
       TEAM_PLACEHOLDER,
     logoLight:
       local?.logoLight || team?.logoLight || team?.logo || TEAM_PLACEHOLDER,
   };
+}
+
+export function teamLogoSource(identity, theme, forceDark = false) {
+  return (forceDark || theme === "dark") && identity.logoDark
+    ? identity.logoDark
+    : identity.logo;
 }
