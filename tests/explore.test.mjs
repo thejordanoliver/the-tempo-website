@@ -150,17 +150,16 @@ await writeFile(
   bundle.outputFiles[0].contents,
 );
 const { render } = await import("../.preview/tests/explore-render.mjs");
-test("guest Explore renders accessible search and board controls without leaking account details", () => {
+test("guest Explore renders accessible search without widgets or account details", () => {
   const html = render("Explore", {});
   for (const text of [
     "Explore",
     "Search players, teams and fans",
-    "Your Explore board",
-    "Add widget",
-    "Edit board",
     "Browse leagues",
   ])
     assert(html.includes(text));
+  for (const text of ["Your Explore board", "Add widget", "Edit board"])
+    assert(!html.includes(text));
   assert(!html.includes("Your email"));
   assert(render("User", { search: "?id=bad" }).includes("Fan not found"));
 });
