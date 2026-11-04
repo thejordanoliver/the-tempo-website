@@ -80,11 +80,6 @@ export default function Home({ onLogout }) {
   return (
     <section className="home-screen">
       <h1 className="sr-only">Home</h1>
-      <div className="home-heading page-toolbar">
-        <button className="tempo-button outline" onClick={onLogout}>
-          Sign out
-        </button>
-      </div>
       <FavoritesScroll
         teams={favoriteTeams}
         leagues={savedLeagues}
