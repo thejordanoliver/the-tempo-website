@@ -1,14 +1,16 @@
-import { useState } from "react";
+import Icon from "../ui/Icon.jsx";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "../../app/router.jsx";
 import { favoriteLeagues } from "../../data/leagues/favoriteLeagues.js";
-import { STANDINGS_LEAGUES } from "../../data/explore/explore.js";
+import { STANDINGS_LEAGUES, GAME_LEAGUES } from "../../data/explore/explore.js";
 import { standingsPath, defaultSeason } from "../../data/leagues/leagues.js";
 import { useResource } from "../../hooks/useResource.js";
 import useLiveSportsSubscription from "../../hooks/useLiveSportsSubscription.js";
-import FavoritesScroll from "../home/FavoritesScroll.jsx";
+import WidgetCarousel from "./WidgetCarousel.jsx";
+import { TeamSlide, StandingsPreview, PollPreview } from "./WidgetTables.jsx";
+import { favoriteTeamAssets } from "../../data/teams/favoriteTeamAssets.js";
+import { hasTeamLeague } from "../../data/teams/teams.js";
 import GameCard from "../games/GameCard.jsx";
-import { LeagueStandings } from "../leagues/LeagueStandings.jsx";
-import { LeagueRecords } from "../leagues/LeagueRecords.jsx";
 import { State } from "../ui/State.jsx";
 import PostComposer from "./PostComposer.jsx";
 
@@ -22,16 +24,16 @@ function Resource({ path, children }) {
     </>
   );
 }
-function FavoriteGames({ widget }) {
+function FavoriteGames({ widget, disabled }) {
   const [version, setVersion] = useState(0);
   return (
     <Resource
       key={version}
-      path={`/api/widgets/explore?${new URLSearchParams({ leagues: (widget.favoriteGameLeagues || []).join(","), refresh: String(version ? 1 : 0) })}`}
+      path={`/api/widgets/explore?${new URLSearchParams({ leagues: (widget.favoriteGameLeagues || GAME_LEAGUES).join(","), refresh: String(version ? 1 : 0) })}`}
     >
       {(data) => (
         <>
-          <LiveFavoriteGames data={data} />
+          <LiveFavoriteGames data={data} widget={widget} disabled={disabled} />
           <button
             type="button"
             className="explore-text-button"
@@ -44,7 +46,7 @@ function FavoriteGames({ widget }) {
     </Resource>
   );
 }
-function LiveFavoriteGames({ data }) {
+function LiveFavoriteGames({ data, widget, disabled }) {
   const games = Array.isArray(data?.games) ? data.games : [];
   const [snapshots, setSnapshots] = useState({});
   useLiveSportsSubscription({
@@ -71,70 +73,175 @@ function LiveFavoriteGames({ data }) {
       {!games.length ? (
         <State empty="Add favorite teams in the Tempo app to see their games here." />
       ) : (
-        <div className="explore-game-list">
-          {games.slice(0, 10).map((item) => (
+        <WidgetCarousel
+          items={games}
+          label="Favorite Games"
+          autoPlay={widget.favoriteGamesAutoPlay !== false}
+          disabled={disabled}
+          renderItem={(item) => (
             <GameCard
-              key={item.key}
               league={item.league}
               game={snapshots[`${item.league}:${item.gameId}`] || item.game}
             />
-          ))}
-        </div>
+          )}
+        />
       )}
     </>
   );
 }
-function FavoriteTeams() {
+function FavoriteTeams({ widget, disabled }) {
   return (
     <Resource path="/api/users/me/favorites">
-      {(teams) => (
-        <Resource path="/api/users/me/favorite-sports">
-          {(sports) => (
-            <FavoritesScroll
-              teams={teams?.favoriteTeams || []}
-              leagues={sports?.favoriteSports || []}
-            />
-          )}
-        </Resource>
-      )}
+      {(data) => {
+        const teams = (data?.favoriteTeams || [])
+          .filter((team) => hasTeamLeague(team.league))
+          .map((team) => ({
+            ...team,
+            ...favoriteTeamAssets[`${team.league}:${team.id}`],
+          }));
+        return teams.length ? (
+          <WidgetCarousel
+            items={teams}
+            label="Favorite Teams"
+            autoPlay={widget.favoriteTeamsAutoPlay !== false}
+            disabled={disabled}
+            renderItem={(team) => (
+              <TeamSlide team={team} league={team.league} />
+            )}
+          />
+        ) : (
+          <State empty="Add favorite teams to show shortcuts here." />
+        );
+      }}
     </Resource>
   );
 }
-function MyPicks() {
+function MyPicks({ widget }) {
+  const [version, setVersion] = useState(0);
   return (
-    <Resource path="/api/predictions/me/picks">
-      {(data) => (
-        <>
-          <div className="explore-pick-record">
-            <strong>
-              {data?.record?.correct ?? 0}/{data?.record?.graded ?? 0}
-            </strong>
-            <span>Correct picks</span>
-          </div>
-          {!data?.picks?.length ? (
-            <State empty="Make picks before games in Tempo to track your record here." />
-          ) : (
-            <ul className="explore-picks">
-              {data.picks.slice(0, 10).map((pick) => (
-                <li key={`${pick.league}:${pick.gameId}`}>
-                  <Link
-                    to={
-                      pick.sport === "mma"
-                        ? `/league/?league=ufc`
-                        : `/game/?${new URLSearchParams({ league: pick.league, id: pick.gameId })}`
-                    }
-                  >
-                    <strong>{pick.pickedShortName || pick.pickedName}</strong>
-                    <span>{pick.matchup}</span>
-                    <small>{pick.outcome}</small>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+    <>
+      <button
+        type="button"
+        className="explore-picks-refresh"
+        aria-label="Refresh your picks"
+        onClick={() => setVersion((value) => value + 1)}
+      >
+        <Icon name="refresh" size={18} />
+      </button>
+      <Resource key={version} path="/api/predictions/me/picks">
+        {(data) => {
+          const record = data?.record || {};
+          if (!data?.picks?.length)
+            return (
+              <State empty="Pick a winner before a game starts to track your predictions here." />
+            );
+          return (
+            <>
+              <div className="explore-pick-record">
+                <div>
+                  <strong>
+                    {record.correct ?? 0}/{record.graded ?? 0}
+                  </strong>
+                  <span>Record</span>
+                </div>
+                <div>
+                  <strong>
+                    {record.accuracy == null ? "—" : `${record.accuracy}%`}
+                  </strong>
+                  <span>Accuracy</span>
+                </div>
+                {widget.size !== "small" && (
+                  <div>
+                    <strong>{record.pending ?? 0}</strong>
+                    <span>Pending</span>
+                  </div>
+                )}
+              </div>
+              <ul className="explore-picks">
+                {data.picks
+                  .slice(
+                    0,
+                    widget.size === "small"
+                      ? 1
+                      : widget.size === "large"
+                        ? 5
+                        : 2,
+                  )
+                  .map((pick) => (
+                    <li key={`${pick.sport}:${pick.league}:${pick.gameId}`}>
+                      <Link
+                        to={
+                          pick.sport === "mma"
+                            ? "/league/?league=ufc"
+                            : `/game/?${new URLSearchParams({ league: pick.league, id: pick.gameId })}`
+                        }
+                      >
+                        <strong>
+                          You picked {pick.pickedShortName || pick.pickedName}
+                        </strong>
+                        {widget.size === "large" && (
+                          <span>
+                            {pick.league.toUpperCase()} · {pick.matchup}
+                          </span>
+                        )}
+                        <small data-outcome={pick.outcome}>
+                          {pick.outcome === "void"
+                            ? "Not scored"
+                            : pick.outcome}
+                        </small>
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </>
+          );
+        }}
+      </Resource>
+    </>
+  );
+}
+function CreatePost({ disabled, userId }) {
+  const [open, setOpen] = useState(false);
+  const dialog = useRef(null);
+  useEffect(() => {
+    if (open) dialog.current?.showModal();
+  }, [open]);
+  if (!userId)
+    return (
+      <Link className="widget-create-post" to="/login/">
+        <Icon name="create" size={24} />
+        <strong>Create Post</strong>
+        <span>Share a take, start a discussion, or post an update.</span>
+        <b>Create →</b>
+      </Link>
+    );
+  return (
+    <>
+      <button
+        className="widget-create-post"
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen(true)}
+      >
+        <Icon name="create" size={24} />
+        <strong>Create Post</strong>
+        <span>Share a take, start a discussion, or post an update.</span>
+        <b>Create →</b>
+      </button>
+      {open && (
+        <dialog
+          ref={dialog}
+          onClose={() => setOpen(false)}
+          className="widget-composer-dialog"
+          aria-label="Create a post"
+        >
+          <button type="button" onClick={() => setOpen(false)} autoFocus>
+            Close
+          </button>
+          <PostComposer />
+        </dialog>
       )}
-    </Resource>
+    </>
   );
 }
 function CollegePoll({ widget, change, disabled }) {
@@ -208,10 +315,11 @@ function CollegePoll({ widget, change, disabled }) {
                   : /fcs/.test(name);
           });
           return (
-            <LeagueRecords
+            <PollPreview
+              poll={poll}
               league={league}
-              tab="rankings"
-              data={{ rankings: poll ? [poll] : [] }}
+              widget={widget}
+              disabled={disabled}
             />
           );
         }}
@@ -226,9 +334,7 @@ export default function ExploreWidgetContent({
   disabled,
 }) {
   if (
-    ["favorite_games", "favorite_teams", "my_picks", "create_post"].includes(
-      widget.type,
-    ) &&
+    ["favorite_games", "favorite_teams", "my_picks"].includes(widget.type) &&
     !userId
   )
     return (
@@ -246,14 +352,15 @@ export default function ExploreWidgetContent({
         <FavoriteGames
           key={widget.favoriteGameLeagues?.join(",")}
           widget={widget}
+          disabled={disabled}
         />
       );
     case "favorite_teams":
-      return <FavoriteTeams />;
+      return <FavoriteTeams widget={widget} disabled={disabled} />;
     case "my_picks":
-      return <MyPicks />;
+      return <MyPicks widget={widget} />;
     case "create_post":
-      return <PostComposer />;
+      return <CreatePost disabled={disabled} userId={userId} />;
     case "standings": {
       const league = widget.standingsLeague || "nba";
       return (
@@ -278,7 +385,14 @@ export default function ExploreWidgetContent({
             key={league}
             path={`${standingsPath(league)}?season=${defaultSeason(league)}&seasontype=2`}
           >
-            {(data) => <LeagueStandings data={data} league={league} />}
+            {(data) => (
+              <StandingsPreview
+                data={data}
+                league={league}
+                widget={widget}
+                disabled={disabled}
+              />
+            )}
           </Resource>
         </>
       );

@@ -1,3 +1,6 @@
+import SettingsOutline from "react-ionicons/lib/SettingsOutline.js";
+import CreateOutline from "react-ionicons/lib/CreateOutline.js";
+import RefreshOutline from "react-ionicons/lib/RefreshOutline.js";
 import ArrowBackOutline from "react-ionicons/lib/ArrowBackOutline.js";
 import ArrowDownOutline from "react-ionicons/lib/ArrowDownOutline.js";
 import ArrowForwardOutline from "react-ionicons/lib/ArrowForwardOutline.js";
@@ -20,6 +23,9 @@ import "./Icon.css";
 
 // Import individual icons to avoid bundling the package's entire icon catalog.
 const icons = {
+  settings: SettingsOutline,
+  create: CreateOutline,
+  refresh: RefreshOutline,
   menu: MenuOutline,
   close: CloseOutline,
   sun: SunnyOutline,

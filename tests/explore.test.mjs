@@ -133,7 +133,7 @@ test("settings conflicts keep edits and block overwriting another device", async
 await mkdir(".preview/tests", { recursive: true });
 const bundle = await build({
   stdin: {
-    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Explore from './src/pages/Explore.jsx';import User from './src/pages/User.jsx';export const render=(name,props)=>renderToStaticMarkup(React.createElement({Explore,User}[name],props));`,
+    contents: `import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';import Explore from './src/pages/Explore.jsx';import User from './src/pages/User.jsx';import { StandingsPreview, PollPreview } from './src/components/explore/WidgetTables.jsx';export const render=(name,props)=>renderToStaticMarkup(React.createElement({Explore,User,StandingsPreview,PollPreview}[name],props));`,
     resolveDir: process.cwd(),
     loader: "jsx",
   },
@@ -150,16 +150,17 @@ await writeFile(
   bundle.outputFiles[0].contents,
 );
 const { render } = await import("../.preview/tests/explore-render.mjs");
-test("guest Explore renders accessible search without widgets or account details", () => {
+test("guest Explore renders accessible search and widget board without account details", () => {
   const html = render("Explore", {});
   for (const text of [
     "Explore",
     "Search players, teams and fans",
     "Browse leagues",
+    "Your Explore board",
+    "Add widget",
+    "Edit board",
   ])
     assert(html.includes(text));
-  for (const text of ["Your Explore board", "Add widget", "Edit board"])
-    assert(!html.includes(text));
   assert(!html.includes("Your email"));
   assert(render("User", { search: "?id=bad" }).includes("Fan not found"));
 });
@@ -194,4 +195,51 @@ test("search cancels stale queries, respects the backend length limit and return
   } finally {
     h.stop();
   }
+});
+
+test("standings widgets use conference previews and small-card slides", () => {
+  const teams = Array.from({ length: 8 }, (_, i) => ({
+    id: String(i + 1),
+    name: `Team ${i + 1}`,
+    wins: 10,
+    losses: 2,
+    winPercent: 0.833,
+  }));
+  const props = {
+    data: { conferences: [{ name: "Eastern", standings: teams }] },
+    league: "nba",
+    widget: { size: "medium" },
+  };
+  const medium = render("StandingsPreview", props);
+  assert(medium.includes("Team 3"));
+  assert(!medium.includes("Team 4"));
+  const large = render("StandingsPreview", {
+    ...props,
+    widget: { size: "large" },
+  });
+  assert(large.includes("Team 8"));
+  const small = render("StandingsPreview", {
+    ...props,
+    widget: { size: "small" },
+  });
+  assert(small.includes('aria-roledescription="carousel"'));
+  assert(small.includes("Eastern"));
+  assert(!small.includes("<table"));
+});
+test("poll widgets show size-limited rows and compact team slides", () => {
+  const ranks = Array.from({ length: 25 }, (_, i) => ({
+    current: i + 1,
+    team: { id: String(i + 1), name: `School ${i + 1}` },
+    recordSummary: "8-0",
+    points: 100,
+  }));
+  const props = { poll: { ranks }, league: "cfb", widget: { size: "medium" } };
+  const medium = render("PollPreview", props);
+  assert(medium.includes("School 5"));
+  assert(!medium.includes("School 6"));
+  const small = render("PollPreview", { ...props, widget: { size: "small" } });
+  assert(small.includes("#1"));
+  assert(small.includes("School 1"));
+  assert(small.includes("Next College Polls slide"));
+  assert(!small.includes("<table"));
 });

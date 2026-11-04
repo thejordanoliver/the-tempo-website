@@ -125,6 +125,7 @@
   height: 100%;
   object-fit: contain;
 }
+/* Match the app's two-column board and fixed widget sizes. */
 .explore-board-heading h2 {
   margin: 0;
 }
@@ -133,166 +134,507 @@
 }
 .explore-board {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 20px;
-  align-items: stretch;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 12px;
+  align-items: start;
 }
 .explore-widget {
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: 480px;
   min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 16px;
+  border: 1px solid var(--muted);
+  border-radius: 8px;
   background: var(--bg);
   overflow: hidden;
 }
 .explore-widget-small {
-  grid-column: span 2;
+  grid-column: span 1;
+  height: 220px;
 }
 .explore-widget-medium {
-  grid-column: span 3;
+  grid-column: span 2;
+  height: 200px;
 }
 .explore-widget-large {
-  grid-column: 1/-1;
-  height: 580px;
+  grid-column: span 2;
+  height: 420px;
 }
 .explore-widget > header {
-  flex: 0 0 auto;
-  min-height: 68px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  border-bottom: 1px solid var(--line);
-  padding: 18px 20px;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 12px;
+  flex-shrink: 0;
 }
 .explore-widget h3 {
-  font-size: 20px;
   margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+.explore-widget-small h3 {
+  font-size: 14px;
 }
 .explore-widget-body {
   flex: 1;
   min-height: 0;
-  padding: 18px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-}
-.explore-widget .page-state {
-  padding: 18px;
-  font-size: 15px;
-}
-.explore-edit-controls {
-  display: flex;
-  gap: 6px;
-}
-.explore-edit-controls button {
-  padding: 4px 10px;
-}
-.explore-widget-filter,
-.explore-widget-filters label,
-.explore-composer label {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 14px;
-  margin-bottom: 16px;
 }
-.explore-widget > .explore-widget-filter {
-  margin: 16px 20px 0;
+.explore-widget .page-state {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 12px;
+  height: 100%;
+  font-size: 13px;
+  text-align: center;
 }
-.explore-widget select,
-.explore-widget textarea {
-  background-color: var(--bg);
+.explore-settings-button,
+.explore-picks-refresh {
+  border: 0;
+  background: transparent;
   color: var(--text);
-  border: 1px solid var(--line);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+}
+.explore-picks-refresh {
+  align-self: flex-end;
+  position: absolute;
+  top: 0;
+  right: 8px;
+}
+.explore-widget[data-widget-type="my_picks"] > header {
+  padding-right: 44px;
+}
+.widget-carousel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.widget-slide {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.widget-slide > * {
+  flex: 1;
+  min-width: 0;
+}
+.widget-slide-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 24px;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--muted);
+}
+.widget-slide-controls button {
+  border: 0;
   border-radius: 8px;
-  min-height: 44px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  min-width: 28px;
+  height: 24px;
+}
+.widget-team-slide {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 8px 12px;
+  overflow: hidden;
+  color: var(--text);
+  text-decoration: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--team-color) 55%, var(--bg)),
+    var(--bg) 80%
+  );
+}
+.widget-team-slide .team-logo {
+  display: block;
+  width: 48%;
+  height: 52%;
+  min-height: 30px;
+}
+.widget-team-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.widget-team-slide strong {
+  font-size: 22px;
+  font-weight: 400;
+  text-align: center;
+  line-height: 1.2;
+}
+.explore-widget-small .widget-team-slide strong {
+  font-size: 16px;
+}
+.widget-team-slide small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.widget-rank {
+  position: absolute;
+  top: 8px;
+  left: 9px;
+  border: 1px solid var(--text);
+  border-radius: 50%;
+  padding: 6px;
+  font-weight: 700;
+}
+.widget-conference-slide {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  text-align: center;
+  font-size: 22px;
+}
+.explore-widget-body > .explore-text-button {
+  position: absolute;
+  right: 6px;
+  top: 0;
+  z-index: 1;
+  font-size: 10px;
+}
+.explore-text-button {
+  border: 0;
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
   font: inherit;
 }
-.explore-widget textarea {
-  resize: vertical;
+.explore-widget .tempo-game-card {
   width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
 }
-.explore-widget .favorites-section {
-  padding: 0;
+.explore-widget-small .tempo-game-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "away away-score" "info info" "home home-score";
+  gap: 4px;
+  padding: 12px;
+}
+.explore-widget-small .gc-team {
+  flex-direction: row;
+}
+.explore-widget-small .gc-name {
+  font-size: 12px;
+}
+.explore-widget-small .gc-logo {
+  width: 30px;
+  height: 30px;
+}
+.explore-widget-small .gc-score {
+  font-size: 24px;
+}
+.explore-widget-filter,
+.explore-widget-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10px;
+}
+.explore-widget-body > .explore-widget-filter,
+.explore-widget-filters {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  z-index: 2;
+  transform: translateY(-100%);
+}
+.explore-widget[data-widget-type="standings"] .explore-widget-body,
+.explore-widget[data-widget-type="college_polls"] .explore-widget-body {
+  overflow: visible;
+}
+.explore-widget[data-widget-type="standings"] > header {
+  min-height: 52px;
+  padding-right: 100px;
+  border-bottom: 1px solid var(--line);
+}
+.explore-widget[data-widget-type="college_polls"] > header {
+  min-height: 52px;
+  padding-right: 180px;
+  border-bottom: 1px solid var(--line);
+}
+.explore-widget-small[data-widget-type="college_polls"] > header {
+  min-height: 70px;
+  padding: 4px 8px 35px;
+}
+.explore-widget-small .explore-widget-filters {
+  left: 8px;
+  right: 8px;
+}
+.explore-widget-filters {
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+.explore-widget select {
+  font: inherit;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  min-height: 28px;
+  padding: 2px 6px;
+  max-width: 130px;
+}
+.widget-conferences {
+  display: flex;
+  gap: 8px;
+  padding: 0 8px;
+  min-height: 0;
+  overflow: auto;
+}
+.widget-conferences > section {
+  flex: 1;
+  min-width: 0;
+}
+.widget-conferences h4 {
   margin: 0;
+  padding: 3px 5px;
+  background: var(--surface);
+  font-size: 11px;
+  text-transform: uppercase;
 }
-.explore-widget .table-scroll {
-  max-width: 100%;
+.widget-poll-table {
+  padding: 0 8px;
+  overflow: auto;
 }
-.explore-game-list {
-  display: grid;
-  gap: 12px;
+.explore-widget table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.explore-widget td,
+.explore-widget th {
+  padding: 4px 3px;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+}
+.explore-widget th {
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.explore-widget td:nth-child(2),
+.explore-widget th:nth-child(2) {
+  text-align: left;
+}
+.explore-widget td a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text);
+  text-decoration: none;
+}
+.explore-widget td .team-logo,
+.explore-widget td img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.explore-pick-record {
+  display: flex;
+  gap: 20px;
+  padding: 0 12px 6px;
+}
+.explore-pick-record > div {
+  display: flex;
+  flex-direction: column;
+}
+.explore-pick-record strong {
+  font-size: 24px;
+  line-height: 1.2;
+}
+.explore-pick-record span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.explore-picks {
+  overflow: auto;
+  padding: 0 12px;
 }
 .explore-picks li {
   border-top: 1px solid var(--line);
 }
 .explore-picks a {
   display: flex;
-  flex-direction: column;
-  padding: 12px 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 5px 0;
   color: var(--text);
   text-decoration: none;
+  font-size: 12px;
 }
-.explore-picks small,
-.explore-picks span {
+.explore-picks small {
+  margin-left: auto;
+  text-transform: capitalize;
   color: var(--muted);
 }
-.explore-pick-record {
+.explore-picks [data-outcome="correct"] {
+  color: #177901;
+}
+.explore-picks [data-outcome="incorrect"] {
+  color: #cc0000;
+}
+.explore-sign-in {
+  margin: auto;
+  padding: 12px;
+  font-size: 13px;
+  text-align: center;
+}
+.explore-sign-in p {
+  margin-bottom: 6px;
+}
+.widget-create-post {
+  flex: 1;
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.explore-pick-record strong {
-  font-size: 36px;
-}
-.explore-text-button {
-  background: none;
-  border: 0;
-  color: var(--link);
-  text-decoration: underline;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 14px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
   font: inherit;
-  min-height: 44px;
+  border: 0;
   cursor: pointer;
+}
+.widget-create-post > span:first-child {
+  font-size: 24px;
+}
+.widget-create-post strong {
+  font-size: 19px;
+  font-weight: 600;
+}
+.widget-create-post span {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--muted);
+}
+.widget-create-post b {
+  padding: 7px 11px;
+  font-size: 13px;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+}
+.explore-widget[data-widget-type="create_post"] > header {
+  display: none;
+}
+.widget-composer-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  margin: auto;
+  width: min(90vw, 520px);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+}
+.explore-composer label {
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0;
+}
+.explore-composer textarea {
+  background: var(--bg);
+  color: var(--text);
+  padding: 12px;
+  border: 1px solid var(--line);
+  font: inherit;
+}
+.explore-edit-controls {
+  display: flex;
+  gap: 4px;
+}
+.explore-edit-controls button {
+  padding: 2px 6px;
+  min-height: 28px;
+  min-width: 28px;
+}
+.explore-widget > .explore-widget-filter {
+  margin: 4px 12px;
+}
+.explore-autoplay {
+  font-size: 12px;
+  padding: 4px 12px;
+}
+.explore-league-options {
+  margin: 4px 12px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  font-size: 12px;
+}
+.explore-league-options label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.explore-board.is-editing .explore-widget,
+.explore-widget:has(.explore-autoplay) {
+  height: auto;
+  min-height: 220px;
+}
+.explore-board.is-editing .explore-widget-body,
+.explore-widget:has(.explore-autoplay) .explore-widget-body {
+  flex: 0 0 160px;
 }
 .explore-widget-catalog {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
-  margin: 0 0 24px;
+  margin-bottom: 24px;
 }
 .explore-widget-catalog button {
   display: flex;
   flex-direction: column;
-  text-align: left;
   gap: 8px;
-  padding: 20px;
+  padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--surface);
   color: var(--text);
   font: inherit;
+  text-align: left;
   cursor: pointer;
 }
 .explore-widget-catalog span,
 .explore-widget-catalog small {
   color: var(--muted);
+  font-size: 13px;
 }
 .explore-page button:disabled {
   opacity: 0.5;
   cursor: default;
-}
-@media (max-width: 900px) {
-  .explore-widget-small,
-  .explore-widget-medium {
-    grid-column: span 3;
-  }
 }
 @media (max-width: 600px) {
   .explore-page {
@@ -301,185 +643,80 @@
   .explore-search {
     padding: 18px;
   }
-  .explore-board {
-    grid-template-columns: 1fr;
-  }
-  .explore-widget-small,
-  .explore-widget-medium,
-  .explore-widget-large {
-    grid-column: 1;
+  .explore-heading h1 {
+    font-size: 40px;
   }
   .explore-actions {
     width: 100%;
   }
-  .explore-widget-body {
-    max-height: 460px;
-  }
-  .explore-heading h1 {
-    font-size: 40px;
-  }
-}
-
-.explore-league-options {
-  margin: 16px 20px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 12px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 8px;
-  font-size: 14px;
-}
-.explore-league-options label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 36px;
-}
-
-/* Keep short guest prompts compact and align the final pair of default widgets. */
-.explore-board.is-guest:not(.is-editing)
-  .explore-widget:not([data-widget-type="standings"]):not(
-    [data-widget-type="college_polls"]
-  ) {
-  height: 220px;
-}
-.explore-widget-small:last-child {
-  grid-column: span 3;
-}
-.explore-sign-in {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100%;
-}
-.explore-sign-in p {
-  font-size: 15px;
-  margin-bottom: 12px;
-}
-.explore-widget-body > .explore-widget-filter {
-  margin-bottom: 18px;
-}
-.explore-widget-filters {
-  align-items: flex-end;
-}
-.explore-widget-filters label {
-  flex: 1;
-  min-width: 130px;
-}
-.explore-widget-filter select,
-.explore-widget-filters select,
-.explore-composer select {
-  width: 100%;
-}
-.explore-widget .league-table-section + .league-table-section {
-  margin-top: 24px;
-}
-.explore-widget .league-table-section h3 {
-  font-size: 17px;
-  margin-bottom: 12px;
-}
-.explore-widget table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-.explore-widget th,
-.explore-widget td {
-  padding: 10px 8px;
-  border-bottom: 1px solid var(--line);
-  text-align: right;
-}
-.explore-widget thead {
-  background: var(--surface);
-  color: var(--muted);
-}
-.explore-widget th:nth-child(2),
-.explore-widget td:nth-child(2) {
-  text-align: left;
-}
-.explore-widget tbody th {
-  font-weight: 400;
-}
-.explore-widget tbody tr:last-child > * {
-  border-bottom: 0;
-}
-.explore-widget .league-team-name {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-.explore-widget .league-team-name .team-logo,
-.explore-widget .league-team-name img {
-  width: 24px;
-  height: 24px;
-  flex: 0 0 24px;
-}
-.explore-widget .league-team-name a {
-  text-decoration: none;
-  color: var(--text);
-}
-.explore-widget .league-team-name a:hover {
-  text-decoration: underline;
-}
-.explore-board.is-editing .explore-widget {
-  height: auto;
-  min-height: 480px;
-}
-.explore-board.is-editing .explore-widget-body {
-  flex: 1 1 320px;
-  max-height: 420px;
-}
-.explore-widget .explore-league-options {
-  flex: 0 0 auto;
-}
-.explore-widget .favorites-heading {
-  flex-wrap: wrap;
-}
-.explore-widget .favorites-scroll {
-  padding: 12px 0;
-}
-.explore-widget .favorites-arrows {
-  margin-left: auto;
-}
-@media (max-width: 600px) {
-  .explore-board {
-    gap: 16px;
-  }
-  .explore-widget,
-  .explore-widget-large,
-  .explore-board.is-guest:not(.is-editing)
-    .explore-widget:not([data-widget-type="standings"]):not(
-      [data-widget-type="college_polls"]
-    ),
-  .explore-board.is-editing .explore-widget {
-    height: auto;
-    min-height: 0;
-  }
-  .explore-widget-small:last-child {
-    grid-column: 1;
-  }
-  .explore-widget > header {
-    padding: 16px;
-  }
-  .explore-widget-body {
-    flex: 0 1 auto;
-    padding: 16px;
-  }
-  .explore-board.is-editing .explore-widget-body {
-    flex: 0 1 auto;
-  }
-  .explore-sign-in {
-    min-height: 120px;
-  }
-  .explore-widget th,
-  .explore-widget td {
-    padding: 10px 7px;
-  }
   .explore-actions > button {
     flex: 1;
+  }
+  .widget-conferences {
+    gap: 4px;
+  }
+  .explore-widget table {
+    font-size: 10px;
+  }
+  .explore-pick-record {
+    gap: 12px;
+  }
+}
+
+.widget-composer-dialog::backdrop {
+  background: #0008;
+}
+.explore-widget-small .gc-away {
+  grid-area: away;
+}
+.explore-widget-small .gc-home {
+  grid-area: home;
+}
+.explore-widget-small .gc-score-slot:nth-child(2) {
+  grid-area: away-score;
+}
+.explore-widget-small .gc-score-slot:nth-last-child(2) {
+  grid-area: home-score;
+}
+.explore-widget-small .gc-info {
+  grid-area: info;
+}
+.explore-widget-small .gc-logo img {
+  width: 30px;
+  height: 30px;
+}
+
+.widget-create-post {
+  text-decoration: none;
+}
+@media (max-width: 600px) {
+  .explore-widget[data-widget-type="college_polls"] > header {
+    min-height: 82px;
+    align-items: flex-start;
+    padding: 8px 12px 38px;
+  }
+  .explore-widget[data-widget-type="college_polls"] .explore-settings-button {
+    position: absolute;
+    right: 8px;
+    top: 4px;
+  }
+  .explore-widget[data-widget-type="college_polls"] .explore-widget-filters {
+    left: 8px;
+    right: 8px;
+  }
+  .explore-widget[data-widget-type="college_polls"]
+    .explore-widget-filters
+    label {
+    flex: 1;
+    min-width: 0;
+  }
+  .explore-widget[data-widget-type="college_polls"] select {
+    width: 100%;
+  }
+}
+
+@media (min-width: 601px) {
+  .explore-widget[data-widget-type="college_polls"] .explore-widget-filters {
+    right: 50px;
   }
 }
