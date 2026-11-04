@@ -80,6 +80,7 @@ export default function Home({ onLogout }) {
   return (
     <section className="home-screen">
       <h1 className="sr-only">Home</h1>
+
       <FavoritesScroll
         teams={favoriteTeams}
         leagues={savedLeagues}
@@ -97,6 +98,7 @@ export default function Home({ onLogout }) {
           if (team) setLeague(team.league);
         }}
       />
+
       <section aria-labelledby="games-title">
         <div className="home-section-heading">
           <h2 id="games-title">Scores</h2>
@@ -122,6 +124,7 @@ export default function Home({ onLogout }) {
           />
         )}
       </section>
+
       <section className="home-news" aria-labelledby="news-title">
         <div className="home-section-heading">
           <div>
