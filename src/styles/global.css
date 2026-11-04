@@ -1811,3 +1811,26 @@ nav[aria-label="Main navigation"] {
   z-index: 30;
   background: var(--bg);
 }
+
+/* Main routes use compact controls without visible page-title blocks. */
+.home-heading.page-toolbar,
+.explore-heading.page-toolbar,
+.league-directory-heading.page-toolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.login-layout.login-form-only {
+  grid-template-columns: minmax(0, 440px);
+  justify-content: center;
+  align-content: start;
+  gap: 0;
+  min-height: 0;
+  padding-block: 40px;
+}
+.login-form-only .login-panel {
+  justify-self: center;
+}

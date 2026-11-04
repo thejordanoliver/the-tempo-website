@@ -1,4 +1,3 @@
-import Icon from "../ui/Icon.jsx";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "../../app/router.jsx";
 import { favoriteLeagues } from "../../data/leagues/favoriteLeagues.js";
@@ -6,17 +5,17 @@ import { STANDINGS_LEAGUES, GAME_LEAGUES } from "../../data/explore/explore.js";
 import { standingsPath, defaultSeason } from "../../data/leagues/leagues.js";
 import { useResource } from "../../hooks/useResource.js";
 import useLiveSportsSubscription from "../../hooks/useLiveSportsSubscription.js";
-import WidgetCarousel from "./WidgetCarousel.jsx";
 import { TeamSlide, StandingsPreview, PollPreview } from "./WidgetTables.jsx";
 import { favoriteTeamAssets } from "../../data/teams/favoriteTeamAssets.js";
 import { hasTeamLeague } from "../../data/teams/teams.js";
 import GameCard from "../games/GameCard.jsx";
+import Icon from "../ui/Icon.jsx";
 import { State } from "../ui/State.jsx";
 import PostComposer from "./PostComposer.jsx";
 
-function Resource({ path, children }) {
+function Resource({ path, children, refreshVersion = 0 }) {
   const [version, setVersion] = useState(0);
-  const resource = useResource(path, version);
+  const resource = useResource(path, version + refreshVersion);
   return (
     <>
       <State {...resource} onRetry={() => setVersion((value) => value + 1)} />
@@ -27,31 +26,35 @@ function Resource({ path, children }) {
 function FavoriteGames({ widget, disabled }) {
   const [version, setVersion] = useState(0);
   return (
-    <Resource
-      key={version}
-      path={`/api/widgets/explore?${new URLSearchParams({ leagues: (widget.favoriteGameLeagues || GAME_LEAGUES).join(","), refresh: String(version ? 1 : 0) })}`}
-    >
-      {(data) => (
-        <>
-          <LiveFavoriteGames data={data} widget={widget} disabled={disabled} />
-          <button
-            type="button"
-            className="explore-text-button"
-            onClick={() => setVersion((value) => value + 1)}
-          >
-            Refresh scores
-          </button>
-        </>
-      )}
-    </Resource>
+    <>
+      <div className="dashboard-content-toolbar">
+        <button
+          type="button"
+          className="explore-text-button"
+          disabled={disabled}
+          onClick={() => setVersion((value) => value + 1)}
+        >
+          <Icon name="refresh" size={16} />
+          Refresh scores
+        </button>
+      </div>
+      <Resource
+        key={version}
+        path={`/api/widgets/explore?${new URLSearchParams({ leagues: (widget.favoriteGameLeagues || GAME_LEAGUES).join(","), refresh: String(version ? 1 : 0) })}`}
+      >
+        {(data) => <LiveFavoriteGames data={data} disabled={disabled} />}
+      </Resource>
+    </>
   );
 }
-function LiveFavoriteGames({ data, widget, disabled }) {
+function LiveFavoriteGames({ data, disabled }) {
   const games = Array.isArray(data?.games) ? data.games : [];
+  const [expanded, setExpanded] = useState(false);
   const [snapshots, setSnapshots] = useState({});
+  const visibleGames = expanded ? games : games.slice(0, 6);
   useLiveSportsSubscription({
-    enabled: games.length > 0,
-    subscriptions: games.slice(0, 10).map((item) => ({
+    enabled: visibleGames.length > 0,
+    subscriptions: visibleGames.map((item) => ({
       kind: "game",
       payload: { sport: item.sport, league: item.league, gameId: item.gameId },
     })),
@@ -67,29 +70,39 @@ function LiveFavoriteGames({ data, widget, disabled }) {
     <>
       {data?.failures?.length > 0 && (
         <p role="status" className="small">
-          Some team schedules are unavailable. Refresh to try again.
+          Some schedules are unavailable. Try refreshing.
         </p>
       )}
       {!games.length ? (
-        <State empty="Add favorite teams in the Tempo app to see their games here." />
+        <State empty="Add favorite teams in the Tempo app to see their games." />
       ) : (
-        <WidgetCarousel
-          items={games}
-          label="Favorite Games"
-          autoPlay={widget.favoriteGamesAutoPlay !== false}
-          disabled={disabled}
-          renderItem={(item) => (
-            <GameCard
-              league={item.league}
-              game={snapshots[`${item.league}:${item.gameId}`] || item.game}
-            />
+        <>
+          <div className="explore-game-list">
+            {visibleGames.map((item) => (
+              <GameCard
+                key={item.key || `${item.league}:${item.gameId}`}
+                league={item.league}
+                game={snapshots[`${item.league}:${item.gameId}`] || item.game}
+              />
+            ))}
+          </div>
+          {games.length > 6 && (
+            <button
+              type="button"
+              className="dashboard-show-more"
+              disabled={disabled}
+              aria-expanded={expanded}
+              onClick={() => setExpanded((value) => !value)}
+            >
+              {expanded ? "Show fewer games" : `Show all ${games.length} games`}
+            </button>
           )}
-        />
+        </>
       )}
     </>
   );
 }
-function FavoriteTeams({ widget, disabled }) {
+function FavoriteTeams() {
   return (
     <Resource path="/api/users/me/favorites">
       {(data) => {
@@ -100,103 +113,106 @@ function FavoriteTeams({ widget, disabled }) {
             ...favoriteTeamAssets[`${team.league}:${team.id}`],
           }));
         return teams.length ? (
-          <WidgetCarousel
-            items={teams}
-            label="Favorite Teams"
-            autoPlay={widget.favoriteTeamsAutoPlay !== false}
-            disabled={disabled}
-            renderItem={(team) => (
-              <TeamSlide team={team} league={team.league} />
-            )}
-          />
+          <div className="dashboard-teams-list">
+            {teams.map((team) => (
+              <TeamSlide
+                key={`${team.league}:${team.id}`}
+                team={team}
+                league={team.league}
+              />
+            ))}
+          </div>
         ) : (
-          <State empty="Add favorite teams to show shortcuts here." />
+          <State empty="Add favorite teams in the Tempo app." />
         );
       }}
     </Resource>
   );
 }
-function MyPicks({ widget }) {
+function MyPicks({ disabled }) {
   const [version, setVersion] = useState(0);
   return (
     <>
-      <button
-        type="button"
-        className="explore-picks-refresh"
-        aria-label="Refresh your picks"
-        onClick={() => setVersion((value) => value + 1)}
+      <div className="dashboard-content-toolbar">
+        <button
+          type="button"
+          className="explore-text-button"
+          aria-label="Refresh your picks"
+          disabled={disabled}
+          onClick={() => setVersion((value) => value + 1)}
+        >
+          <Icon name="refresh" size={16} />
+          Refresh
+        </button>
+      </div>
+      <Resource
+        key={version}
+        refreshVersion={version}
+        path="/api/predictions/me/picks"
       >
-        <Icon name="refresh" size={18} />
-      </button>
-      <Resource key={version} path="/api/predictions/me/picks">
-        {(data) => {
-          const record = data?.record || {};
-          if (!data?.picks?.length)
-            return (
-              <State empty="Pick a winner before a game starts to track your predictions here." />
-            );
-          return (
-            <>
-              <div className="explore-pick-record">
-                <div>
-                  <strong>
-                    {record.correct ?? 0}/{record.graded ?? 0}
-                  </strong>
-                  <span>Record</span>
-                </div>
-                <div>
-                  <strong>
-                    {record.accuracy == null ? "—" : `${record.accuracy}%`}
-                  </strong>
-                  <span>Accuracy</span>
-                </div>
-                {widget.size !== "small" && (
-                  <div>
-                    <strong>{record.pending ?? 0}</strong>
-                    <span>Pending</span>
-                  </div>
-                )}
-              </div>
-              <ul className="explore-picks">
-                {data.picks
-                  .slice(
-                    0,
-                    widget.size === "small"
-                      ? 1
-                      : widget.size === "large"
-                        ? 5
-                        : 2,
-                  )
-                  .map((pick) => (
-                    <li key={`${pick.sport}:${pick.league}:${pick.gameId}`}>
-                      <Link
-                        to={
-                          pick.sport === "mma"
-                            ? "/league/?league=ufc"
-                            : `/game/?${new URLSearchParams({ league: pick.league, id: pick.gameId })}`
-                        }
-                      >
-                        <strong>
-                          You picked {pick.pickedShortName || pick.pickedName}
-                        </strong>
-                        {widget.size === "large" && (
-                          <span>
-                            {pick.league.toUpperCase()} · {pick.matchup}
-                          </span>
-                        )}
-                        <small data-outcome={pick.outcome}>
-                          {pick.outcome === "void"
-                            ? "Not scored"
-                            : pick.outcome}
-                        </small>
-                      </Link>
-                    </li>
-                  ))}
-              </ul>
-            </>
-          );
-        }}
+        {(data) => <PicksSummary data={data} disabled={disabled} />}
       </Resource>
+    </>
+  );
+}
+function PicksSummary({ data, disabled }) {
+  const [expanded, setExpanded] = useState(false);
+  const record = data?.record || {};
+  const picks = data?.picks || [];
+  if (!picks.length)
+    return <State empty="Pick a winner before a game to track your record." />;
+  return (
+    <>
+      <div className="explore-pick-record">
+        <div>
+          <strong>
+            {record.correct ?? 0}/{record.graded ?? 0}
+          </strong>
+          <span>Record</span>
+        </div>
+        <div>
+          <strong>
+            {record.accuracy == null ? "—" : `${record.accuracy}%`}
+          </strong>
+          <span>Accuracy</span>
+        </div>
+        <div>
+          <strong>{record.pending ?? 0}</strong>
+          <span>Pending</span>
+        </div>
+      </div>
+      <ul className="explore-picks">
+        {picks.slice(0, expanded ? undefined : 5).map((pick) => (
+          <li key={`${pick.sport}:${pick.league}:${pick.gameId}`}>
+            <Link
+              to={
+                pick.sport === "mma"
+                  ? "/league/?league=ufc"
+                  : `/game/?${new URLSearchParams({ league: pick.league, id: pick.gameId })}`
+              }
+            >
+              <strong>Picked {pick.pickedShortName || pick.pickedName}</strong>
+              <span>
+                {pick.league.toUpperCase()} · {pick.matchup}
+              </span>
+              <small data-outcome={pick.outcome}>
+                {pick.outcome === "void" ? "Not scored" : pick.outcome}
+              </small>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {picks.length > 5 && (
+        <button
+          type="button"
+          className="dashboard-show-more"
+          disabled={disabled}
+          aria-expanded={expanded}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? "Show fewer picks" : `Show all ${picks.length} picks`}
+        </button>
+      )}
     </>
   );
 }
@@ -206,13 +222,18 @@ function CreatePost({ disabled, userId }) {
   useEffect(() => {
     if (open) dialog.current?.showModal();
   }, [open]);
+  const content = (
+    <>
+      <Icon name="create" size={24} />
+      <b>
+        Write a post <Icon name="arrow-forward" size={16} />
+      </b>
+    </>
+  );
   if (!userId)
     return (
       <Link className="widget-create-post" to="/login/">
-        <Icon name="create" size={24} />
-        <strong>Create Post</strong>
-        <span>Share a take, start a discussion, or post an update.</span>
-        <b>Create →</b>
+        {content}
       </Link>
     );
   return (
@@ -223,10 +244,7 @@ function CreatePost({ disabled, userId }) {
         disabled={disabled}
         onClick={() => setOpen(true)}
       >
-        <Icon name="create" size={24} />
-        <strong>Create Post</strong>
-        <span>Share a take, start a discussion, or post an update.</span>
-        <b>Create →</b>
+        {content}
       </button>
       {open && (
         <dialog
@@ -235,7 +253,12 @@ function CreatePost({ disabled, userId }) {
           className="widget-composer-dialog"
           aria-label="Create a post"
         >
-          <button type="button" onClick={() => setOpen(false)} autoFocus>
+          <button
+            type="button"
+            className="explore-text-button"
+            onClick={() => setOpen(false)}
+            autoFocus
+          >
             Close
           </button>
           <PostComposer />
@@ -294,6 +317,12 @@ function CollegePoll({ widget, change, disabled }) {
             ))}
           </select>
         </label>
+        <Link
+          className="dashboard-section-link"
+          to={`/league/?league=${league}`}
+        >
+          View league <Icon name="arrow-forward" size={16} />
+        </Link>
       </div>
       <Resource key={league} path={`/api/standings/${league}/rankings`}>
         {(data) => {
@@ -316,9 +345,9 @@ function CollegePoll({ widget, change, disabled }) {
           });
           return (
             <PollPreview
+              key={`${league}:${pollType}`}
               poll={poll}
               league={league}
-              widget={widget}
               disabled={disabled}
             />
           );
@@ -336,16 +365,28 @@ export default function ExploreWidgetContent({
   if (
     ["favorite_games", "favorite_teams", "my_picks"].includes(widget.type) &&
     !userId
-  )
+  ) {
+    const copy = {
+      favorite_games: "Sign in to see your teams’ games.",
+      favorite_teams: "Sign in to see your favorite teams.",
+      my_picks: "Sign in to track your picks.",
+    };
     return (
-      <div className="explore-sign-in">
-        <p>
-          Sign in to use {widget.title.toLowerCase()} and sync your board with
-          the Tempo app.
-        </p>
-        <Link to="/login/">Sign in</Link>
+      <div className="dashboard-personal-empty">
+        <Icon
+          name={
+            widget.type === "favorite_teams"
+              ? "heart"
+              : widget.type === "my_picks"
+                ? "trending-up"
+                : "star"
+          }
+          size={28}
+        />
+        <p>{copy[widget.type]}</p>
       </div>
     );
+  }
   switch (widget.type) {
     case "favorite_games":
       return (
@@ -356,31 +397,39 @@ export default function ExploreWidgetContent({
         />
       );
     case "favorite_teams":
-      return <FavoriteTeams widget={widget} disabled={disabled} />;
+      return <FavoriteTeams />;
     case "my_picks":
-      return <MyPicks widget={widget} />;
+      return <MyPicks disabled={disabled} />;
     case "create_post":
       return <CreatePost disabled={disabled} userId={userId} />;
     case "standings": {
       const league = widget.standingsLeague || "nba";
       return (
         <>
-          <label className="explore-widget-filter">
-            League
-            <select
-              disabled={disabled}
-              value={league}
-              onChange={(event) =>
-                change({ standingsLeague: event.target.value })
-              }
+          <div className="explore-widget-filters">
+            <label className="explore-widget-filter">
+              League
+              <select
+                disabled={disabled}
+                value={league}
+                onChange={(event) =>
+                  change({ standingsLeague: event.target.value })
+                }
+              >
+                {STANDINGS_LEAGUES.map((id) => (
+                  <option key={id} value={id}>
+                    {favoriteLeagues[id].label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Link
+              className="dashboard-section-link"
+              to={`/league/?league=${league}`}
             >
-              {STANDINGS_LEAGUES.map((id) => (
-                <option key={id} value={id}>
-                  {favoriteLeagues[id].label}
-                </option>
-              ))}
-            </select>
-          </label>
+              View league <Icon name="arrow-forward" size={16} />
+            </Link>
+          </div>
           <Resource
             key={league}
             path={`${standingsPath(league)}?season=${defaultSeason(league)}&seasontype=2`}
@@ -389,7 +438,6 @@ export default function ExploreWidgetContent({
               <StandingsPreview
                 data={data}
                 league={league}
-                widget={widget}
                 disabled={disabled}
               />
             )}

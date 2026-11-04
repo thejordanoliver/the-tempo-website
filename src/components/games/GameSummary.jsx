@@ -149,9 +149,7 @@ export default function GameSummary({ score, league }) {
               )}
             </>
           ) : (
-            <p className="summary-empty">
-              Play-by-play is not available for this game yet.
-            </p>
+            <p className="summary-empty">No play-by-play yet.</p>
           )}
         </div>
       </div>

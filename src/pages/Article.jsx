@@ -31,11 +31,14 @@ function ArticleVideo({ video }) {
       <figcaption>
         {video.title && <h2>{video.title}</h2>}
         {video.description && <p>{video.description}</p>}
-        {failed && (
-          <p>Unable to play this video here. Open the video to watch it.</p>
-        )}
-        <a href={url} target="_blank" rel="noopener noreferrer">
-          Watch video in a new tab
+        {failed && <p>Video unavailable. Try the link below.</p>}
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Watch video in a new tab"
+        >
+          Watch video
         </a>
       </figcaption>
     </figure>
@@ -137,7 +140,7 @@ export function Story({ article }) {
             </p>
           ))
         ) : videos.length ? null : (
-          <p>Article text is currently unavailable.</p>
+          <p>Article text unavailable.</p>
         )}
       </div>
     </>

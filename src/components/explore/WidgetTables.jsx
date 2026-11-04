@@ -1,159 +1,147 @@
+import { useState } from "react";
 import { Link } from "../../app/router.jsx";
 import { teamHref } from "../../data/teams/teams.js";
 import TeamLogo from "../teams/TeamLogo.jsx";
-import WidgetCarousel from "./WidgetCarousel.jsx";
 import { State } from "../ui/State.jsx";
 
-export function TeamSlide({ team, league, rank, record, metric }) {
-  const color = /^#?[0-9a-f]{6}$/i.test(team.primaryColor || team.color || "")
-    ? `#${(team.primaryColor || team.color).replace(/^#/, "")}`
-    : "#888888";
-  return (
-    <Link
-      className="widget-team-slide"
-      style={{ "--team-color": color }}
-      to={teamHref(league, team.id)}
-    >
-      {rank != null && <span className="widget-rank">#{rank}</span>}
+const teamName = (team) =>
+  team.shortName || team.name || team.fullName || team.code || "Team";
+function TeamName({ team, league }) {
+  const content = (
+    <>
       <TeamLogo team={team} league={league} />
-      <strong>
-        {team.shortName || team.name || team.fullName || team.code}
-      </strong>
-      <small>
-        {[record, metric]
-          .filter((value) => value != null && value !== "")
-          .join(" · ") || league.toUpperCase()}
-      </small>
+      <span>{teamName(team)}</span>
+    </>
+  );
+  return team.id != null ? (
+    <Link to={teamHref(league, team.id)}>{content}</Link>
+  ) : (
+    <span className="dashboard-team-name">{content}</span>
+  );
+}
+
+export function TeamSlide({ team, league }) {
+  return (
+    <Link className="dashboard-team-link" to={teamHref(league, team.id)}>
+      <TeamLogo team={team} league={league} />
+      <span>
+        <strong>{teamName(team)}</strong>
+        <small>{league.toUpperCase()}</small>
+      </span>
     </Link>
   );
 }
-export function StandingsPreview({ data, league, widget, disabled }) {
+
+export function StandingsPreview({ data, league, disabled }) {
+  const [expanded, setExpanded] = useState(false);
   const groups = (data?.conferences || []).filter(
     (group) => group.standings?.length,
   );
-  if (!groups.length)
-    return (
-      <State empty="No standings available. Check back when the league publishes its table." />
-    );
+  if (!groups.length) return <State empty="No standings available." />;
   const record = (team) =>
-    `${team.wins ?? 0}-${team.losses ?? 0}${league === "nhl" ? `-${team.otLosses ?? 0}` : ""}`;
+    `${team.wins ?? "—"}-${team.losses ?? "—"}${league === "nhl" ? `-${team.otLosses ?? "—"}` : ""}`;
   const metric = (team) =>
     league === "nhl"
-      ? `${team.points ?? 0} PTS`
-      : `${Number(team.winPercent ?? 0).toFixed(3)} PCT`;
-  if (widget.size === "small") {
-    const slides = groups.flatMap((group) => [
-      { name: group.name },
-      ...group.standings.map((team, index) => ({
-        team,
-        rank: team.rank ?? index + 1,
-      })),
-    ]);
-    return (
-      <WidgetCarousel
-        items={slides}
-        disabled={disabled}
-        label="Standings"
-        renderItem={(slide) =>
-          slide.team ? (
-            <TeamSlide
-              {...slide}
-              league={league}
-              record={record(slide.team)}
-              metric={metric(slide.team)}
-            />
-          ) : (
-            <div className="widget-conference-slide">{slide.name}</div>
-          )
-        }
-      />
-    );
-  }
-  const limit = widget.size === "large" ? 10 : 3;
+      ? (team.points ?? "—")
+      : team.winPercent == null
+        ? "—"
+        : Number(team.winPercent).toFixed(3);
+  const hasMore = groups.some((group) => group.standings.length > 5);
   return (
-    <div className="widget-conferences">
-      {groups.map((group, index) => (
-        <section key={group.id || index}>
-          <h4>{group.name}</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Team</th>
-                <th>Record</th>
-                <th>{league === "nhl" ? "PTS" : "PCT"}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {group.standings.slice(0, limit).map((team, index) => (
-                <tr key={team.id}>
-                  <td>{team.rank ?? index + 1}</td>
-                  <td>
-                    <Link to={teamHref(league, team.id)}>
-                      <TeamLogo team={team} league={league} />
-                      {team.code || team.shortName || team.name}
-                    </Link>
-                  </td>
-                  <td>{record(team)}</td>
-                  <td>{metric(team).split(" ")[0]}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      ))}
-    </div>
+    <>
+      <div className="widget-conferences">
+        {groups.map((group, index) => (
+          <section key={group.id || index}>
+            <h4>{group.name || "Standings"}</h4>
+            <div className="dashboard-table-scroll">
+              <table
+                aria-label={`${group.name || league.toUpperCase()} standings`}
+              >
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Team</th>
+                    <th scope="col">Record</th>
+                    <th scope="col">{league === "nhl" ? "PTS" : "PCT"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.standings
+                    .slice(0, expanded ? undefined : 5)
+                    .map((team, index) => (
+                      <tr key={team.id || index}>
+                        <td>{team.rank ?? index + 1}</td>
+                        <td>
+                          <TeamName team={team} league={league} />
+                        </td>
+                        <td>{record(team)}</td>
+                        <td>{metric(team)}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ))}
+      </div>
+      {hasMore && (
+        <button
+          type="button"
+          className="dashboard-show-more"
+          disabled={disabled}
+          aria-expanded={expanded}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? "Show fewer teams" : "Show all teams"}
+        </button>
+      )}
+    </>
   );
 }
-export function PollPreview({ poll, league, widget, disabled }) {
+
+export function PollPreview({ poll, league, disabled }) {
+  const [expanded, setExpanded] = useState(false);
   const rows = poll?.ranks || [];
-  if (!rows.length)
-    return <State empty="College rankings are not available right now." />;
-  if (widget.size === "small")
-    return (
-      <WidgetCarousel
-        items={rows}
-        label="College Polls"
-        autoPlay={widget.collegePollAutoPlay !== false}
-        disabled={disabled}
-        renderItem={(row) => (
-          <TeamSlide
-            team={row.team || {}}
-            league={league}
-            rank={row.current}
-            record={row.recordSummary}
-            metric={row.points == null ? null : `${row.points} PTS`}
-          />
-        )}
-      />
-    );
+  if (!rows.length) return <State empty="No rankings available." />;
   return (
-    <div className="widget-poll-table">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Team</th>
-            <th>Record</th>
-            <th>Points</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.slice(0, widget.size === "large" ? 25 : 5).map((row) => (
-            <tr key={row.team?.id || row.current}>
-              <td>{row.current}</td>
-              <td>
-                <Link to={teamHref(league, row.team?.id)}>
-                  <TeamLogo team={row.team || {}} league={league} />
-                  {row.team?.shortName || row.team?.name}
-                </Link>
-              </td>
-              <td>{row.recordSummary}</td>
-              <td>{row.points}</td>
+    <>
+      <div className="widget-poll-table dashboard-table-scroll">
+        <table
+          aria-label={`${poll.shortName || poll.name || "College"} rankings`}
+        >
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Team</th>
+              <th scope="col">Record</th>
+              <th scope="col">Points</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {rows.slice(0, expanded ? undefined : 5).map((row, index) => (
+              <tr key={row.team?.id || row.current || index}>
+                <td>{row.current ?? index + 1}</td>
+                <td>
+                  <TeamName team={row.team || {}} league={league} />
+                </td>
+                <td>{row.recordSummary || "—"}</td>
+                <td>{row.points ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {rows.length > 5 && (
+        <button
+          type="button"
+          className="dashboard-show-more"
+          disabled={disabled}
+          aria-expanded={expanded}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? "Show fewer teams" : `Show all ${rows.length} teams`}
+        </button>
+      )}
+    </>
   );
 }

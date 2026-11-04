@@ -4,27 +4,27 @@ import { hasTeamLeague, teamHref } from "../teams/teams.js";
 export const WIDGETS = {
   favorite_games: {
     title: "Favorite Games",
-    description: "Live scores and upcoming games for your teams.",
+    description: "Scores for your teams.",
   },
   favorite_teams: {
     title: "Favorite Teams",
-    description: "Your saved teams and leagues, one click away.",
+    description: "Team shortcuts.",
   },
   my_picks: {
     title: "My Picks",
-    description: "Your prediction record and recent results.",
+    description: "Prediction record.",
   },
   standings: {
     title: "Standings",
-    description: "Follow the race in your favorite league.",
+    description: "League standings.",
   },
   college_polls: {
     title: "College Polls",
-    description: "The latest college football and basketball rankings.",
+    description: "College rankings.",
   },
   create_post: {
     title: "Create Post",
-    description: "Start a conversation with the Tempo community.",
+    description: "Post to a league.",
   },
 };
 export const GAME_LEAGUES = [
@@ -91,9 +91,7 @@ export function readSettings(value) {
     !Array.isArray(settings.widgets) ||
     settings.widgets.some((w) => !Object.hasOwn(WIDGETS, w.type))
   )
-    throw new Error(
-      "This widget layout could not be loaded. Reload your account settings before editing.",
-    );
+    throw new Error("Couldn’t load your layout. Reload settings to edit.");
   return {
     widgets: orderWidgets(
       [...settings.widgets].sort((a, b) => a.order - b.order),

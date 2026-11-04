@@ -34,8 +34,7 @@ export default function UFCChampions({ data }) {
       rows[0];
     return champion ? [{ division, champion }] : [];
   });
-  if (!entries.length)
-    return <State empty="No champions available right now." />;
+  if (!entries.length) return <State empty="No champions available." />;
   return (
     <div className="ufc-champions">
       {entries.map(({ division, champion }) => {

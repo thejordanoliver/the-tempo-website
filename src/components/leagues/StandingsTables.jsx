@@ -10,8 +10,7 @@ function VolleyballStandings({ data, league }) {
     ...flatten(data?.groups),
     { name: "Standings", standings: list(data?.standings) },
   ].filter((group) => list(group.standings).length);
-  if (!groups.length)
-    return <Empty>No standings available for this season.</Empty>;
+  if (!groups.length) return <Empty>No standings for this season.</Empty>;
   return (
     <>
       {groups.map((group, index) => {
@@ -62,8 +61,7 @@ function CollegeStandings({ data, league }) {
         teams: division.teams,
       })),
   );
-  if (!groups.length)
-    return <Empty>No standings available for this season.</Empty>;
+  if (!groups.length) return <Empty>No standings for this season.</Empty>;
   return groups.map((group, index) => (
     <section className="league-table-section" key={index}>
       <h3>{group.name}</h3>
@@ -98,8 +96,7 @@ export default function StandingsTables({ data, league }) {
   const groups = list(data?.conferences).filter(
     (group) => list(group.standings).length,
   );
-  if (!groups.length)
-    return <Empty>No standings available for this season.</Empty>;
+  if (!groups.length) return <Empty>No standings for this season.</Empty>;
   const soccer = leagueSports[league] === "soccer",
     racing = league === "f1";
   return (

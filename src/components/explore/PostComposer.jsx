@@ -29,7 +29,7 @@ export default function PostComposer() {
       );
       if (!data.post?.id)
         throw new Error(
-          "Your post could not be opened. Check the league forum before posting again.",
+          "Couldn’t open your post. Check the forum before posting again.",
         );
       if (mounted.current)
         navigate(`/post/?id=${encodeURIComponent(data.post.id)}`);
@@ -57,13 +57,13 @@ export default function PostComposer() {
         </select>
       </label>
       <label>
-        Your post
+        Post
         <textarea
           rows={4}
           maxLength={5000}
           value={text}
           disabled={pending}
-          placeholder="What’s your take?"
+          placeholder="Write a post…"
           onChange={(event) => setText(event.target.value)}
         />
       </label>
@@ -73,7 +73,7 @@ export default function PostComposer() {
         className="tempo-button"
         disabled={pending || !text.trim()}
       >
-        {pending ? "Posting…" : "Post to league"}
+        {pending ? "Posting…" : "Post"}
       </button>
     </form>
   );

@@ -128,7 +128,7 @@ export default function useExploreBoard(userId) {
           pending: false,
           error:
             error.status === 409
-              ? "Your layout changed on another device. Reload account settings to continue."
+              ? "Layout changed on another device. Reload settings."
               : error.message,
           conflict: error.status === 409,
         }));

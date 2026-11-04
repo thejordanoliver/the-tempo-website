@@ -1,8 +1,9 @@
 import { useState } from "react";
 
 import { Link } from "../app/router.jsx";
-import PlayerAwards from "../components/players/PlayerAwards.jsx";
 import NavLinks from "../components/layout/NavLinks.jsx";
+import "../components/players/Player.css";
+import PlayerAwards from "../components/players/PlayerAwards.jsx";
 import PlayerLink from "../components/players/PlayerLink.jsx";
 import TeamLogo from "../components/teams/TeamLogo.jsx";
 import { Image } from "../components/ui/Image.jsx";
@@ -13,17 +14,16 @@ import {
   playerApiLeague,
   playerHref,
   playerResource,
-  seasonStatGroups,
   seasonPhase,
+  seasonStatGroups,
   statLabel,
   validPlayerId,
 } from "../data/players/players.js";
 import { shortStatLabel } from "../data/players/statHeaders.js";
 import { teamIdentity } from "../data/teams/teamIdentity.js";
-import useVisitedTabs from "../hooks/useVisitedTabs.js";
 import usePlayerTeams from "../hooks/usePlayerTeams.js";
 import { useResource } from "../hooks/useResource.js";
-import "../components/players/Player.css";
+import useVisitedTabs from "../hooks/useVisitedTabs.js";
 
 export function LogResult({ result, score }) {
   const outcome = String(result || "")
@@ -120,7 +120,7 @@ export function PlayerOverview({ player, fighter }) {
             ))}
           </dl>
         ) : (
-          <State empty="Biographical details are not available yet." />
+          <State empty="No bio available." />
         )}
       </section>
       <PlayerAwards awards={awards} />
@@ -169,10 +169,7 @@ export function PlayerSeasonStats({ data, league }) {
       ),
     ),
   ];
-  if (!allSeasons.length)
-    return (
-      <State empty="Season statistics are not available for this player yet." />
-    );
+  if (!allSeasons.length) return <State empty="No season stats." />;
   return (
     <section className="player-section">
       <h2>Season stats</h2>
@@ -242,7 +239,7 @@ export function PlayerSeasonStats({ data, league }) {
         />
       ) : (
         <State
-          empty={`No ${phase === "postseason" ? "postseason" : phase === "preseason" ? "preseason" : "regular season"} statistics available.`}
+          empty={`No ${phase === "postseason" ? "postseason" : phase === "preseason" ? "preseason" : "regular season"} stats.`}
         />
       )}
     </section>
@@ -318,7 +315,7 @@ function GameLog({ league, id }) {
               ])}
             />
           ) : (
-            <State empty="No games available for this selection." />
+            <State empty="No games for this selection." />
           )}
         </section>
       )}
@@ -340,7 +337,7 @@ export function FighterHistory({ data, career = false }) {
             ))}
           </dl>
         ) : (
-          <State empty="Career stats are not available yet." />
+          <State empty="No career stats." />
         )}
       </section>
     );
@@ -371,7 +368,7 @@ export function FighterHistory({ data, career = false }) {
           ])}
         />
       ) : (
-        <State empty="No fight history available yet." />
+        <State empty="No fight history." />
       )}
     </section>
   );
@@ -436,7 +433,7 @@ export function PlayerProfile({
           <Image src={player.headshot_url} alt={`${name} headshot`} />
         </div>
         <div className="player-identity">
-          {fighter && <p className="eyebrow">UFC · Fighter</p>}
+          {fighter && <p className="eyebrow">UFC</p>}
           <h1>{name}</h1>
           {fighter && player.nickname && <p>&quot;{player.nickname}&quot;</p>}
           <p>
@@ -555,7 +552,6 @@ export default function Player({ search = "", fighter = false }) {
     return (
       <section className="leagues-page">
         <h1>{fighter ? "Fighter" : "Player"} not found</h1>
-        <Link to="/leagues/">Browse leagues</Link>
       </section>
     );
   return (

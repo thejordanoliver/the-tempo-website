@@ -1,12 +1,11 @@
 import { useState } from "react";
 
-import { Link } from "../app/router.jsx";
 import HomeScoreSections from "../components/home/HomeScoreSections.jsx";
 import { LeagueNews } from "../components/leagues/LeagueNews.jsx";
 import GameDatePicker from "../components/ui/GameDatePicker.jsx";
 import { State } from "../components/ui/State.jsx";
 import { favoriteLeagues } from "../data/leagues/favoriteLeagues.js";
-import { scorePath, leagueSports } from "../data/leagues/leagues.js";
+import { leagueSports, scorePath } from "../data/leagues/leagues.js";
 import { useResource } from "../hooks/useResource.js";
 import { localDate } from "../utils/dates.js";
 import { groupHomeScores, scoreboardItems } from "../utils/homeScores.js";
@@ -30,7 +29,7 @@ function GuestScores({ league, date }) {
         {...scores}
         empty={
           !scoreboardItems(scores.data, league).length
-            ? "No games scheduled for the selected date."
+            ? "No games scheduled for this date."
             : null
         }
         onRetry={() => setVersion((v) => v + 1)}
@@ -51,28 +50,12 @@ export default function GuestHome() {
   const news = useResource("/api/news/all?limit=12", newsVersion);
   return (
     <section className="home-screen">
-      <header className="home-heading">
-        <div>
-          <h1>Home</h1>
-          <p>Scores, stories, and the sports you follow.</p>
-        </div>
-        <Link className="tempo-button outline" to="/login/">
-          Sign in
-        </Link>
-      </header>
-      <section className="page-state" aria-label="Personalize your Home">
-        <h2>Your teams. Your Tempo.</h2>
-        <p>
-          Sign in to see your favorite teams and leagues, personalized news, and
-          fan conversations.
-        </p>
-        <Link to="/login/">Sign in to personalize Home</Link>
-      </section>
+      <h1 className="sr-only">Home</h1>
+
       <section aria-labelledby="guest-scores">
-        <div className="home-section-heading">
-          <h2 id="guest-scores">Scores</h2>
-          <Link to="/leagues/">Browse leagues</Link>
-        </div>
+        <h2 id="guest-scores" className="sr-only">
+          Scores
+        </h2>
         <div className="games-controls">
           <label>
             League
@@ -104,7 +87,7 @@ export default function GuestHome() {
       </section>
       <section className="home-news" aria-labelledby="guest-news">
         <div className="home-section-heading">
-          <h2 id="guest-news">Around the game</h2>
+          <h2 id="guest-news">News</h2>
         </div>
         <State {...news} onRetry={() => setNewsVersion((v) => v + 1)} />
         {!news.loading && !news.error && (

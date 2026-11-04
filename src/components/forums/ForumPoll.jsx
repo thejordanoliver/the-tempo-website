@@ -79,7 +79,7 @@ export default function ForumPoll({ postId, initialPoll }) {
         /* The vote was already accepted. */
       }
     } catch (err) {
-      setError(err.message || "Couldn’t record your vote. Please try again.");
+      setError(err.message || "Vote failed. Try again.");
     } finally {
       pending.current = false;
       setVoting(false);
@@ -139,7 +139,7 @@ export default function ForumPoll({ postId, initialPoll }) {
         <div role="alert">
           <p>{error}</p>
           <button type="button" onClick={() => setVersion((v) => v + 1)}>
-            Reload poll
+            Retry
           </button>
         </div>
       )}

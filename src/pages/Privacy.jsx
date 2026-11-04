@@ -2,11 +2,10 @@ import { Link } from "../app/router.jsx";
 export default function Privacy() {
   return (
     <article className="tempo-info" aria-labelledby="tempo-privacy-title">
-      <header>
-        <p className="tempo-brand">Tempo Sports</p>
-        <h1 id="tempo-privacy-title">Privacy Policy</h1>
-        <p className="tempo-meta">Last updated: October 16, 2026</p>
-      </header>
+      <h1 id="tempo-privacy-title" className="sr-only">
+        Privacy Policy
+      </h1>
+      <p className="tempo-meta">Last updated: October 16, 2026</p>
       <p>
         This policy explains how Tempo handles information when you use the
         Tempo sports app, thetemposports.com website, and support services. For

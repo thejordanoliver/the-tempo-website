@@ -1,6 +1,4 @@
 import { State } from "../ui/State.jsx";
-export default function EmptyLeagueState({
-  children = "No results available for this selection.",
-}) {
+export default function EmptyLeagueState({ children = "No results." }) {
   return <State empty={children} />;
 }

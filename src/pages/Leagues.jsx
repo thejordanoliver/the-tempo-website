@@ -21,15 +21,8 @@ export default function Leagues() {
     .filter(([, leagues]) => leagues.length);
   return (
     <section className="leagues-page">
-      <header className="league-directory-heading">
-        <div>
-          <p className="eyebrow">Every league. One Tempo.</p>
-          <h1>Leagues</h1>
-          <p>
-            Scores, stories, standings, and conversations from around the sports
-            world.
-          </p>
-        </div>
+      <h1 className="sr-only">Leagues</h1>
+      <div className="league-directory-heading page-toolbar">
         <label className="league-search">
           Search leagues
           <input
@@ -39,10 +32,10 @@ export default function Leagues() {
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
-      </header>
+      </div>
       {!groups.length && (
         <p role="status" className="page-state">
-          No leagues match “{query}”. Try another name or sport.
+          No leagues match “{query}”.
         </p>
       )}
       {groups.map(([sport, leagues]) => (
@@ -59,7 +52,6 @@ export default function Leagues() {
                 <LeagueLogo league={league} />
                 <div>
                   <h3>{favoriteLeagues[league].label}</h3>
-                  <span>Scores &amp; more</span>
                 </div>
                 <Icon name="chevron-forward" className="league-tile-arrow" />
               </Link>

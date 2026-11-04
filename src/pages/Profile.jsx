@@ -42,7 +42,7 @@ export default function Profile({ user, onLogout }) {
         <h1>{name}</h1>
         <p className="profile-handle">@{user.username}</p>
         <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-          {user.bio || "No bio yet. Add one in the Tempo app."}
+          {user.bio || "No bio yet."}
         </p>
         {!Number.isNaN(joined.valueOf()) && (
           <p className="small">
@@ -65,20 +65,17 @@ export default function Profile({ user, onLogout }) {
               <dd>{user.username || "—"}</dd>
             </div>
           </dl>
-          <p className="small">Only you can see your email on this page.</p>
+          <p className="small">Email is visible only to you.</p>
         </section>
         {state.error && (
           <State error={state.error} onRetry={() => setVersion((v) => v + 1)} />
         )}
         <div className="profile-actions">
           <Link className="tempo-button outline" to="/support/">
-            Help &amp; support
+            Support
           </Link>
         </div>
-        <p className="profile-app-note">
-          Update your profile in the Tempo app. Reopen this page to see your
-          changes.
-        </p>
+        <p className="profile-app-note">Edit your profile in the Tempo app.</p>
       </div>
     </section>
   );

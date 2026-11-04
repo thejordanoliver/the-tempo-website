@@ -1,3 +1,8 @@
+import SearchOutline from "react-ionicons/lib/SearchOutline.js";
+import SchoolOutline from "react-ionicons/lib/SchoolOutline.js";
+import PodiumOutline from "react-ionicons/lib/PodiumOutline.js";
+import CheckmarkCircleOutline from "react-ionicons/lib/CheckmarkCircleOutline.js";
+import BasketballOutline from "react-ionicons/lib/BasketballOutline.js";
 import SettingsOutline from "react-ionicons/lib/SettingsOutline.js";
 import CreateOutline from "react-ionicons/lib/CreateOutline.js";
 import RefreshOutline from "react-ionicons/lib/RefreshOutline.js";
@@ -23,6 +28,11 @@ import "./Icon.css";
 
 // Import individual icons to avoid bundling the package's entire icon catalog.
 const icons = {
+  search: SearchOutline,
+  school: SchoolOutline,
+  podium: PodiumOutline,
+  "checkmark-circle": CheckmarkCircleOutline,
+  scoreboard: BasketballOutline,
   settings: SettingsOutline,
   create: CreateOutline,
   refresh: RefreshOutline,

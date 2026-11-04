@@ -142,7 +142,7 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
           </section>
         ))
       ) : (
-        <State empty="No roster available for this team." />
+        <State empty="No roster available." />
       );
   } else if (tab === "stats") {
     const groups = Object.values(data?.stats || {}).filter(
@@ -151,7 +151,7 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
     content = groups.length ? (
       groups.map((group, index) => (
         <section className="league-table-section" key={index}>
-          <h3>{group.name || "Team statistics"}</h3>
+          <h3>{group.name || "Team stats"}</h3>
           <Table
             headers={["Statistic", "Total", "Per game"]}
             rows={group.stats.map((stat) => [
@@ -163,7 +163,7 @@ function TeamPanel({ league, id, tab, season, page, onPage, team }) {
         </section>
       ))
     ) : (
-      <State empty="No team statistics available for this season." />
+      <State empty="No stats for this season." />
     );
   } else
     content = (
@@ -368,8 +368,7 @@ function TeamData({ league, id, search, signedIn }) {
           >
             {tab === "forum" && !signedIn ? (
               <div className="page-state">
-                <h2>Join the conversation</h2>
-                <Link to="/login/">Sign in to read team discussions</Link>
+                <Link to="/login/">Sign in to read discussions</Link>
               </div>
             ) : (
               <TeamPanel
@@ -404,7 +403,6 @@ export default function Team({ search = "", signedIn = false }) {
   ) : (
     <section className="leagues-page">
       <h1>Team not found</h1>
-      <Link to="/leagues/">Browse leagues</Link>
     </section>
   );
 }

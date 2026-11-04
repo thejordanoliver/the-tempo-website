@@ -150,17 +150,19 @@ await writeFile(
   bundle.outputFiles[0].contents,
 );
 const { render } = await import("../.preview/tests/explore-render.mjs");
-test("guest Explore renders accessible search and widget board without account details", () => {
+test("guest Explore offers search, public dashboard content and one personalization invitation", () => {
   const html = render("Explore", {});
   for (const text of [
-    "Explore",
+    '<h1 class="sr-only">Explore</h1>',
     "Search players, teams and fans",
-    "Browse leagues",
-    "Your Explore board",
-    "Add widget",
-    "Edit board",
+    "Leagues",
+    "Dashboard",
+    "Customize dashboard",
+    "Sign in to personalize",
   ])
     assert(html.includes(text));
+  assert.equal((html.match(/Sign in to personalize/g) || []).length, 1);
+  assert(!html.includes("Widget size"));
   assert(!html.includes("Your email"));
   assert(render("User", { search: "?id=bad" }).includes("Fan not found"));
 });
@@ -197,7 +199,7 @@ test("search cancels stale queries, respects the backend length limit and return
   }
 });
 
-test("standings widgets use conference previews and small-card slides", () => {
+test("dashboard standings stay readable for every saved app widget size", () => {
   const teams = Array.from({ length: 8 }, (_, i) => ({
     id: String(i + 1),
     name: `Team ${i + 1}`,
@@ -205,41 +207,76 @@ test("standings widgets use conference previews and small-card slides", () => {
     losses: 2,
     winPercent: 0.833,
   }));
-  const props = {
-    data: { conferences: [{ name: "Eastern", standings: teams }] },
-    league: "nba",
-    widget: { size: "medium" },
-  };
-  const medium = render("StandingsPreview", props);
-  assert(medium.includes("Team 3"));
-  assert(!medium.includes("Team 4"));
-  const large = render("StandingsPreview", {
-    ...props,
-    widget: { size: "large" },
-  });
-  assert(large.includes("Team 8"));
-  const small = render("StandingsPreview", {
-    ...props,
-    widget: { size: "small" },
-  });
-  assert(small.includes('aria-roledescription="carousel"'));
-  assert(small.includes("Eastern"));
-  assert(!small.includes("<table"));
+  for (const size of ["small", "medium", "large"]) {
+    const html = render("StandingsPreview", {
+      data: { conferences: [{ name: "Eastern", standings: teams }] },
+      league: "nba",
+      widget: { size },
+    });
+    assert(html.includes("Eastern"));
+    assert(html.includes("<table"));
+    assert(html.includes("Team 1"));
+    assert(html.includes("Team 5"));
+    assert(!html.includes("Team 6"));
+    assert(html.includes("Show all teams"));
+    assert(!html.includes('aria-roledescription="carousel"'));
+  }
 });
-test("poll widgets show size-limited rows and compact team slides", () => {
+test("dashboard polls offer the same top five and expansion for every saved app size", () => {
   const ranks = Array.from({ length: 25 }, (_, i) => ({
     current: i + 1,
     team: { id: String(i + 1), name: `School ${i + 1}` },
     recordSummary: "8-0",
     points: 100,
   }));
-  const props = { poll: { ranks }, league: "cfb", widget: { size: "medium" } };
-  const medium = render("PollPreview", props);
-  assert(medium.includes("School 5"));
-  assert(!medium.includes("School 6"));
-  const small = render("PollPreview", { ...props, widget: { size: "small" } });
-  assert(small.includes("#1"));
-  assert(small.includes("School 1"));
-  assert(small.includes("Next College Polls slide"));
-  assert(!small.includes("<table"));
+  for (const size of ["small", "medium", "large"]) {
+    const html = render("PollPreview", {
+      poll: { ranks },
+      league: "cfb",
+      widget: { size },
+    });
+    assert(html.includes("<table"));
+    assert(html.includes("School 1"));
+    assert(html.includes("School 5"));
+    assert(!html.includes("School 6"));
+    assert(html.includes("Show all 25 teams"));
+    assert(!html.includes('aria-roledescription="carousel"'));
+  }
+});
+test("short dashboard tables do not offer unnecessary expansion", () => {
+  const team = {
+    id: "1",
+    name: "Only Team",
+    wins: 2,
+    losses: 0,
+    winPercent: 1,
+  };
+  const standings = render("StandingsPreview", {
+    data: { conferences: [{ name: "Conference", standings: [team] }] },
+    league: "nba",
+    widget: { size: "small" },
+  });
+  assert(standings.includes("Only Team"));
+  assert(!standings.includes("Show all teams"));
+  const poll = render("PollPreview", {
+    poll: { ranks: [{ current: 1, team, recordSummary: "2-0", points: 25 }] },
+    league: "cfb",
+    widget: { size: "large" },
+  });
+  assert(poll.includes("Only Team"));
+  assert(!poll.includes("Show all 1 teams"));
+});
+test("dashboard standings and polls explain unavailable data", () => {
+  const standings = render("StandingsPreview", {
+    data: { conferences: [] },
+    league: "nba",
+    widget: { size: "small" },
+  });
+  assert(standings.includes("No standings available"));
+  const poll = render("PollPreview", {
+    poll: null,
+    league: "cfb",
+    widget: { size: "large" },
+  });
+  assert(poll.includes("No rankings available"));
 });

@@ -115,9 +115,7 @@ export default function useHomeScores(teams, leagues, date, version, enabled) {
         key,
         items,
         loading: false,
-        error: failed
-          ? "Some scores could not be loaded. Please try again."
-          : null,
+        error: failed ? "Some scores unavailable. Try again." : null,
       });
     }
     void load();

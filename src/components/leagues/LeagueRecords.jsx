@@ -22,7 +22,7 @@ export function LeagueRecords({ data, tab, league }) {
         ))}
       </div>
     ) : (
-      <Empty>No transactions for this selection.</Empty>
+      <Empty>No transactions.</Empty>
     );
   }
   if (tab === "draft") {
@@ -35,7 +35,7 @@ export function LeagueRecords({ data, tab, league }) {
         <DraftList data={data} league={league} />
       </>
     ) : (
-      <Empty>Draft selections are not available for this year.</Empty>
+      <Empty>No draft picks for this year.</Empty>
     );
   }
   if (tab === "recruits") {
@@ -60,7 +60,7 @@ export function LeagueRecords({ data, tab, league }) {
         ])}
       />
     ) : (
-      <Empty>No recruits available for this class.</Empty>
+      <Empty>No recruits for this class.</Empty>
     );
   }
   if (tab === "awards") {
@@ -86,7 +86,7 @@ export function LeagueRecords({ data, tab, league }) {
         ))}
       </>
     ) : (
-      <Empty>No awards recorded for this season.</Empty>
+      <Empty>No awards for this season.</Empty>
     );
   }
   if (tab === "champions") return <UFCChampions data={data} />;
@@ -111,7 +111,7 @@ export function LeagueRecords({ data, tab, league }) {
         ))}
       </>
     ) : (
-      <Empty>No rankings available right now.</Empty>
+      <Empty>No rankings available.</Empty>
     );
   }
   if (tab === "forum") {
@@ -119,7 +119,7 @@ export function LeagueRecords({ data, tab, league }) {
     return posts.length ? (
       <ForumPosts posts={posts} />
     ) : (
-      <Empty>No league conversations yet.</Empty>
+      <Empty>No discussions yet.</Empty>
     );
   }
   return <Empty />;

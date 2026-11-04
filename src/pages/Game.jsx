@@ -36,7 +36,7 @@ function GameData({ id, league }) {
         loading={loading}
         error={
           error ||
-          (!loading && !score?.home ? "Game details are not available." : null)
+          (!loading && !score?.home ? "Game details unavailable." : null)
         }
         onRetry={() => setVersion((v) => v + 1)}
       />
@@ -66,7 +66,7 @@ export default function Game({ search }) {
       {!id || !/^\d+$/.test(id) || !sports[league] ? (
         <>
           <h1>Game details</h1>
-          <State error="Select a supported game from Home." />
+          <State error="Choose a game from Home." />
         </>
       ) : (
         <GameData key={`${id}-${league}`} id={id} league={league} />

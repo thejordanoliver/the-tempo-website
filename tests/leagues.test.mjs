@@ -149,12 +149,10 @@ test("sections have sport-specific tabs, API routes, season and pagination param
 });
 test("invalid league URLs recover and public forum requests require sign-in", () => {
   assert(
-    render("League", { search: "?league=unknown" }).includes(
-      "Browse all leagues",
-    ),
+    render("League", { search: "?league=unknown" }).includes("Browse leagues"),
   );
   const html = render("League", { search: "?league=nba&tab=forum" });
-  assert(html.includes("Join the conversation"));
+  assert(html.includes("Sign in to read discussions"));
   assert(html.includes("/login/"));
   const fallback = render("League", {
     search: "?league=nba&tab=unknown&date=bad&season=9999",
@@ -589,7 +587,7 @@ test("post links accept backend UUIDs and mount the post and comments page", () 
     const search = new URL(`https://example.test/post/?id=${id}${hash}`).search;
     const html = render("Post", { search });
     assert(!html.includes("Select a forum post."));
-    assert(html.includes("<h1>Post</h1>"));
+    assert(html.includes('<h1 class="sr-only">Post</h1>'));
     assert(html.includes('id="comments"'));
     assert(html.includes("Loading…"));
   }

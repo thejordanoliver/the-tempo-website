@@ -8,8 +8,7 @@ export default function UFCEvents({ data, eventId, onChange }) {
   const selected =
     events.find((event) => String(event.id) === String(eventId)) ||
     events.find((event) => String(event.id) === defaultId);
-  if (!selected)
-    return <State empty="No UFC events available for this year." />;
+  if (!selected) return <State empty="No events this year." />;
   return (
     <>
       <LeagueControlSlot>

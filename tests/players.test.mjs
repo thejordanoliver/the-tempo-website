@@ -195,7 +195,7 @@ test("season stats keep regular and postseason rows distinguishable", () => {
   });
   assert(html.includes('value="postseason"'));
   assert(html.includes('value="regular"'));
-  assert(html.includes("No regular season statistics available"));
+  assert(html.includes("No regular season stats."));
   const regular = render("PlayerSeasonStats", {
     data: {
       seasons: [
@@ -210,7 +210,7 @@ test("season stats keep regular and postseason rows distinguishable", () => {
   assert(!regular.includes(">Type<"));
   assert(
     render("PlayerSeasonStats", { data: { seasons: [] } }).includes(
-      "not available",
+      "No season stats.",
     ),
   );
 });

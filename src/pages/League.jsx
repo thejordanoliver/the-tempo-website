@@ -134,8 +134,7 @@ export default function League({ search = "", signedIn = false }) {
     return (
       <section className="leagues-page">
         <h1>League not found</h1>
-        <p>Choose a league to see its latest scores and stories.</p>
-        <Link to="/leagues/">Browse all leagues</Link>
+        <Link to="/leagues/">Browse leagues</Link>
       </section>
     );
   const config = favoriteLeagues[league],
@@ -204,7 +203,7 @@ export default function League({ search = "", signedIn = false }) {
           <h1>{config.label}</h1>
         </div>
         <label className="league-switcher">
-          Switch league
+          League
           <select
             value={league}
             onChange={(event) => navigate(leagueHref(event.target.value))}
@@ -269,7 +268,7 @@ export default function League({ search = "", signedIn = false }) {
           (league === "ufc" && tab === "fights") ||
           (leagueSports[league] === "football" && tab === "scores")) && (
           <label>
-            Season / year
+            Season
             <select
               value={season}
               onChange={(event) =>
@@ -332,9 +331,7 @@ export default function League({ search = "", signedIn = false }) {
       >
         {tab === "forum" && !signedIn ? (
           <div className="page-state">
-            <h2>Join the conversation</h2>
-            <p>Sign in to read league discussions with other Tempo fans.</p>
-            <Link to="/login/">Sign in</Link>
+            <Link to="/login/">Sign in to read discussions</Link>
           </div>
         ) : (
           <ResourcePanel

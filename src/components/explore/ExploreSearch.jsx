@@ -1,3 +1,4 @@
+import Icon from "../ui/Icon.jsx";
 import { useState } from "react";
 import { Link } from "../../app/router.jsx";
 import {
@@ -21,36 +22,41 @@ export default function ExploreSearch({ userId }) {
       );
   return (
     <section className="explore-search" aria-labelledby="explore-search-title">
-      <h2 id="explore-search-title">Find your next favorite</h2>
-      <label className="explore-search-label">
-        <span className="sr-only">Search players, teams and fans</span>
-        <input
-          type="search"
-          value={query}
-          maxLength={80}
-          placeholder="Search players, teams and fans…"
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setExpanded(false);
-          }}
-        />
-      </label>
-      <div className="explore-search-scopes" aria-label="Search categories">
-        {["all", "players", "teams", "users"].map((value) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={scope === value}
-            onClick={() => {
-              setScope(value);
+      <h2 id="explore-search-title" className="sr-only">
+        Search
+      </h2>
+      <div className="explore-search-fields">
+        <label className="explore-search-label">
+          <Icon name="search" size={21} />
+          <span className="sr-only">Search players, teams and fans</span>
+          <input
+            type="search"
+            value={query}
+            maxLength={80}
+            placeholder="Players, teams, fans…"
+            onChange={(event) => {
+              setQuery(event.target.value);
               setExpanded(false);
             }}
-          >
-            {value === "users"
-              ? "Fans"
-              : value[0].toUpperCase() + value.slice(1)}
-          </button>
-        ))}
+          />
+        </label>
+        <div className="explore-search-scopes" aria-label="Search categories">
+          {["all", "players", "teams", "users"].map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={scope === value}
+              onClick={() => {
+                setScope(value);
+                setExpanded(false);
+              }}
+            >
+              {value === "users"
+                ? "Fans"
+                : value[0].toUpperCase() + value.slice(1)}
+            </button>
+          ))}
+        </div>
       </div>
       <State
         loading={search.loading}
@@ -60,7 +66,7 @@ export default function ExploreSearch({ userId }) {
             ? query.trim().length < 2
               ? "Enter at least 2 characters."
               : !items.length
-                ? "No matches. Try another name or team."
+                ? "No matches. Try another search."
                 : null
             : null
         }
@@ -86,7 +92,7 @@ export default function ExploreSearch({ userId }) {
                       {item.type === "user"
                         ? `@${item.username}`
                         : `${item.affiliation?.toUpperCase() || ""} · ${item.type}${item.position ? ` · ${item.position}` : ""}`}
-                      {!url ? " · Profile not available on web" : ""}
+                      {!url ? " · Profile unavailable" : ""}
                     </small>
                   </span>
                 </>
@@ -119,7 +125,7 @@ export default function ExploreSearch({ userId }) {
               className="tempo-button outline"
               onClick={() => setExpanded(true)}
             >
-              See more results
+              More results
             </button>
           )}
         </>

@@ -16,9 +16,7 @@ export function LeagueScores({ data, league, playoffs = false }) {
   if (!groups.length)
     return (
       <Empty>
-        {playoffs
-          ? "No postseason games available for this season."
-          : "No games or events scheduled for this selection."}
+        {playoffs ? "No postseason games." : "No games or events scheduled."}
       </Empty>
     );
   return (

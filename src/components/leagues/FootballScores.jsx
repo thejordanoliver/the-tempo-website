@@ -70,7 +70,7 @@ export default function FootballScores({
         </label>
       </LeagueControlSlot>
       {league !== "cfb" && resource.error && (
-        <State error="Conference filters are unavailable. Showing all games." />
+        <State error="Filters unavailable. Showing all games." />
       )}
       <LeagueScores data={filtered} league={league} />
     </>

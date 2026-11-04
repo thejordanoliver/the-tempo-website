@@ -7,8 +7,7 @@ export function LeagueStats({ data, league }) {
   const categories = list(data?.categories).filter(
     (category) => list(category.leaders).length,
   );
-  if (!categories.length)
-    return <Empty>No season leaders available yet.</Empty>;
+  if (!categories.length) return <Empty>No season leaders.</Empty>;
   return (
     <>
       {data.displaySeason && <p className="page-note">{data.displaySeason}</p>}

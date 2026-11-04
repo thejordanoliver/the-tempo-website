@@ -40,7 +40,7 @@ function PostData({ id }) {
   }, [post.loading, comments.loading]);
   return (
     <section className="detail-page">
-      <h1>Post</h1>
+      <h1 className="sr-only">Post</h1>
       <State
         {...post}
         error={
@@ -64,14 +64,14 @@ function PostData({ id }) {
                   disabled={page === 1}
                   onClick={() => setPage((p) => p - 1)}
                 >
-                  Previous comments
+                  Previous
                 </button>
                 <span>Page {page}</span>
                 <button
                   disabled={page >= comments.data?.pagination?.totalPages}
                   onClick={() => setPage((p) => p + 1)}
                 >
-                  Next comments
+                  Next
                 </button>
               </div>
             )}

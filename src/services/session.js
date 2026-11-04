@@ -77,7 +77,7 @@ export function createSessionStore({
       api.startsWith("http:")
     )
       throw new Error(
-        "This website currently uses a local HTTP backend. Use a local HTTP preview on the same network to access account and sports data.",
+        "This backend requires a local HTTP preview on the same network.",
       );
     const generation = revision;
     const { auth: _auth, cache: _cache, ...fetchOptions } = options;
@@ -111,9 +111,7 @@ export function createSessionStore({
           if (generation !== revision) throw new Error("Session changed");
           if (!res.ok) {
             if (res.status === 401 || res.status === 403) clear();
-            throw new Error(
-              "Unable to refresh your session. Please try again.",
-            );
+            throw new Error("Session refresh failed. Try again.");
           }
           const data = await res.json();
           if (
@@ -136,7 +134,7 @@ export function createSessionStore({
       }
       await refreshPromise;
       if (generation !== revision || !value)
-        throw new Error("Your session ended. Please sign in.");
+        throw new Error("Session ended. Sign in again.");
       response = await send();
       if (await invalid(response)) clear();
     }
@@ -144,10 +142,10 @@ export function createSessionStore({
     if (!response.ok) {
       const error = new Error(
         response.status === 404
-          ? "This content could not be found."
+          ? "Content not found."
           : response.status === 429
-            ? "Too many requests. Please try again shortly."
-            : data.error || "The request failed. Please try again.",
+            ? "Too many requests. Try again shortly."
+            : data.error || "Request failed. Try again.",
       );
       error.status = response.status;
       throw error;
@@ -243,7 +241,7 @@ export function createSessionStore({
         typeof data.accessToken !== "string" ||
         typeof data.refreshToken !== "string"
       )
-        throw new Error("Incomplete sign-in response. Please try again.");
+        throw new Error("Sign-in failed. Try again.");
       changeSession();
       remembered = Boolean(rememberMe);
       update(data);

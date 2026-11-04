@@ -18,7 +18,7 @@ const endpoints = {
   mlb: "baseball",
   nhl: "hockey",
 };
-export default function Home({ user, onLogout }) {
+export default function Home({ onLogout }) {
   const [league, setLeague] = useState(() => {
       const saved = globalThis.history?.state?.tempoHome?.league;
       return Object.hasOwn(endpoints, saved) ? saved : "nba";
@@ -79,15 +79,12 @@ export default function Home({ user, onLogout }) {
   const articles = Array.isArray(feed.data?.articles) ? feed.data.articles : [];
   return (
     <section className="home-screen">
-      <header className="home-heading">
-        <div>
-          <h1>Home</h1>
-          <p>Welcome back, {user.fullName || user.username || "Tempo fan"}.</p>
-        </div>
+      <h1 className="sr-only">Home</h1>
+      <div className="home-heading page-toolbar">
         <button className="tempo-button outline" onClick={onLogout}>
           Sign out
         </button>
-      </header>
+      </div>
       <FavoritesScroll
         teams={favoriteTeams}
         leagues={savedLeagues}
@@ -117,8 +114,8 @@ export default function Home({ user, onLogout }) {
           empty={
             !gameList.length
               ? selectedTeam
-                ? "No games scheduled for this favorite team on the selected date."
-                : "No games scheduled for the selected date."
+                ? "No games for this team on this date."
+                : "No games on this date."
               : null
           }
           onRetry={() => setGamesVersion((v) => v + 1)}
@@ -133,13 +130,12 @@ export default function Home({ user, onLogout }) {
       <section className="home-news" aria-labelledby="news-title">
         <div className="home-section-heading">
           <div>
-            <p className="eyebrow">For you</p>
-            <h2 id="news-title">Around the game</h2>
+            <h2 id="news-title">News</h2>
           </div>
         </div>
         <State
           {...feed}
-          empty={!articles.length ? "No stories available right now." : null}
+          empty={!articles.length ? "No stories yet." : null}
           onRetry={() => setNewsVersion((v) => v + 1)}
         />
         {!feed.loading && !feed.error && (

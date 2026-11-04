@@ -28,32 +28,13 @@ export default function Login() {
     }
   }
   return (
-    <section className="login-layout">
-      <div className="login-intro">
-        <p className="eyebrow">Welcome back to Tempo</p>
-        <h1>
-          YOUR GAME.
-          <br /> YOUR TEMPO.
-        </h1>
-        <p>
-          Scores, stories, and the conversation.
-          <br />
-          Pick up right where you left off.
-        </p>
-      </div>
+    <section className="login-layout login-form-only">
+      <h1 className="sr-only">Sign in</h1>
       <article className="login-panel">
-        <div className="login-tabs">
-          <span aria-current="page">Sign in</span>
-          <Link to="/support/#account-access">Account help</Link>
-        </div>
-        <h2>Welcome back.</h2>
-        <p className="login-description">
-          Use the same username and password as the Tempo app.
-        </p>
+        <p className="login-description">Use your Tempo app account.</p>
         {blocked && (
           <p className="draft-notice" role="status">
-            Web sign-in is not available with the current local HTTP backend.
-            Use a local HTTP preview on the same network.
+            Use a local HTTP preview on the same network to sign in.
           </p>
         )}
         {error && (
@@ -68,7 +49,6 @@ export default function Login() {
             <input
               id="username"
               name="username"
-              placeholder="Enter your username"
               autoComplete="username"
               autoCapitalize="none"
               spellCheck={false}
@@ -81,7 +61,6 @@ export default function Login() {
               <input
                 id="password"
                 name="password"
-                placeholder="Enter your password"
                 type={show ? "text" : "password"}
                 autoComplete="current-password"
                 required
@@ -113,10 +92,10 @@ export default function Login() {
           </fieldset>
         </form>
         <Link className="account-help" to="/support/#account-access">
-          Need help signing in?
+          Sign-in help
         </Link>
         <p className="login-footnote">
-          Manage your account and create a new one in the Tempo mobile app.
+          Create or manage your account in the Tempo app.
         </p>
         <footer>
           <Link to="/privacy/">Privacy Policy</Link>

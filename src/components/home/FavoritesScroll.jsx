@@ -148,9 +148,7 @@ export default function FavoritesScroll({
               })}
           </div>
         ) : (
-          <p className="small">
-            Add favorite teams in the Tempo app to see them here.
-          </p>
+          <p className="small">Add favorites in the Tempo app.</p>
         ))}
     </section>
   );

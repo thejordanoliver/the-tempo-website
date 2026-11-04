@@ -5,8 +5,7 @@ import Empty from "./EmptyLeagueState.jsx";
 const list = (value) => (Array.isArray(value) ? value : []);
 export function LeagueNews({ data }) {
   const articles = list(data?.articles);
-  if (!articles.length)
-    return <Empty>No league stories available right now.</Empty>;
+  if (!articles.length) return <Empty>No stories yet.</Empty>;
   return (
     <div className="home-articles">
       {articles.map((article, index) => (

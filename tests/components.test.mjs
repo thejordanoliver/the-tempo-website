@@ -79,9 +79,7 @@ test("support and privacy remain public with contact and published policy", () =
   assert(render("Privacy").includes("GitHub Pages"));
 });
 test("invalid game/article links render recoverable states", () => {
-  assert(
-    render("Game", { search: "?id=bad" }).includes("Select a supported game"),
-  );
+  assert(render("Game", { search: "?id=bad" }).includes("Choose a game"));
   assert(render("Article", { search: "" }).includes("Select an article"));
 });
 test("external media/link validation rejects executable URLs", () => {
@@ -263,7 +261,7 @@ test("summary handles missing metadata and paginates long games", () => {
     render("GameSummary", {
       score: { ...headerGame, status: { state: "in" } },
       league: "nba",
-    }).includes("not available"),
+    }).includes("No play-by-play yet."),
   );
 });
 
@@ -346,9 +344,7 @@ test("favorites rail shows saved teams, selected state, dark logos and empty gui
   assert(html.includes('href="/team/?league=nba&amp;id=26"'));
   assert(!html.includes('media="(prefers-color-scheme: dark)"'));
   assert(html.includes("Scroll favorites right"));
-  assert(
-    render("FavoritesScroll").includes("Add favorite teams in the Tempo app"),
-  );
+  assert(render("FavoritesScroll").includes("Add favorites in the Tempo app."));
 });
 
 test("favorites displays saved leagues before teams with a section divider", () => {
@@ -371,9 +367,10 @@ test("favorites displays saved leagues before teams with a section divider", () 
 
 test("guest Home offers public sports browsing without account controls", () => {
   const html = render("GuestHome");
-  assert(html.includes("Around the game"));
+  assert(html.includes("News"));
   assert(html.includes('aria-label="League"'));
-  assert(html.includes("Sign in to personalize Home"));
+  assert(html.includes('id="guest-scores"'));
+  assert(html.includes('type="date"'));
   assert(!html.includes("Sign out"));
   assert(!html.includes("Welcome back"));
 });
@@ -422,7 +419,7 @@ test("video articles render playable backend videos and safe watch links", () =>
   assert(html.includes('preload="none"'));
   assert(html.includes('poster="https://example.test/poster.jpg"'));
   assert(html.includes('href="https://example.test/highlight.mp4"'));
-  assert(html.includes("Watch video in a new tab"));
+  assert(html.includes(">Watch video</a>"));
   assert(html.includes("Match recap."));
   assert(!html.includes("javascript:"));
 });
