@@ -229,7 +229,9 @@ export default function ExploreBoard({ userId }) {
           </div>
         </section>
       )}
-      <div className="dashboard-columns">
+      <div
+        className={`dashboard-columns${board.ready && !primary.length ? " dashboard-columns-empty" : ""}`}
+      >
         <div className="dashboard-primary">
           {board.ready && primary.map(renderSection)}
           {board.ready && !primary.length && (
