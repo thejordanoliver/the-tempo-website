@@ -69,6 +69,7 @@ export default function Home({ onLogout }) {
     "/api/feed/for-you?newsLimit=12&postsLimit=1",
     newsVersion,
   );
+  
   const gameList = selectedTeam
     ? games.items.filter(({ game, league }) =>
         [game.home, game.away].some(
@@ -77,6 +78,7 @@ export default function Home({ onLogout }) {
       )
     : games.items;
   const articles = Array.isArray(feed.data?.articles) ? feed.data.articles : [];
+
   return (
     <section className="home-screen">
       <h1 className="sr-only">Home</h1>
